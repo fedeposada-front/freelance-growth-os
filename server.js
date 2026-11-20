@@ -81,6 +81,37 @@ async function discoverCompanies(sector,limit,exclude,country='ambos'){
  return {companies:out.slice(0,limit),source:out.some(c=>c.source?.includes('Catálogo'))?querySource+' + catálogo ampliado':querySource,message:queryMessage};
 }
 
+
+async function contactsFromOfficialSite(c){
+ const site=safeURL(c.website);if(!site)return {error:'Se requiere una URL HTTPS oficial'};
+ const u=new URL(site),origin=u.origin;
+ const urls=[site,...['/contacto/','/contactanos/','/contact/','/equipo/','/nosotros/'].map(x=>origin+x)];
+ const channels=new Map(),checked=[];
+ for(const page of urls){
+  try{
+   const dns=await lookup(u.hostname,{all:true});if(!dns.length||dns.some(d=>privateIP(d.address)))continue;
+   const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),3600);
+   let response;try{response=await fetch(page,{redirect:'error',signal:ac.signal,headers:{'User-Agent':'Mozilla/5.0 (compatible; CoMunicarseOS/0.3)'}})}finally{clearTimeout(timer)}
+   if(!response.ok||!(response.headers.get('content-type')||'').includes('html'))continue;
+   const html=(await response.text()).slice(0,120000);
+   checked.push(page);
+   const items=[...html.matchAll(/(?:mailto:)?([a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})/gi)];
+   for(const m of items){const email=m[1].toLowerCase();if(email.length>100||/example|sentry|wix|wordpress|google|facebook|schema|noreply|no-reply|cloudflare/.test(email))continue;
+    if(!channels.has(email))channels.set(email,{email,source:page,type:/capacit|rrhh|personas|talento|formaci/i.test(email)?'Posible canal de capacitación / RR. HH.':/ventas|comercial|sales/i.test(email)?'Canal comercial publicado':'Canal general publicado (decisor no confirmado)'});
+   }
+  }catch{/* Page not accessible: never fabricate contact details. */}
+ }
+ const found=[...channels.values()];found.sort((x,y)=>(y.type.includes('capacitación')?2:y.type.includes('comercial')?1:0)-(x.type.includes('capacitación')?2:x.type.includes('comercial')?1:0));
+ return {role:'Responsable de Capacitación / Desarrollo de Personas; alternativamente Gerencia Comercial',person:null,personVerified:false,channels:found.slice(0,10),sources:checked,contactUrl:origin+'/contacto',warning:found.length?'Direcciones publicadas en páginas oficiales; no equivalen a responsables identificados.':'No apareció un email verificable. Consultar el formulario oficial o buscar el responsable por otros canales.'};
+}
+function draftCommercialEmail(c,recipient){
+ const company=clean(c.name,100),sector=clean(c.sector,100),person=clean(recipient.person,90),to=clean(recipient.email,120);
+ const greeting=person?'Hola '+person.split(' ')[0]+', ¿cómo estás?':'Hola, ¿cómo están?';
+ const subject='Capacitación en comunicación comercial para '+company;
+ const body=greeting+'\n\nSoy Alicia Camaño, directora de Co.Municarse. Diseño capacitaciones prácticas para equipos comerciales y técnicos, enfocadas en comunicar valor, preparar conversaciones con clientes y gestionar objeciones.\n\nConocí la actividad de '+company+' en el sector '+sector+' y me gustaría saber si están evaluando alguna iniciativa de formación para sus equipos. Podemos adaptar el programa a situaciones de su trabajo diario.\n\n¿Tendrías 15 minutos para conversar y explorar si puede servirles?'+(!person?'\n\nSi no sos la persona indicada, ¿podrías derivarme con quien coordina las capacitaciones comerciales?':'')+'\n\nMuchas gracias,\nAlicia Camaño\nCo.Municarse';
+ return {to,subject,body,status:'Borrador, no enviado',verification:person?'Nombre proporcionado manualmente: verificar identidad y cargo antes de enviar':'Responsable no identificado; mensaje preparado para canal corporativo'};
+}
+
 const server=http.createServer(async(req,res)=>{try{
  const url=new URL(req.url,'http://localhost');
  if(req.method==='GET'&&url.pathname==='/api/health')return send(res,{ok:true,version:'0.3.0'});
@@ -91,6 +122,15 @@ const server=http.createServer(async(req,res)=>{try{
  const country=['argentina','uruguay','ambos'].includes(url.searchParams.get('country'))?url.searchParams.get('country'):'ambos';return send(res,await discoverCompanies(sector,limit,exclude,country));
  }
  if(req.method==='GET'&&url.pathname==='/'){const page2=await readFile(new URL('./public-v2.html',import.meta.url));res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; object-src 'none'; frame-ancestors 'none'"});return res.end(page2);}
+ 
+ if(req.method==='POST'&&(url.pathname==='/api/contacts'||url.pathname==='/api/email-draft')){
+  let input='';for await(const chunk of req){input+=chunk;if(input.length>10000)return send(res,{error:'Solicitud muy grande'},413)}
+  let b;try{b=JSON.parse(input)}catch{return send(res,{error:'Formato inválido'},400)}
+  const company={name:clean(b.name,100),sector:clean(b.sector,120),website:safeURL(b.website)};
+  if(!company.name||!company.website)return send(res,{error:'Nombre y URL HTTPS oficial requeridos'},400);
+  if(url.pathname==='/api/contacts')return send(res,await contactsFromOfficialSite(company));
+  return send(res,draftCommercialEmail(company,b.recipient||{}));
+ }
  if(req.method==='POST'&&url.pathname==='/api/analyze'){let input='';for await(const chunk of req){input+=chunk;if(input.length>12000)return send(res,{error:'Datos demasiado extensos'},413)}
  let b;try{b=JSON.parse(input)}catch{return send(res,{error:'JSON inválido'},400)}
  const name=clean(b.name,100),sector=clean(b.sector,120),website=safeURL(b.website),why=clean(b.why,200);
