@@ -50,27 +50,32 @@ $('download').onclick=()=>{let b=new Blob([$('proposal').value],{type:'text/plai
 </script></body></html>`;
 
 const DISCOVERY_POOL=[
+{name:'Calister',sector:'Agroquímicos y semillas',website:'https://www.calister.com.uy/',contact:'https://www.calister.com.uy/la-empresa/',why:'Comercialización de productos orientados al sector agropecuario',country:'Uruguay',source:'Sitio oficial · Uruguay'},
+{name:'ISUSA',sector:'Fertilizantes y químicos',website:'https://isusa.com.uy/',contact:'https://isusa.com.uy/',why:'Industria química y fertilizantes con comercialización técnica',country:'Uruguay',source:'Sitio oficial · Uruguay'},
+{name:'Proquimur',sector:'Agroquímicos',website:'https://proquimur.com.uy/',contact:'https://proquimur.com.uy/',why:'Productos técnicos para agricultura y sector forestal',country:'Uruguay',source:'Sitio oficial · Uruguay'},
+{name:'Vettore Uruguay',sector:'Insumos agrícolas',website:'https://www.vettoreuruguay.com/',contact:'https://www.vettoreuruguay.com/',why:'Equipo técnico comercial de asesoramiento al productor',country:'Uruguay',source:'Sitio oficial · Uruguay'},
+
 {name:'Profertil',sector:'Fertilizantes y nutrición de cultivos',website:'https://www.profertil.com.ar/',contact:'https://www.profertil.com.ar/',why:'Producción y comercialización de fertilizantes; comunicación técnica',source:'Catálogo ampliado · web oficial'},
 {name:'DONMARIO Semillas',sector:'Genética y semillas',website:'https://www.donmario.com/argentina/',contact:'https://www.donmario.com/argentina/equipo-comercial/',why:'Red comercial y asesoramiento técnico en semillas',source:'Catálogo ampliado · web oficial'},
 {name:'Stoller Argentina',sector:'Nutrición y fisiología vegetal',website:'https://www.stoller.com.ar/',contact:'https://materiales.stoller.com.ar/contacto_atc_stollerargentina',why:'Asesores técnicos y soluciones agronómicas',source:'Catálogo ampliado · web oficial'},
 {name:'Laboratorios Agroinsumos',sector:'Agroinsumos',website:'https://laboratoriosagroinsumos.com/',contact:'https://laboratoriosagroinsumos.com/contacto/',why:'Productos y asistencia técnica en agroinsumos',source:'Catálogo ampliado · web oficial'}
 ];
-async function discoverCompanies(sector,limit,exclude){
+async function discoverCompanies(sector,limit,exclude,country='ambos'){
  const words={agro:['agro','agric','cultivo','semill','fertiliz','food','farm','químic'],industria:['industr','maquin','metal','manufactur','equipam'],tecnologia:['tecnolog','software','internet','telecom','comput','informát'],salud:['salud','médic','farmac','hospital','health'],todos:[]}[sector]||[];
  const out=[];let queryMessage='',querySource='';
- const query='SELECT DISTINCT ?company ?companyLabel ?website ?industryLabel WHERE { ?company wdt:P17 wd:Q414 ; wdt:P856 ?website . OPTIONAL { ?company wdt:P452 ?industry . } SERVICE wikibase:label { bd:serviceParam wikibase:language "es,en" . } } LIMIT 250';
+ const countryId=country==='uruguay'?'wd:Q77':country==='argentina'?'wd:Q414':'?country';const values=country==='ambos'?'VALUES ?country { wd:Q414 wd:Q77 } ':'';const query='SELECT DISTINCT ?company ?companyLabel ?website ?industryLabel ?country WHERE { '+values+' ?company wdt:P17 '+countryId+' ; wdt:P856 ?website . OPTIONAL { ?company wdt:P452 ?industry . } SERVICE wikibase:label { bd:serviceParam wikibase:language "es,en" . } } LIMIT 250';
  try{
   const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),9500);
   let r;try{r=await fetch('https://query.wikidata.org/sparql?format=json&query='+encodeURIComponent(query),{signal:ctl.signal,headers:{'User-Agent':'CoMunicarseOS/0.2 (public-data discovery; info@comunicarse.com.ar)','Accept':'application/sparql-results+json'},redirect:'error'})}finally{clearTimeout(timer)}
   if(!r.ok)throw new Error('Wikidata HTTP '+r.status);
   const data=await r.json();
-  const matches=(data.results?.bindings||[]).map(row=>({name:clean(row.companyLabel?.value,100),sector:clean(row.industryLabel?.value,120)||'Sector por verificar',website:safeURL(row.website?.value),why:'Empresa registrada en fuente abierta; validar afinidad',source:'Wikidata · consulta abierta',sourceUrl:row.company?.value})).filter(c=>c.name&&!/^Q\d+$/.test(c.name)&&c.website&&!exclude.has(c.name.toLowerCase())&&(!words.length||words.some(w=>(c.name+' '+c.sector).toLowerCase().includes(w))));
+  const matches=(data.results?.bindings||[]).map(row=>({name:clean(row.companyLabel?.value,100),sector:clean(row.industryLabel?.value,120)||'Sector por verificar',website:safeURL(row.website?.value),why:'Empresa registrada en fuente abierta; validar afinidad',country:row.country?.value?.endsWith('Q77')?'Uruguay':'Argentina',source:'Wikidata · consulta abierta',sourceUrl:row.company?.value})).filter(c=>c.name&&!/^Q\d+$/.test(c.name)&&c.website&&!exclude.has(c.name.toLowerCase())&&(!words.length||words.some(w=>(c.name+' '+c.sector).toLowerCase().includes(w))));
   for(const c of matches){if(!out.some(x=>x.website===c.website))out.push(c);if(out.length>=limit)break}
   queryMessage='Búsqueda en Wikidata completada.';
   querySource='Wikidata SPARQL';
  }catch(e){queryMessage='La fuente abierta Wikidata no respondió o bloqueó la consulta.';querySource='Wikidata (sin respuesta)'}
  if(out.length<limit && ['agro','todos'].includes(sector)){
-  for(const c of DISCOVERY_POOL){if(!exclude.has(c.name.toLowerCase())&&!out.some(x=>x.name.toLowerCase()===c.name.toLowerCase()))out.push(c);if(out.length>=limit)break}
+  for(const c of DISCOVERY_POOL){if((country==='ambos'||(c.country||'Argentina').toLowerCase()===country)&&!exclude.has(c.name.toLowerCase())&&!out.some(x=>x.name.toLowerCase()===c.name.toLowerCase()))out.push(c);if(out.length>=limit)break}
   if(out.some(c=>c.source?.startsWith('Catálogo')))queryMessage+=' Se completó con empresas adicionales de un catálogo previamente verificado, no con hallazgos en vivo.';
  }
  return {companies:out.slice(0,limit),source:out.some(c=>c.source?.includes('Catálogo'))?querySource+' + catálogo ampliado':querySource,message:queryMessage};
@@ -78,12 +83,12 @@ async function discoverCompanies(sector,limit,exclude){
 
 const server=http.createServer(async(req,res)=>{try{
  const url=new URL(req.url,'http://localhost');
- if(req.method==='GET'&&url.pathname==='/api/health')return send(res,{ok:true,version:'0.2.0'});
+ if(req.method==='GET'&&url.pathname==='/api/health')return send(res,{ok:true,version:'0.3.0'});
  if(req.method==='GET'&&url.pathname==='/api/companies')return send(res,COMPANIES);
  if(req.method==='GET'&&url.pathname==='/api/discover'){
  const sector=clean(url.searchParams.get('sector'),30),limit=Math.min(30,Math.max(1,Number(url.searchParams.get('limit'))||10));
  const exclude=new Set(clean(url.searchParams.get('exclude'),5000).split('|').map(x=>x.toLowerCase()));
- return send(res,await discoverCompanies(sector,limit,exclude));
+ const country=['argentina','uruguay','ambos'].includes(url.searchParams.get('country'))?url.searchParams.get('country'):'ambos';return send(res,await discoverCompanies(sector,limit,exclude,country));
  }
  if(req.method==='GET'&&url.pathname==='/'){const page2=await readFile(new URL('./public-v2.html',import.meta.url));res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; object-src 'none'; frame-ancestors 'none'"});return res.end(page2);}
  if(req.method==='POST'&&url.pathname==='/api/analyze'){let input='';for await(const chunk of req){input+=chunk;if(input.length>12000)return send(res,{error:'Datos demasiado extensos'},413)}
