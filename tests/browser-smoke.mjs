@@ -20,11 +20,12 @@ try{
   await page.locator('#editStage').selectOption('Investigado');
   await page.locator('#saveCompany').click();
   await page.locator('[data-nav="pipeline"]').click();
-  await page.getByText('Empresa QA DEMO').first().waitFor();
+  await page.locator('#pipelineCards').getByText('Empresa QA DEMO').first().waitFor();
   await page.locator('[data-nav="proposal"]').click();
   await page.locator('#propHeadline').fill('Un sitio más claro para familias');
   await page.locator('#saveProposal').click();
-  await page.getByText('Empresa QA DEMO').first().waitFor();
+  await page.locator('#propCompany').waitFor();
+  assert.ok((await page.locator('#propCompany').innerText()).includes('Empresa QA DEMO'));
   assert.ok((await page.locator('#presentation').innerText()).includes('Un sitio más claro para familias'));
   await page.reload({waitUntil:'domcontentloaded'});
   await page.locator('#stat-total').waitFor();
