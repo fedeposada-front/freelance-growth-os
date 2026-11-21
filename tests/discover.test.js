@@ -61,3 +61,28 @@ test('discovery sanitizes public text and invalid website',async()=>{
     assert.equal(res.body.companies[0].name,'A B');
   });
 });
+
+test('discovery rejects malformed OSM elements and deduplicates IDs',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[
+    null,{type:'node',id:42,tags:{name:'Empresa única'}},
+    {type:'node',id:42,tags:{name:'Duplicada'}},
+    {type:'way',id:-1,tags:{name:'ID inválido'}},
+    {type:'script',id:44,tags:{name:'Tipo inválido'}},
+    {type:'way',id:45,tags:{name:'  '}},
+    {type:'way',id:46,tags:{name:'Empresa válida'}}
+  ]})}),async()=>{
+    const res=response();
+    await handler({method:'GET',query:{zone:'amba',sector:'funeral'}},res);
+    assert.equal(res.code,200);
+    assert.deepEqual(res.body.companies.map(x=>x.name),['Empresa única','Empresa válida']);
+  });
+});
+
+test('discovery handles unexpected Overpass JSON without fabricating records',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:{unexpected:'object'}})}),async()=>{
+    const res=response();
+    await handler({method:'GET',query:{}},res);
+    assert.equal(res.code,200);
+    assert.deepEqual(res.body.companies,[]);
+  });
+});
