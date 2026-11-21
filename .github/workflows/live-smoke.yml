@@ -3,6 +3,8 @@ on:
   push:
     branches: [mvp/freelance-growth-os]
   workflow_dispatch:
+  pull_request:
+    branches: [main]
 permissions:
   contents: read
 jobs:
