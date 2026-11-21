@@ -23,3 +23,14 @@ jobs:
           set -euo pipefail
           curl --retry 3 --retry-delay 2 --max-time 25 --fail --silent --show-error 'https://freelance-growth-os-mvp.vercel.app/api/audit?url=https%3A%2F%2Fwww.sepeliosmoron.com.ar%2F' -o /tmp/audit.json
           node -e "const fs=require('fs'); const j=JSON.parse(fs.readFileSync('/tmp/audit.json','utf8')); if (!['consultado','no_consultado'].includes(j.status) || !j.checkedAt) process.exit(1); console.log('API audit status:', j.status)"
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Install headless Chromium runner
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Browser E2E on desktop and mobile
+        run: node tests/browser-smoke.mjs
