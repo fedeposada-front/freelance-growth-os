@@ -55,3 +55,12 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - CI para el nuevo commit: todavía sin ejecución confirmada al consultar GitHub. Próxima ejecución debe verificar checks y corregir cualquier fallo.
 - Sin bloqueos que justifiquen intervención manual: las verificaciones pueden continuar mediante CI y herramientas conectadas. **No enviar email de bloqueo.**
 - Prioridad siguiente: disparar/verificar integración en CI de /api/discover contra fuente real con límites de tiempo y registrar si está disponible, sin datos inventados. Luego avanzar en seguridad y persistencia.
+
+## Ejecución 21/11/2026 · 19:54 ART — robustez del descubrimiento
+- Cambio concreto en `api/discover.js`: validar tipo e ID de cada elemento OSM, limitar procesamiento a 300 elementos, eliminar duplicados por tipo/ID y tolerar JSON inesperado sin inventar registros.
+- Regresiones agregadas en `tests/discover.test.js`: 2 tests nuevos de payload malformado, duplicados y ausencia de array.
+- Commits: `41f1333404a57f23ec4c69f127af4db226f7811c` (implementación), `9e472cb2fdcb3138df0aff3b4fd366fc4875298b` (tests).
+- Consulta de workflow runs asociada al último commit: sin runs aún; **CI pendiente, no declarar PASS**.
+- Intento de smoke directo contra `https://freelance-growth-os-mvp.vercel.app/api/discover?zone=caba&sector=funeral`: el entorno de ejecución no resuelve DNS. Esto **no demuestra caída de Vercel**. Validación live Overpass pendiente.
+- Sin bloqueo humano confirmado: seguir con CI y otras rutas de validación; no enviar email de bloqueo.
+- Próxima corrida: comprobar CI del commit 9e472cb2, validar descubrimiento vivo por CI con timeout y verificar protección de APIs; continuar con persistencia segura.
