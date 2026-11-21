@@ -35,3 +35,13 @@
 4. Ejecutar CI y QA responsive y actualizar STATUS con estado de evidencia; seguir hasta MVP de punta a punta aceptable.
 
 No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
+
+## QA funcional actualizado · 21/11/2026 18:12 ART
+- [x] Public URL smoke: home HTTPS HTTP 200 + HTML de radar/propuestas presentes.
+- [x] Endpoint /api/audit remoto: JSON válido, estado real `consultado` para https://www.sepeliosmoron.com.ar/ en GitHub Actions (run 44950213210).
+- [x] Chromium Playwright E2E **PASS**: crear prospecto DEMO, modificar ficha, etapa, navegar pipeline, editar/guardar propuesta, recargar y mantener datos, viewport desktop y mobile, sin errores JavaScript. Evidencia: https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44950213210 ; job 136986258608, mensaje `PASS: desktop + mobile navigation; create, save, stage, persist and proposal`.
+- [x] CI de Node/validación JS previa y Vercel READY, URL: https://freelance-growth-os-mvp.vercel.app/ .
+- [ ] API /api/discover Overpass **no testeada** con datos reales; verificar disponibilidad, límites y licencia.
+- [ ] Auth + PostgreSQL, PageSpeed/axe, IA intercambiable real, accesibilidad profunda, prueba envío NO (prohibido), uso comercial condicionado por hosting.
+
+**Decisión:** MVP experimental externo y funcional para test personal, pero NO beta comercial ni sistema completo. Continuar automatización horaria enfocada en persistencia segura, auditoría verificable y descubrimiento, sin gastos ni auto-SEND.
