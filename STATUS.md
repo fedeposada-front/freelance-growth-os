@@ -45,3 +45,13 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - [ ] Auth + PostgreSQL, PageSpeed/axe, IA intercambiable real, accesibilidad profunda, prueba envío NO (prohibido), uso comercial condicionado por hosting.
 
 **Decisión:** MVP experimental externo y funcional para test personal, pero NO beta comercial ni sistema completo. Continuar automatización horaria enfocada en persistencia segura, auditoría verificable y descubrimiento, sin gastos ni auto-SEND.
+
+
+## Ejecución 21/11/2026 · 18:56 ART — validación de descubrimiento
+- Commit nuevo: `2a06bd4e6c9b3f53e13ae9691a85a1f78eab75b4`.
+- Añadido `tests/discover.test.js`: 4 pruebas de contrato con `fetch` simulado para fuente OSM, procedencia verificable, método inválido, fallo HTTP 429 y sanitización de campos/URLs. Se trata de pruebas simuladas, **NO** validan disponibilidad real de Overpass.
+- Inspección del endpoint `api/discover.js`: consulta Overpass por área/rubro, devuelve `sourceUrl`, ODbL y no inventa empresas cuando la fuente falla.
+- Acceso directo a la URL desde el entorno de esta ejecución: sin resolución DNS / acceso web; **no** atribuir a la aplicación una caída, ni declarar descubrimiento remoto PASS.
+- CI para el nuevo commit: todavía sin ejecución confirmada al consultar GitHub. Próxima ejecución debe verificar checks y corregir cualquier fallo.
+- Sin bloqueos que justifiquen intervención manual: las verificaciones pueden continuar mediante CI y herramientas conectadas. **No enviar email de bloqueo.**
+- Prioridad siguiente: disparar/verificar integración en CI de /api/discover contra fuente real con límites de tiempo y registrar si está disponible, sin datos inventados. Luego avanzar en seguridad y persistencia.
