@@ -79,3 +79,12 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commits: `17dc9b755c7f33d57e7e8a59cd882c855c2ebb09` (validación), `55c45666b0c59d12682623f6335acd417707ef43` (test de regresión con fetch prohibido para filtros inválidos).
 - CI de estos dos commits: aún pendiente de confirmación; no declarar PASS.
 - Sigue pendiente prueba live Overpass y persistencia/auth segura. No existe bloqueo humano imprescindible, no enviar email.
+
+
+## Ejecución 21/11/2026 · 23:03 ART — distinguir fallo de fuente y cero resultados
+- Verificada la CI del commit anterior `55c45666b0c59d12682623f6335acd417707ef43`: dos workflows completados **PASS**: https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44968951298 y https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44968951237.
+- Corregido `api/discover.js`: Overpass puede responder HTTP 200 con un cuerpo JSON inválido o con `remark` de error. Antes se interpretaba como búsqueda válida sin empresas; ahora devuelve HTTP 503 con mensaje honesto y no genera leads ficticios. Commit `49edb97a055947e1046c77ab3e3edc56b5fb85a1`.
+- Ampliadas pruebas de regresión: respuesta malformada, `remark` con timeout y verdadero resultado vacío. Commit `38e7569ef34a7c0ba17ea023258bccb5522f5539`.
+- CI de los cambios nuevos: pendiente de confirmación; no declarar PASS todavía.
+- El entorno de ejecución continúa sin resolver el dominio Vercel mediante DNS, por lo que no se ha comprobado /api/discover en vivo; no es evidencia de caída de producción.
+- Sin bloqueo humano imprescindible: no enviar correo. Siguiente corrida: verificar CI de 38e7569, intentar smoke remoto vía GitHub Actions y avanzar persistencia/auth sin gastos.
