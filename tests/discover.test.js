@@ -78,10 +78,29 @@ test('discovery rejects malformed OSM elements and deduplicates IDs',async()=>{
   });
 });
 
-test('discovery handles unexpected Overpass JSON without fabricating records',async()=>{
+test('discovery rejects unexpected Overpass JSON without fabricating records',async()=>{
   await withFetch(async()=>({ok:true,json:async()=>({elements:{unexpected:'object'}})}),async()=>{
     const res=response();
     await handler({method:'GET',query:{}},res);
+    assert.equal(res.code,503);
+    assert.match(res.body.error,/Overpass/);
+    assert.equal(res.body.companies,undefined);
+  });
+});
+
+test('discovery rejects Overpass remark despite HTTP 200',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[],remark:'runtime error: timeout'})}),async()=>{
+    const res=response();
+    await handler({method:'GET',query:{zone:'caba',sector:'funeral'}},res);
+    assert.equal(res.code,503);
+    assert.equal(res.body.companies,undefined);
+  });
+});
+
+test('discovery accepts genuinely empty Overpass results',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[]})}),async()=>{
+    const res=response();
+    await handler({method:'GET',query:{zone:'caba',sector:'funeral'}},res);
     assert.equal(res.code,200);
     assert.deepEqual(res.body.companies,[]);
   });
