@@ -41,7 +41,7 @@ export function findingsFromHtml(html){
   return checks;
 }
 function decode(s){return String(s||'').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/&nbsp;/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,500);}
-function meta(html,name){
+export function meta(html,name){
   const tags=html.match(/<meta\b[^>]*>/gi)||[];
   for(const tag of tags){
     const attrs={};
