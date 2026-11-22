@@ -210,3 +210,10 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - CI de estos commits y despliegue HTTPS de esta revisión: PENDIENTES; no se atribuye PASS.
 - La auditoría continúa teniendo riesgo de DNS rebinding porque resuelve con `dns.lookup` y luego `fetch` vuelve a resolver; no declarar la API segura para uso público sin pinning DNS/TLS o mitigación equivalente. Auth y persistencia privada multidispositivo continúan pendientes.
 - No hay acción humana indispensable demostrada; no enviar correo de bloqueo. Mantener el trabajo aislado en la rama personal.
+
+
+## 22/11/2026 · 15:59 ART — falsos negativos en auditoría heurística
+- Inspección de `api/audit.js`: `findingsFromHtml` podía interpretar ejemplos de HTML dentro de `<script>`, `<style>` o comentarios como etiquetas reales, ocultando señales ausentes (título, H1, meta y enlaces). Corregido al excluir esos bloques antes de las comprobaciones heurísticas.
+- Commits `9fb5ffddfe7b10c092b45a2b8685940af5abdf6d` (código) y `95e18fdd407830a56fa22fbd4255f378651b55da` (regresión con seis señales faltantes).
+- Vercel mostró preview READY del commit anterior `0bc7c73`, no de estos commits. CI y despliegue de los cambios nuevos **no verificados** en esta ejecución; no declarar PASS.
+- Esta mejora no resuelve el riesgo de DNS rebinding, autenticación/persistencia segura ni Overpass real. No hay bloqueo humano indispensable; no se envió correo.
