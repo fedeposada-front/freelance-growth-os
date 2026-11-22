@@ -19,11 +19,14 @@ export function validTarget(value){
     return u;
   }catch{return null;}
 }
+function hasMetaName(html,name){
+  return (html.match(/<meta\\b[^>]*>/gi)||[]).some(tag=>new RegExp('\\\\bname\\\\s*=\\\\s*(["\\\\x27])'+name+'\\\\1','i').test(tag));
+}
 export function findingsFromHtml(html){
   const checks=[];
-  if(!/<meta[^>]*name\s*=\s*["']viewport["']/i.test(html))checks.push({name:'Viewport móvil no detectado',severity:'high',evidence:'No se encontró meta viewport en el HTML descargado. Revisar experiencia responsive manualmente.'});
+  if(!hasMetaName(html,'viewport'))checks.push({name:'Viewport móvil no detectado',severity:'high',evidence:'No se encontró meta viewport en el HTML descargado. Revisar experiencia responsive manualmente.'});
   if(!/<title\b[^>]*>[^<]{3,}<\/title>/i.test(html))checks.push({name:'Título de página no identificado',severity:'high',evidence:'No se encontró un elemento <title> con contenido legible.'});
-  if(!/<meta[^>]*name\s*=\s*["']description["']/i.test(html))checks.push({name:'Meta descripción no detectada',severity:'medium',evidence:'La respuesta HTML no incluye una etiqueta meta description reconocible. No implica automáticamente mala indexación.'});
+  if(!hasMetaName(html,'description'))checks.push({name:'Meta descripción no detectada',severity:'medium',evidence:'La respuesta HTML no incluye una etiqueta meta description reconocible. No implica automáticamente mala indexación.'});
   if(!/<h1\b/i.test(html))checks.push({name:'Encabezado H1 no detectado',severity:'medium',evidence:'No se encontró H1 en el HTML inicial. Podría generarse dinámicamente.'});
   if(!/href\s*=\s*["']tel:/i.test(html))checks.push({name:'Enlace telefónico no detectado',severity:'medium',evidence:'No se observó href="tel:" en el HTML inicial. Revisar si existe otro canal de contacto.'});
   if(!/wa\.me\/|api\.whatsapp\.com|href\s*=\s*["']mailto:/i.test(html))checks.push({name:'Enlace a mensajería/email no detectado',severity:'medium',evidence:'No se observó enlace a WhatsApp o mailto en el HTML inicial. No demuestra ausencia de formulario u otros canales.'});
