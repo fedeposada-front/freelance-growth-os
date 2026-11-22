@@ -192,3 +192,6 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Vercel personal confirmó preview `READY` de `ca06e66` (deployment `dpl_B4TLQi4293KrWW4UcPr167QncSkv`). Solicitado despliegue **production** del mismo SHA en el proyecto personal existente `prj_5P2SW7NSH1y9wHkYsB68AiVHADf9`, deployment `dpl_4w982KFs7dvJThd56cxTohAPR3M4`. Primera comprobación: `BUILDING`; no declarar READY hasta verificarlo.
 - Esta operación no crea proyecto, cuenta, plan ni gasto nuevo; no toca Co.Municarse ni servicios corporativos.
 - Próxima ejecución: confirmar READY/alias y smoke HTTPS de producción; priorizar login/persistencia segura, prueba real de Overpass y E2E. No hay bloqueo humano indispensable identificado; sin correo de bloqueo.
+
+### Confirmación del despliegue de las 13:02 ART
+- Vercel devolvió `READY`, `target=production`, `aliasError=null` para `dpl_4w982KFs7dvJThd56cxTohAPR3M4`, commit `ca06e66`, alias `freelance-growth-os-mvp.vercel.app` asociado. Esto confirma publicación del código con métricas de auditoría, **no** smoke E2E de esa producción ni funcionalidad integral.
