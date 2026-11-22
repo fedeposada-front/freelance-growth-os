@@ -217,3 +217,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commits `9fb5ffddfe7b10c092b45a2b8685940af5abdf6d` (código) y `95e18fdd407830a56fa22fbd4255f378651b55da` (regresión con seis señales faltantes).
 - Vercel mostró preview READY del commit anterior `0bc7c73`, no de estos commits. CI y despliegue de los cambios nuevos **no verificados** en esta ejecución; no declarar PASS.
 - Esta mejora no resuelve el riesgo de DNS rebinding, autenticación/persistencia segura ni Overpass real. No hay bloqueo humano indispensable; no se envió correo.
+
+
+## 22/11/2026 19:03 ART — pinning DNS/TLS del auditor
+- Inspeccionado `api/audit.js` y sus pruebas. Se identificó el desacople entre `dns.lookup` y `fetch`, que podía resolver nuevamente el hostname y permitir DNS rebinding.
+- Implementación commit `e7e42ed`: reemplazado `fetch` por `https.request` con callback `lookup` fijado a la IP pública previamente validada, SNI y validación de certificado para el hostname original, sin redirecciones. Se conserva el timeout y el límite de HTML.
+- Prueba de regresión commit `8ab0857`: una conexión a `example.com` con IP fijada deliberadamente a loopback debe fallar, sin volver a resolver el dominio. El handler nunca debe seleccionar loopback porque `publicAddress` lo rechaza.
+- CI y smoke HTTPS de estos commits todavía pendientes de confirmación. Esta corrección reduce riesgo de DNS rebinding, pero no sustituye rate limiting, login, persistencia privada ni revisión de otros vectores SSRF. No declarar MVP completo.
+- Sin intervención humana imprescindible ni correo de bloqueo; siguiente ejecución verificar CI y endpoint remoto, corregir cualquier regresión.
