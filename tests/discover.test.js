@@ -53,7 +53,7 @@ test('discovery handles unavailable source without invented results',async()=>{
 });
 
 test('discovery sanitizes public text and invalid website',async()=>{
-  await withFetch(async()=>({ok:true,json:async()=>({elements:[{type:'node',id:3,tags:{name:'A\\nB',website:'javascript:alert(1)',email:'x\\ny'}}]})}),async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[{type:'node',id:3,tags:{name:'A'+String.fromCharCode(10)+'B',website:'javascript:alert(1)',email:'x'+String.fromCharCode(10)+'y'}}]})}),async()=>{
     const res=response();
     await handler({method:'GET',query:{}},res);
     assert.equal(res.code,200);
