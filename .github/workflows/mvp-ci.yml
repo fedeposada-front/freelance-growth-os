@@ -19,3 +19,16 @@ jobs:
       - name: Parse browser app JS
         run: |
           node --input-type=module -e "import fs from 'node:fs'; import vm from 'node:vm'; const s=fs.readFileSync('index.html','utf8').match(/<script>([\s\S]*?)<\/script>/)?.[1]; if (!s) process.exit(1); new vm.Script(s);"
+      - name: Live discovery smoke (informational, external service)
+        continue-on-error: true
+        run: |
+          node --input-type=module -e '
+            const url="https://freelance-growth-os-mvp.vercel.app/api/discover?zone=caba&sector=funeral";
+            try {
+              const response=await fetch(url,{signal:AbortSignal.timeout(25000)});
+              const body=await response.json();
+              if(response.status!==200 || !Array.isArray(body.companies) || !String(body.license).includes("ODbL")) throw Error("Invalid discovery response: "+response.status);
+              if(body.companies.some(c=>!c.name || !/^https:\/\/www.openstreetmap.org\//.test(c.sourceUrl))) throw Error("Missing OSM provenance");
+              console.log("LIVE DISCOVERY PASS; count="+body.companies.length);
+            } catch(error) { console.error("LIVE DISCOVERY NOT VERIFIED: "+error.message); process.exitCode=1; }
+          '
