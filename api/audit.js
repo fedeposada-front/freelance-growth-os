@@ -22,7 +22,7 @@ export function validTarget(value){
 function hasMetaName(html,name){
   const tags=html.match(/<meta\b[^>]*>/gi)||[];
   return tags.some(tag=>{
-    const match=tag.match(/\bname\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+    const match=tag.match(/\sname\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
     return (match?.[1]??match?.[2]??match?.[3]??'').toLowerCase()===name;
   });
 }
