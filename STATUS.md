@@ -125,3 +125,9 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - **QA PENDIENTE**: consulta inmediata a workflow runs del último commit devolvió cero resultados. No se ejecutaron tests locales ni se verificó disponibilidad live de ambos proveedores en esta corrida. Verificar CI y smoke remoto en próxima ejecución; no declarar PASS.
 - Advertencia: el presupuesto máximo combinado de dos intentos es ~17 s más procesamiento; revisar límites del runtime Vercel si surge timeout. Los endpoints públicos pueden cambiar o tener restricciones de uso; conservar CSV como alternativa.
 - No hay bloqueo humano imprescindible; no enviar correo. Persistencia segura y autenticación siguen pendientes.
+
+## 22/11/2026 · 05:03 ART — CI y diagnóstico del 503 persistente
+- Confirmado **MVP CI PASS** para commit `3dbdfbe` en [run 44995928474](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44995928474): 18 pruebas unitarias PASS, incluida recuperación simulada del fallback. [Public URL smoke 44995928482](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44995928482) también concluyó success.
+- **Descubrimiento real NO VERIFICADO**: logs del job 137126831329, 22/11 06:56 UTC, muestran `LIVE DISCOVERY NOT VERIFIED: Invalid discovery response: 503`; el paso informativo falla pero el workflow global figura success. No atribuir aún el 503 a Overpass ni afirmar que el fallback esté desplegado.
+- Commit `d80f441ca236bfc602ff790831b977306fa9e748`: mejorado el diagnóstico de CI para mostrar motivo de error acotado a 280 caracteres en próxima ejecución, sin datos de empresas ni secretos. No cambia la app ni acredita reparación del 503.
+- Pendiente: inspeccionar próximo log, discriminar deployment desactualizado vs timeout/upstream, corregir causa y verificar consulta real; avanzar auth/persistencia. No hay acción humana indispensable demostrada; sin correo de bloqueo.
