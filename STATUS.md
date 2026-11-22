@@ -203,3 +203,10 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Prueba `bb56485`: regresión de direcciones privadas, reservadas, documentación y direcciones públicas. CI del nuevo commit todavía NO verificada; no declarar PASS.
 - Limitación: comprobación DNS previa a fetch no elimina por sí sola DNS rebinding; requiere pinning/verificación de IP en la conexión para producción multiusuario. No hay autenticación ni persistencia privada compartida. No exponer datos sensibles.
 - Prioridad: verificar CI de bb56485, resolver DNS rebinding y seguridad de endpoints, avanzar auth/persistencia gratuita y E2E HTTPS. Sin bloqueo humano imprescindible; no enviar alerta.
+
+## 22/11/2026 · 14:54 ART — validación de entrada de auditoría
+- Se inspeccionó `api/audit.js`, sus regresiones y el historial de despliegues Vercel del proyecto personal. El preview del commit `c001dd3` figura READY; esto no equivale a producción ni a E2E PASS.
+- Se detectó que `validTarget` permitía coerción implícita de parámetros no string (`new URL` sobre arrays de un elemento), situación posible con parámetros query repetidos. Ahora rechaza tipos no string y valores vacíos antes de parsear. Implementación `e5f7596`; prueba `cff14e4`.
+- CI de estos commits y despliegue HTTPS de esta revisión: PENDIENTES; no se atribuye PASS.
+- La auditoría continúa teniendo riesgo de DNS rebinding porque resuelve con `dns.lookup` y luego `fetch` vuelve a resolver; no declarar la API segura para uso público sin pinning DNS/TLS o mitigación equivalente. Auth y persistencia privada multidispositivo continúan pendientes.
+- No hay acción humana indispensable demostrada; no enviar correo de bloqueo. Mantener el trabajo aislado en la rama personal.
