@@ -36,3 +36,9 @@ test('bounded reader handles an empty stream without fabricated findings',async(
  const result=await readLimited(response);
  assert.deepEqual(result,{html:'',truncated:false});
 });
+
+
+test('meta checks accept attributes in any order and avoid false findings',()=>{
+  const html='<html><head><title>Empresa real</title><meta content="width=device-width" name="viewport"><meta content="Servicios" name="description"></head><body><h1>Inicio</h1><a href="tel:+5411000">Teléfono</a><a href="mailto:info@example.com">Email</a></body></html>';
+  assert.deepEqual(findingsFromHtml(html),[]);
+});
