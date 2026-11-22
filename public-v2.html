@@ -70,9 +70,50 @@
 .proposal-page.dark::before{background:rgba(255,51,204,.13)}
 .proposal-page::after{background:rgba(253,195,0,.055)}
 .proposal-page.dark::after{background:rgba(253,195,0,.09)}
+
+/* Typography lock: visual identity Co.Municarse
+   Headings: Bebas Neue Regular; supporting type: DM Sans 400–800.
+   Scoped to presentation slides so email/CRM UI remains unaffected. */
+.proposal-page{
+  --font-display:'Bebas Neue',Impact,'Arial Narrow',sans-serif;
+  --font-body:'DM Sans',Arial,Helvetica,sans-serif;
+  font-family:var(--font-body);
+  font-weight:400;
+  font-optical-sizing:auto;
+}
+.proposal-page h3{
+  font-family:var(--font-display);
+  font-weight:400;
+  font-style:normal;
+  letter-spacing:.012em;
+  text-transform:uppercase;
+  overflow-wrap:break-word;
+}
+.proposal-page h3 em{font-family:inherit;font-weight:inherit;font-style:normal}
+.proposal-page h4,
+.proposal-page p,
+.proposal-page li,
+.proposal-page .large,
+.proposal-page .eyebrow,
+.proposal-page footer,
+.proposal-page .signature-label,
+.proposal-page .block,
+.proposal-page .black-block{font-family:var(--font-body)}
+.proposal-page h4{font-weight:800;line-height:1.3;letter-spacing:-.015em}
+.proposal-page .eyebrow{font-weight:800;letter-spacing:.20em;line-height:1.4}
+.proposal-page p,.proposal-page li{font-weight:400;overflow-wrap:break-word}
+.proposal-page p strong,.proposal-page li strong,.proposal-page .block strong{font-weight:700}
+.proposal-page .large{font-weight:800;letter-spacing:-.02em}
+.proposal-page footer{font-weight:600;letter-spacing:.055em;line-height:1.4}
+.proposal-page .signature-label{font-weight:500}
+@media print{
+ .proposal-page{font-family:'DM Sans',Arial,sans-serif!important}
+ .proposal-page h3{font-family:'Bebas Neue',Impact,'Arial Narrow',sans-serif!important;font-weight:400!important}
+ .proposal-page h4,.proposal-page p,.proposal-page li,.proposal-page .eyebrow,.proposal-page footer,.proposal-page .large,.proposal-page .block,.proposal-page .black-block,.proposal-page .signature-label{font-family:'DM Sans',Arial,sans-serif!important}
+}
 </style></head><body>
 <header><div class="brand">CO<span class="dot">.</span>MUNICARSE<small>ALICIA CAMAÑO</small></div><span class="headtag">Sistema de prospección · Edición Yara</span></header>
-<main><div class="intro"><div class="eyebrow" style="color:#b71772;letter-spacing:.17em;font-size:11px;font-weight:800">RADAR COMERCIAL · v0.4.0</div><h1>DE EMPRESA A <span>PROPUESTA.</span></h1><p class="sub">Descubrí oportunidades, investigá el contexto de cada empresa y generá una propuesta corporativa con la identidad de Alicia. Todo en un mismo lugar.</p></div>
+<main><div class="intro"><div class="eyebrow" style="color:#b71772;letter-spacing:.17em;font-size:11px;font-weight:800">RADAR COMERCIAL · v0.4.1</div><h1>DE EMPRESA A <span>PROPUESTA.</span></h1><p class="sub">Descubrí oportunidades, investigá el contexto de cada empresa y generá una propuesta corporativa con la identidad de Alicia. Todo en un mismo lugar.</p></div>
 <nav class="steps no-print"><button data-step="1" class="active"><b>01</b> Buscar empresas</button><button data-step="2"><b>02</b> Investigar y priorizar</button><button data-step="3"><b>03</b> Contacto y email</button><button data-step="4"><b>04</b> Propuesta visual</button></nav>
 <section class="panel" id="step1"><h2>01 / DESCUBRIR EMPRESAS</h2><p class="muted">Generá un lote nuevo según sector y país. Se consulta una fuente abierta; si no responde, conservamos la lista inicial y mostramos el error sin inventar resultados.</p><div class="controls"><label>País<select id="country"><option value="ambos">Argentina + Uruguay</option><option value="argentina">Argentina</option><option value="uruguay">Uruguay</option></select></label><label>Sector objetivo<select id="target"><option value="agro">Agroindustria</option><option value="industria">Industria / maquinaria</option><option value="tecnologia">Tecnología B2B</option><option value="salud">Salud / equipamiento</option><option value="todos">Otros sectores</option></select></label><label>Máximo de empresas<select id="limit"><option>10</option><option>20</option><option>30</option></select></label><button class="secondary" id="discover">Buscar nuevo lote ↗</button><button class="tertiary" id="restore">Ver empresas iniciales</button></div><p class="status" id="discover-status">Mostrando la base inicial de empresas verificadas.</p><div class="bar"><h2 style="margin-top:18px">EMPRESAS EN EL RADAR</h2><span class="muted" id="count"></span></div><div id="companies" class="cards"></div><div class="notice">La aparición en este radar no implica que la empresa esté buscando una capacitación. Los contactos y oportunidades reales requieren validación.</div><button id="next1" class="primary" disabled>Investigar empresa seleccionada →</button></section>
 <section class="panel hidden" id="step2"><h2>02 / INVESTIGAR Y PRIORIZAR</h2><p class="muted">Usamos información pública del sitio de la empresa. La afinidad calculada es orientativa y no acredita necesidades internas.</p><div class="two"><div class="form"><label>Empresa<input id="name"></label><label>Sector<input id="sector"></label><label class="span2">Sitio oficial HTTPS<input id="website"></label><label class="span2">Motivo de selección<input id="why"></label><button id="analyze" class="secondary span2">Investigar sitio y calcular prioridad</button></div><div><div id="analysis" class="research">Seleccioná una empresa y ejecutá el análisis.</div><p class="muted">Podés corregir el nombre, sector y sitio antes de investigar.</p></div></div><div class="bar" style="margin-top:16px"><button class="tertiary" data-step="1">← Volver al radar</button><button class="primary" id="next2" disabled>Buscar contacto y preparar email →</button></div></section>
@@ -168,7 +209,31 @@ parts.push(section('07 · RESULTADOS','HERRAMIENTAS<br>PARA <em>ACTUAR.</em>',bu
 parts.push(section('08 · INVERSIÓN','PROPUESTA<br><em>ECONÓMICA.</em>','<div class="black-block"><div class="eyebrow">INVERSIÓN DE REFERENCIA</div><p class="large">'+investment+'</p></div>'+bullet(['Reunión de alineación previa.','Diseño adaptado de contenidos.','Facilitación y ejercicios del taller.','Material de apoyo.','Evaluación y seguimiento si se incluye en el acuerdo.'])+'<p class="footnote">Condiciones, impuestos, gastos de traslado, forma de pago y vigencia: definir por escrito. No se reutiliza automáticamente el precio histórico de Yara.</p>'));
 parts.push(section('09 · SOBRE ALICIA','UNA VOZ<br><em>PROPIA.</em>','<p><strong>Alicia Camaño</strong> · Directora y fundadora de Co.Municarse.</p><p>Comunicación estratégica, oratoria y entrenamiento de equipos y voceros, con una mirada humana orientada a transformar ideas en mensajes claros y memorables.</p><p><strong>Próximo paso:</strong> reunión de diagnóstico para revisar el desafío, validar destinatarios y definir el alcance final.</p><div class="line"></div><p>somoscomunicarse@gmail.com · @co.municarse · comunicarse.com.ar</p><p class="footnote">Datos de contacto extraídos del material institucional; verificar vigencia antes de enviar.</p>',true));
 $('proposal-preview').innerHTML=parts.join('');embedFixedBrandAssets();}
-$('next2').onclick=()=>{prepareContactStep();navigate(3)};['mode','hours','participants','investment','need','notes'].forEach(id=>$(id).addEventListener('change',()=>{if(proposalDirty&&!confirm('Cambiar los datos regenerará la propuesta. ¿Reemplazar los textos editados?'))return;try{localStorage.removeItem(proposalStorageKey())}catch{}proposalDirty=false;generate();markEditable()}));$('print').onclick=async()=>{if(!analysis)return;embedFixedBrandAssets();const images=[...$('proposal-preview').querySelectorAll('img.fixed-brand-image')];await Promise.all(images.map(img=>img.decode().catch(()=>{})));if(images.some(img=>!img.naturalWidth)){alert('Alguna imagen de marca no terminó de cargar. Comprobá tu conexión y volvé a intentar exportar.');return}window.print()};$('copy').onclick=async()=>{const str=$('proposal-preview').innerText;try{await navigator.clipboard.writeText(str);alert('Propuesta copiada')}catch{alert('No se pudo copiar automáticamente')}};
+$('next2').onclick=()=>{prepareContactStep();navigate(3)};['mode','hours','participants','investment','need','notes'].forEach(id=>$(id).addEventListener('change',()=>{if(proposalDirty&&!confirm('Cambiar los datos regenerará la propuesta. ¿Reemplazar los textos editados?'))return;try{localStorage.removeItem(proposalStorageKey())}catch{}proposalDirty=false;generate();markEditable()}));async function ensureProposalFonts(){
+ if(!document.fonts||typeof document.fonts.load!=='function')return false;
+ try{
+  const loaded=await Promise.all([
+   document.fonts.load('400 54px "Bebas Neue"','COMUNICACIÓN'),
+   document.fonts.load('400 13px "DM Sans"','Comunicación estratégica'),
+   document.fonts.load('700 13px "DM Sans"','Comunicación estratégica'),
+   document.fonts.load('800 16px "DM Sans"','Comunicación estratégica')
+  ]);
+  await document.fonts.ready;
+  return loaded.every(fonts=>fonts.length>0);
+ }catch{return false}
+}
+$('print').onclick=async()=>{
+ if(!analysis)return;
+ embedFixedBrandAssets();
+ const images=[...$('proposal-preview').querySelectorAll('img.fixed-brand-image')];
+ const [fontsReady]=await Promise.all([
+  ensureProposalFonts(),
+  Promise.all(images.map(img=>img.decode().catch(()=>{})))
+ ]);
+ if(images.some(img=>!img.naturalWidth)){alert('Alguna imagen de marca no terminó de cargar. Comprobá tu conexión y volvé a intentar exportar.');return}
+ if(!fontsReady&&!confirm('No se pudieron cargar Bebas Neue y DM Sans. ¿Exportar igualmente usando tipografías de respaldo?'))return;
+ window.print();
+};$('copy').onclick=async()=>{const str=$('proposal-preview').innerText;try{await navigator.clipboard.writeText(str);alert('Propuesta copiada')}catch{alert('No se pudo copiar automáticamente')}};
 let contactInfo=null;
 function setContactMessage(msg){$('contact-status').textContent=msg;}
 async function prepareContactStep(){
