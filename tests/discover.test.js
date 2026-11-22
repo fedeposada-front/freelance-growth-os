@@ -164,3 +164,14 @@ test('discovery never fabricates results when both providers fail',async()=>{
     assert.equal(res.body.companies,undefined);
   });
 });
+
+
+test('discovery exposes a safe deployment revision header for remote QA',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[]})}),async()=>{
+    const res=response();
+    await handler({method:'GET',query:{}},res);
+    assert.equal(res.code,200);
+    assert.match(res.headers['X-App-Revision'],/^(unknown|[a-f0-9]{40})$/i);
+    assert.equal(res.headers['Cache-Control'],'no-store');
+  });
+});
