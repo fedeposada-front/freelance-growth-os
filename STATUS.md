@@ -225,3 +225,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Prueba de regresión commit `8ab0857`: una conexión a `example.com` con IP fijada deliberadamente a loopback debe fallar, sin volver a resolver el dominio. El handler nunca debe seleccionar loopback porque `publicAddress` lo rechaza.
 - CI y smoke HTTPS de estos commits todavía pendientes de confirmación. Esta corrección reduce riesgo de DNS rebinding, pero no sustituye rate limiting, login, persistencia privada ni revisión de otros vectores SSRF. No declarar MVP completo.
 - Sin intervención humana imprescindible ni correo de bloqueo; siguiente ejecución verificar CI y endpoint remoto, corregir cualquier regresión.
+
+
+## 22/11/2026 19:58 ART — regresión DNS pinning detectada y corregida
+- CI de `0ab0997`: **FAIL** en [MVP CI #45075556726](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45075556726), 25/26 tests PASS. `Public URL smoke #45075556708` PASS, pero prueba una URL de producción de revisión anterior.
+- Causa reproducida en logs: Node `https.request` invoca `lookup` con `options.all=true` (autoSelectFamily); el callback anterior devolvía `(address, family)` en vez de un array de direcciones y provocaba `ERR_INVALID_IP_ADDRESS: undefined`.
+- Corrección `86b7b1c`: el callback devuelve `[{address,family}]` cuando `options.all` es true y `(address,family)` cuando no. No se permite resolución DNS secundaria: la conexión sigue limitada a la IP validada.
+- CI y HTTPS de la corrección aún **no verificados**. Preview READY anterior no equivale a E2E de esta revisión. Continuar con verificación de workflow y test de auditoría en preview; no promover a producción sin PASS.
+- Autenticación y persistencia privada siguen pendientes. No hubo bloqueo humano ni correo.
