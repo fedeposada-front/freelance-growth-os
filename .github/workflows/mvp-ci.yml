@@ -27,7 +27,7 @@ jobs:
             try {
               const response=await fetch(url,{signal:AbortSignal.timeout(25000)});
               const body=await response.json();
-              if(response.status!==200 || !Array.isArray(body.companies) || !String(body.license).includes("ODbL")) throw Error("Invalid discovery response: "+response.status);
+              if(response.status!==200 || !Array.isArray(body.companies) || !String(body.license).includes("ODbL")) throw Error("Invalid discovery response: "+response.status+"; reason="+String(body.error||"unknown").slice(0,280));
               if(body.companies.some(c=>!c.name || !/^https:\/\/www.openstreetmap.org\//.test(c.sourceUrl))) throw Error("Missing OSM provenance");
               console.log("LIVE DISCOVERY PASS; count="+body.companies.length);
             } catch(error) { console.error("LIVE DISCOVERY NOT VERIFIED: "+error.message); process.exitCode=1; }
