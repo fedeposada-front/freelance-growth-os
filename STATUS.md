@@ -156,3 +156,6 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Solicitado despliegue de producción gratuito sobre el **mismo proyecto personal**, desde SHA `162cb7a`, deployment `dpl_5XHz2r1MKYTbNMwBMmkDF8qeZ6EP`. Última lectura: `BUILDING`; **no declarar READY** hasta nueva consulta. No se modificaron repos corporativos, Co.Municarse ni configuraciones de pago.
 - Smoke directo de endpoint desde el acceso web disponible no obtuvo respuesta accesible; no se infiere falla de aplicación ni se atribuye PASS.
 - Próxima ejecución: comprobar READY + alias + `X-App-Revision`, revisar logs del smoke remoto y resultado live OSM; continuar autenticación y persistencia segura. Sin bloqueo humano confirmado y sin correo.
+
+### Confirmación posterior de despliegue 08:00 ART
+- Vercel devolvió **READY**, `target=production`, `aliasError=null` para `dpl_5XHz2r1MKYTbNMwBMmkDF8qeZ6EP`; alias `freelance-growth-os-mvp.vercel.app` asociado a `162cb7a`. Es prueba de publicación, **no** de funcionamiento E2E ni de Overpass real.
