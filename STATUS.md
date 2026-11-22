@@ -71,3 +71,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Corregida la fixture con `String.fromCharCode(10)` para probar un carácter de control real, en commit `a3315e8a53472ff63a512cf67bd5f78d7ed91a6f`.
 - CI de la corrección: **pendiente**, sin workflow asociado al commit en la consulta inmediata; no declarar PASS hasta ver resultado.
 - Próximo: verificar CI de a3315e8; probar /api/discover en vivo; continuar seguridad y persistencia. Sin bloqueo humano, sin correo de alerta.
+
+
+## Ejecución 21/11/2026 · 21:54 ART — CI recuperada y validación de filtros
+- Verificación retrospectiva del commit `a3315e8a53472ff63a512cf67bd5f78d7ed91a6f`: **CI PASS** en GitHub Actions runs [44964472747](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44964472747) y [44964473021](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44964473021), ambos completados con conclusion=success. Estado Vercel success. Esto confirma la corrección de fixture previa, NO prueba Overpass real.
+- Defecto corregido: filtros de descubrimiento de zona/rubro desconocidos caían silenciosamente a AMBA/funerarias y podían generar leads incorrectamente clasificados. Ahora se devuelve HTTP 400 con valores permitidos, sin consultar Overpass.
+- Commits: `17dc9b755c7f33d57e7e8a59cd882c855c2ebb09` (validación), `55c45666b0c59d12682623f6335acd417707ef43` (test de regresión con fetch prohibido para filtros inválidos).
+- CI de estos dos commits: aún pendiente de confirmación; no declarar PASS.
+- Sigue pendiente prueba live Overpass y persistencia/auth segura. No existe bloqueo humano imprescindible, no enviar email.
