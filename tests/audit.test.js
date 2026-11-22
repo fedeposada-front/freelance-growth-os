@@ -26,3 +26,13 @@ test('bounded audit reader returns complete HTML when below cap',async()=>{
  const result=await readLimited(response,350000);
  assert.deepEqual(result,{html,truncated:false});
 });
+
+test('bounded reader handles absent body without throwing or fabricating HTML',async()=>{
+ const result=await readLimited({body:null});
+ assert.deepEqual(result,{html:'',truncated:false});
+});
+test('bounded reader handles an empty stream without fabricated findings',async()=>{
+ const response={body:new ReadableStream({start(controller){controller.close();}})};
+ const result=await readLimited(response);
+ assert.deepEqual(result,{html:'',truncated:false});
+});
