@@ -233,3 +233,9 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Corrección `86b7b1c`: el callback devuelve `[{address,family}]` cuando `options.all` es true y `(address,family)` cuando no. No se permite resolución DNS secundaria: la conexión sigue limitada a la IP validada.
 - CI y HTTPS de la corrección aún **no verificados**. Preview READY anterior no equivale a E2E de esta revisión. Continuar con verificación de workflow y test de auditoría en preview; no promover a producción sin PASS.
 - Autenticación y persistencia privada siguen pendientes. No hubo bloqueo humano ni correo.
+
+## 22/11/2026 · 20:54 ART — CI del pinning DNS recuperada
+- Verificación GitHub Actions del commit `2eca065d37b22c7491c5628f1fdcc923dce3ec6e`: **MVP CI PASS** run https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45080742791 y **Public URL smoke PASS** run https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45080742739. Ambos `completed/success`; el segundo comprueba la URL pública configurada, no un E2E del preview nuevo.
+- Vercel personal reportó preview `dpl_2tuYWhV7kQ2cyayeHGu1Rd91x17L` en estado READY para `2eca065` (rama `mvp/freelance-growth-os`, `target=null`). **No se promovió a producción**: READY no demuestra auditoría real de red ni seguridad multidispositivo.
+- Se releyeron `api/audit.js` y `tests/audit.test.js`: el pinning respeta `lookup(options.all)` y existe regresión para impedir fallback a DNS del hostname. La CI verde valida la suite existente; sigue sin ser una prueba E2E remota de auditoría con el nuevo transporte.
+- Prioridades sin cerrar: prueba remota del endpoint `/api/audit` en el preview, descubrimiento Overpass real, autenticación y persistencia privada segura, QA E2E integral. Sin intervención manual indispensable identificada, sin correo de bloqueo.
