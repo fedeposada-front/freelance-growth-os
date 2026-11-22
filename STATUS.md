@@ -148,3 +148,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commit `4455fe8191cebb68cd27ccf45984a2c59395b46f`: `api/discover.js` agrega header `X-App-Revision` con `VERCEL_GIT_COMMIT_SHA` validado (40 caracteres hexadecimales), o `unknown`; no expone credenciales. Permite comparar el código desplegado con la rama y distinguir nuevamente producción desactualizada de fallos upstream.
 - Commit `5442489e8a1d821119d6d5e8fbacebb98b2e4cb4`: regresión de header y `Cache-Control: no-store`. CI de estos commits aún sin verificación; no declarar PASS.
 - La producción sigue en `d941c20` hasta nuevo deploy explícito. Siguiente ejecución: verificar CI, desplegar commit de QA en producción gratuita si las pruebas pasan, comprobar `X-App-Revision` en endpoint remoto y discovery real. Autenticación y persistencia segura siguen pendientes; no hay acción manual indispensable ni correo.
+
+
+## 22/11/2026 · 08:00 ART — promoción de revisión QA a producción
+- Verificado HEAD de PR #1 en rama aislada: `162cb7a9b6b47119dd815c867656663c0b0677ce`. CI de ese commit: [MVP CI 45010606542](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45010606542) y [Public URL smoke 45010606541](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45010606541), ambos `completed/success`. El smoke puede pasar aunque la comprobación Overpass informativa no lo haga: no se declara discovery live PASS.
+- Confirmado que el alias público seguía en producción `d941c20` (deploy READY `dpl_EZnWjoSf9tH9wrWYjvcYj459pfBe`), por lo que el header `X-App-Revision` aún no estaba en producción.
+- Solicitado despliegue de producción gratuito sobre el **mismo proyecto personal**, desde SHA `162cb7a`, deployment `dpl_5XHz2r1MKYTbNMwBMmkDF8qeZ6EP`. Última lectura: `BUILDING`; **no declarar READY** hasta nueva consulta. No se modificaron repos corporativos, Co.Municarse ni configuraciones de pago.
+- Smoke directo de endpoint desde el acceso web disponible no obtuvo respuesta accesible; no se infiere falla de aplicación ni se atribuye PASS.
+- Próxima ejecución: comprobar READY + alias + `X-App-Revision`, revisar logs del smoke remoto y resultado live OSM; continuar autenticación y persistencia segura. Sin bloqueo humano confirmado y sin correo.
