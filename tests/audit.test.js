@@ -79,3 +79,9 @@ test('heuristic audit ignores fake page markup embedded in scripts, styles and c
   assert.ok(names.some(x=>x.includes('Viewport')));
   assert.ok(names.some(x=>x.includes('Título')));
 });
+
+
+test('pinned HTTPS transport cannot fall back to hostname DNS',async()=>{
+ const {fetchPinnedHtml}=await import('../api/audit.js');
+ await assert.rejects(fetchPinnedHtml(new URL('https://example.com/'),[{address:'127.0.0.1',family:4}],AbortSignal.timeout(1000)),/ECONNREFUSED|abort|timeout|connect/i);
+});
