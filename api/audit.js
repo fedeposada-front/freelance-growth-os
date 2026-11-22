@@ -70,6 +70,7 @@ export default async function handler(req,res){
   const u=validTarget(req.query.url);
   if(!u)return res.status(400).json({error:'Se requiere una URL HTTPS pública válida sin puerto especial'});
   const checkedAt=new Date().toISOString();
+  const startedAt=performance.now();
   try{
     const addresses=await dns.lookup(u.hostname,{all:true,verbatim:true});
     if(!addresses.length||addresses.some(a=>!publicAddress(a.address)))return res.status(400).json({error:'El destino no cumple la política de seguridad pública'});
@@ -85,7 +86,7 @@ export default async function handler(req,res){
       if(!html.trim())return res.status(200).json({status:'no_consultado',message:'La respuesta HTML está vacía; no se atribuyen defectos UX.',checkedAt,url:u.href});
       const title=decode(html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]||'');
       const description=meta(html,'description');
-      return res.status(200).json({status:'consultado',title,description,checkedAt,url:u.href,findings:findingsFromHtml(html),method:'HTML estático inicial · prueba heurística limitada',source:'Respuesta pública del sitio indicado'});
+      return res.status(200).json({status:'consultado',title,description,checkedAt,url:u.href,httpStatus:response.status,elapsedMs:Math.round(performance.now()-startedAt),htmlBytes:new TextEncoder().encode(html).byteLength,findings:findingsFromHtml(html),method:'HTML estático inicial · prueba heurística limitada',source:'Respuesta pública del sitio indicado'});
     }finally{clearTimeout(timer);}
   }catch(e){
     return res.status(200).json({status:'no_consultado',checkedAt,url:u.href,message:'El sitio no permitió completar la consulta pública. No inferimos defectos. '+(e.name==='AbortError'?'Tiempo de espera agotado.':'Requiere verificación manual.')});
