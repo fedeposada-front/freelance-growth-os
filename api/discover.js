@@ -27,8 +27,13 @@ export default async function handler(req,res){
     const response=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/x-www-form-urlencoded','User-Agent':'FreelanceGrowthOS/0.1 (small public pilot)'},body:new URLSearchParams({data:q})});
     if(!response.ok)return res.status(503).json({error:'OpenStreetMap/Overpass respondió HTTP '+response.status+'. Probá nuevamente o usá CSV.'});
     const payload=await response.json();
+    // Overpass may return an HTTP 200 with an error/remark or a non-Overpass JSON body.
+    // Never present such failures as a genuine zero-results search.
+    if(!payload||!Array.isArray(payload.elements)||typeof payload.remark==='string'&&payload.remark.trim()){
+      return res.status(503).json({error:'Overpass no devolvió un conjunto de resultados válido. Reintentá o importá CSV; no se generaron prospectos ficticios.'});
+    }
     // Validate untrusted Overpass JSON before mapping. Keep CPU and memory bounded.
-    const elements=Array.isArray(payload?.elements)?payload.elements.slice(0,300):[];
+    const elements=payload.elements.slice(0,300);
     const seen=new Set();
     const list=elements.filter(function(x){
       if(!x||!['node','way','relation'].includes(x.type)||!Number.isSafeInteger(x.id)||x.id<=0||!x.tags||typeof x.tags.name!=='string'||!x.tags.name.trim())return false;
