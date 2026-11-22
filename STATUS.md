@@ -137,3 +137,7 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Vercel personal: proyecto `prj_5P2SW7NSH1y9wHkYsB68AiVHADf9`, despliegues recientes de `mvp/freelance-growth-os` tenían `target=null` (preview) pese a `READY`; por ello no actualizaban necesariamente el dominio de producción `freelance-growth-os-mvp.vercel.app`.
 - Se solicitó **despliegue explícito a production** desde la rama personal y commit `d941c20b4453ac6b1e2c5da9973699730dbf7261`, deployment `dpl_EZnWjoSf9tH9wrWYjvcYj459pfBe`. Al consultar inicialmente, estado **BUILDING**, todavía NO PASS ni endpoint validado. No se tocaron servicios corporativos ni se contrató un plan pago.
 - Siguiente: confirmar READY y alias de producción, ejecutar prueba real de `/api/discover` contra versión actualizada, revisar resultado y seguir con autenticación/persistencia. No hay intervención humana imprescindible identificada ni correo de bloqueo.
+
+### Confirmación del despliegue correctivo
+- Vercel confirmó `dpl_EZnWjoSf9tH9wrWYjvcYj459pfBe` como **READY**, `target=production`, `aliasError=null`, y el alias **freelance-growth-os-mvp.vercel.app** asociado al commit `d941c20`. Esto sí corrige la desalineación de versión del dominio; **NO** valida todavía Overpass real.
+- Intento de GET desde el entorno de ejecución: falla DNS local (`NameResolutionError`); no se interpreta como caída de Vercel. El smoke real remoto debe volver a ejecutarse contra este alias actualizado para comprobar el fallback y el JSON.
