@@ -195,3 +195,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 
 ### Confirmación del despliegue de las 13:02 ART
 - Vercel devolvió `READY`, `target=production`, `aliasError=null` para `dpl_4w982KFs7dvJThd56cxTohAPR3M4`, commit `ca06e66`, alias `freelance-growth-os-mvp.vercel.app` asociado. Esto confirma publicación del código con métricas de auditoría, **no** smoke E2E de esa producción ni funcionalidad integral.
+
+
+## 22/11/2026 · 14:03 ART — seguridad del auditor HTTPS
+- Verificado Vercel personal: producción READY en deployment `dpl_4w982KFs7dvJThd56cxTohAPR3M4` (revisión `ca06e66`); no equivale a E2E del último commit.
+- Corrección `02b8e04`: el filtro DNS de /api/audit rechaza además rangos IPv4 de documentación y especiales (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24, 192.88.99.0/24), para evitar consultas SSRF a destinos no públicos.
+- Prueba `bb56485`: regresión de direcciones privadas, reservadas, documentación y direcciones públicas. CI del nuevo commit todavía NO verificada; no declarar PASS.
+- Limitación: comprobación DNS previa a fetch no elimina por sí sola DNS rebinding; requiere pinning/verificación de IP en la conexión para producción multiusuario. No hay autenticación ni persistencia privada compartida. No exponer datos sensibles.
+- Prioridad: verificar CI de bb56485, resolver DNS rebinding y seguridad de endpoints, avanzar auth/persistencia gratuita y E2E HTTPS. Sin bloqueo humano imprescindible; no enviar alerta.
