@@ -186,3 +186,9 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 ## 22/11/2026 · 11:55 ART — métricas observadas de auditoría
 - Commit `a57427e613b59eebcdfed8da7f1066483ef262d6`: la respuesta `consultado` de `/api/audit` ahora incluye `httpStatus` real, `elapsedMs` medido desde el inicio de la operación (incluye resolución DNS, red y lectura HTML) y `htmlBytes` del HTML efectivamente descargado. Son medidas del servidor de auditoría, **no** Core Web Vitals, Lighthouse ni tiempos del navegador del cliente. No se generan métricas si la consulta no se completa.
 - QA de esta revisión y despliegue HTTPS **pendientes**; no declarar PASS. Persistencia segura/login y discovery live continúan pendientes. Sin bloqueo humano indispensable confirmado; sin correo.
+
+## 22/11/2026 · 13:02 ART — CI comprobada y promoción a producción
+- Verificado en GitHub que el commit `ca06e6601bd71859817c95fa5c4b1d89ba3225e7` completó `MVP CI` con `success` ([run 45035450091](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45035450091)) y `Public URL smoke` con `success` ([run 45035450078](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45035450078)). El smoke no equivale a QA completo de autenticación, persistencia ni Overpass real.
+- Vercel personal confirmó preview `READY` de `ca06e66` (deployment `dpl_B4TLQi4293KrWW4UcPr167QncSkv`). Solicitado despliegue **production** del mismo SHA en el proyecto personal existente `prj_5P2SW7NSH1y9wHkYsB68AiVHADf9`, deployment `dpl_4w982KFs7dvJThd56cxTohAPR3M4`. Primera comprobación: `BUILDING`; no declarar READY hasta verificarlo.
+- Esta operación no crea proyecto, cuenta, plan ni gasto nuevo; no toca Co.Municarse ni servicios corporativos.
+- Próxima ejecución: confirmar READY/alias y smoke HTTPS de producción; priorizar login/persistencia segura, prueba real de Overpass y E2E. No hay bloqueo humano indispensable identificado; sin correo de bloqueo.
