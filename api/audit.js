@@ -20,7 +20,11 @@ export function validTarget(value){
   }catch{return null;}
 }
 function hasMetaName(html,name){
-  return (html.match(/<meta\\b[^>]*>/gi)||[]).some(tag=>new RegExp('\\\\bname\\\\s*=\\\\s*(["\\\\x27])'+name+'\\\\1','i').test(tag));
+  const tags=html.match(/<meta\b[^>]*>/gi)||[];
+  return tags.some(tag=>{
+    const match=tag.match(/\bname\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+    return (match?.[1]??match?.[2]??match?.[3]??'').toLowerCase()===name;
+  });
 }
 export function findingsFromHtml(html){
   const checks=[];
