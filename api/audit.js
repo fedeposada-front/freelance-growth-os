@@ -1,12 +1,12 @@
 import dns from 'node:dns/promises';
 import {isIP} from 'node:net';
 
-function publicAddress(address){
+export function publicAddress(address){
   if(!address || !isIP(address))return false;
   const a=address.toLowerCase();
   if(isIP(a)===4){
     const n=a.split('.').map(Number);
-    if(n[0]===0||n[0]===10||n[0]===127||n[0]>=224||n[0]===169&&n[1]===254||n[0]===192&&n[1]===168||n[0]===172&&n[1]>=16&&n[1]<=31||n[0]===100&&n[1]>=64&&n[1]<=127||n[0]===198&&(n[1]===18||n[1]===19)||n[0]===192&&n[1]===0)return false;
+    if(n[0]===0||n[0]===10||n[0]===127||n[0]>=224||n[0]===169&&n[1]===254||n[0]===192&&n[1]===168||n[0]===172&&n[1]>=16&&n[1]<=31||n[0]===100&&n[1]>=64&&n[1]<=127||n[0]===198&&(n[1]===18||n[1]===19)||n[0]===192&&(n[1]===0||n[1]===88&&n[2]===99)||n[0]===192&&n[1]===0&&n[2]===2||n[0]===198&&n[1]===51&&n[2]===100||n[0]===203&&n[1]===0&&n[2]===113)return false;
     return true;
   }
   return !(a==='::'||a==='::1'||a.startsWith('fe80:')||a.startsWith('fc')||a.startsWith('fd')||a.startsWith('ff')||a.startsWith('::ffff:')||a.startsWith('2001:db8:'));
