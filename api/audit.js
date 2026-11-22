@@ -31,7 +31,7 @@ export function findingsFromHtml(html){
 }
 function decode(s){return String(s||'').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/&nbsp;/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,500);}
 function meta(html,name){const tags=html.match(/<meta\b[^>]*>/gi)||[];const tag=tags.find(t=>new RegExp('name\\s*=\\s*["\\x27]'+name+'["\\x27]','i').test(t));return decode(tag?.match(/content\s*=\s*["']([^"']*)["']/i)?.[1]||'');}
-async function readLimited(response,max=350000){
+export async function readLimited(response,max=350000){
   const reader=response.body?.getReader();if(!reader)return '';
   const decoder=new TextDecoder();let text='',count=0;
   while(true){
