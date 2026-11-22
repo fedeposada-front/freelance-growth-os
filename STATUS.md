@@ -141,3 +141,10 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 ### Confirmación del despliegue correctivo
 - Vercel confirmó `dpl_EZnWjoSf9tH9wrWYjvcYj459pfBe` como **READY**, `target=production`, `aliasError=null`, y el alias **freelance-growth-os-mvp.vercel.app** asociado al commit `d941c20`. Esto sí corrige la desalineación de versión del dominio; **NO** valida todavía Overpass real.
 - Intento de GET desde el entorno de ejecución: falla DNS local (`NameResolutionError`); no se interpreta como caída de Vercel. El smoke real remoto debe volver a ejecutarse contra este alias actualizado para comprobar el fallback y el JSON.
+
+
+## 22/11/2026 · 07:03 ART — trazabilidad de versión desplegada
+- Diagnóstico: Vercel confirmó READY de producción para `d941c20`, pero el entorno actual sigue sin resolver DNS del dominio público. No se declara smoke ni Overpass live PASS.
+- Commit `4455fe8191cebb68cd27ccf45984a2c59395b46f`: `api/discover.js` agrega header `X-App-Revision` con `VERCEL_GIT_COMMIT_SHA` validado (40 caracteres hexadecimales), o `unknown`; no expone credenciales. Permite comparar el código desplegado con la rama y distinguir nuevamente producción desactualizada de fallos upstream.
+- Commit `5442489e8a1d821119d6d5e8fbacebb98b2e4cb4`: regresión de header y `Cache-Control: no-store`. CI de estos commits aún sin verificación; no declarar PASS.
+- La producción sigue en `d941c20` hasta nuevo deploy explícito. Siguiente ejecución: verificar CI, desplegar commit de QA en producción gratuita si las pruebas pasan, comprobar `X-App-Revision` en endpoint remoto y discovery real. Autenticación y persistencia segura siguen pendientes; no hay acción manual indispensable ni correo.
