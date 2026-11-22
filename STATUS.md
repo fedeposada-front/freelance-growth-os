@@ -159,3 +159,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 
 ### Confirmación posterior de despliegue 08:00 ART
 - Vercel devolvió **READY**, `target=production`, `aliasError=null` para `dpl_5XHz2r1MKYTbNMwBMmkDF8qeZ6EP`; alias `freelance-growth-os-mvp.vercel.app` asociado a `162cb7a`. Es prueba de publicación, **no** de funcionamiento E2E ni de Overpass real.
+
+
+## 22/11/2026 08:58 ART — auditoría HTML: evitar falsos positivos
+- Inspeccionados `api/audit.js`, `api/discover.js`, tests y estado documental de la rama personal.
+- Defecto corregido: la detección heurística de `meta viewport` y `meta description` dependía de una forma estrecha del HTML. Ahora busca atributos `name` en las etiquetas meta independientemente de su orden; evita atribuir faltantes inexistentes.
+- Commits: `7547e3a19642c63761a64ee7d231fa90347d04b3` (código) y `af5968c72c4f437e727cc7a455e6d952086387de` (regresión).
+- Verificación puntual del patrón con Node local: 2 ejemplos de etiquetas meta con orden distinto reconocidos. **No equivale a ejecutar toda la suite ni smoke HTTPS**. CI de estos commits pendiente; no declarar PASS.
+- Siguen pendientes autenticación/persistencia segura y validación live del descubrimiento Overpass. Sin bloqueo humano indispensable confirmado; no se envió email.
