@@ -22,8 +22,12 @@ export function validTarget(value){
 function hasMetaName(html,name){
   const tags=html.match(/<meta\b[^>]*>/gi)||[];
   return tags.some(tag=>{
-    const match=tag.match(/\sname\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
-    return (match?.[1]??match?.[2]??match?.[3]??'').toLowerCase()===name;
+    const attrs=tag.slice(5,-1);
+    const pairs=attrs.matchAll(/([^\s=/>]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/g);
+    for(const pair of pairs){
+      if(pair[1].toLowerCase()==='name'&&(pair[2]??pair[3]??pair[4]??'').toLowerCase()===name)return true;
+    }
+    return false;
   });
 }
 export function findingsFromHtml(html){
