@@ -86,3 +86,16 @@ test('discovery handles unexpected Overpass JSON without fabricating records',as
     assert.deepEqual(res.body.companies,[]);
   });
 });
+
+
+test('discovery rejects unsupported zone and sector before network access',async()=>{
+  await withFetch(async()=>{throw Error('fetch must not run')},async()=>{
+    for(const query of [{zone:'unknown',sector:'funeral'},{zone:'caba',sector:'unknown'},{zone:['amba'],sector:'funeral'}]){
+      const res=response();
+      await handler({method:'GET',query},res);
+      assert.equal(res.code,400);
+      assert.match(res.body.error,/Zona o rubro/);
+      assert.ok(res.body.allowedZones.includes('amba'));
+    }
+  });
+});
