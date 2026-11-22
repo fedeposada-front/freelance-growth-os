@@ -13,8 +13,13 @@ function https(raw){try{const u=new URL(raw);return u.protocol==='https:'?u.href
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   if(req.method!=='GET')return res.status(405).json({error:'Método no permitido'});
-  const zone=boxes[req.query.zone]?'_'+req.query.zone:'_amba';
-  const bbox=boxes[zone.slice(1)],sector=sectors[req.query.sector]||sectors.funeral;
+  // Reject unknown filters: silently defaulting would mislabel commercial leads.
+  const requestedZone=req.query?.zone??'amba';
+  const requestedSector=req.query?.sector??'funeral';
+  if(typeof requestedZone!=='string'||!Object.hasOwn(boxes,requestedZone)||typeof requestedSector!=='string'||!Object.hasOwn(sectors,requestedSector)){
+    return res.status(400).json({error:'Zona o rubro no admitido',allowedZones:Object.keys(boxes),allowedSectors:Object.keys(sectors)});
+  }
+  const bbox=boxes[requestedZone],sector=sectors[requestedSector];
   const clauses=sector.tags.map(function(t){return 'nwr'+t+'('+bbox+');'}).join('');
   const q='[out:json][timeout:14];('+clauses+');out center 60;';
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),11500);
