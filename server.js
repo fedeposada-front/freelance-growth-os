@@ -114,13 +114,14 @@ function draftCommercialEmail(c,recipient){
 
 const server=http.createServer(async(req,res)=>{try{
  const url=new URL(req.url,'http://localhost');
- if(req.method==='GET'&&url.pathname==='/api/health')return send(res,{ok:true,version:'0.3.0'});
+ if(req.method==='GET'&&url.pathname==='/api/health')return send(res,{ok:true,version:'0.4.0'});
  if(req.method==='GET'&&url.pathname==='/api/companies')return send(res,COMPANIES);
  if(req.method==='GET'&&url.pathname==='/api/discover'){
  const sector=clean(url.searchParams.get('sector'),30),limit=Math.min(30,Math.max(1,Number(url.searchParams.get('limit'))||10));
  const exclude=new Set(clean(url.searchParams.get('exclude'),5000).split('|').map(x=>x.toLowerCase()));
  const country=['argentina','uruguay','ambos'].includes(url.searchParams.get('country'))?url.searchParams.get('country'):'ambos';return send(res,await discoverCompanies(sector,limit,exclude,country));
  }
+ if(req.method==='GET'&&['/assets/alicia-portada.webp','/assets/alicia-cierre.webp','/assets/alicia-firma-clara.webp'].includes(url.pathname)){const file=url.pathname.split('/').pop();const img=await readFile(new URL('./public/assets/'+file,import.meta.url));res.writeHead(200,{'Content-Type':'image/webp','Cache-Control':'public, max-age=86400','X-Content-Type-Options':'nosniff'});return res.end(img);}
  if(req.method==='GET'&&url.pathname==='/'){const page2=await readFile(new URL('./public-v2.html',import.meta.url));res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; object-src 'none'; frame-ancestors 'none'"});return res.end(page2);}
  
  if(req.method==='POST'&&(url.pathname==='/api/contacts'||url.pathname==='/api/email-draft')){
