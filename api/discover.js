@@ -22,11 +22,26 @@ export default async function handler(req,res){
   const bbox=boxes[requestedZone],sector=sectors[requestedSector];
   const clauses=sector.tags.map(function(t){return 'nwr'+t+'('+bbox+');'}).join('');
   const q='[out:json][timeout:14];('+clauses+');out center 60;';
-  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),11500);
+  // Two public Overpass instances; bounded sequential fallback for transient upstream failure.
+  // No silent zero-results: every unsuccessful source is reported as unavailable.
+  const endpoints=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
+  let payload=null,usedEndpoint='',lastFailure='sin respuesta';
+  for(const endpoint of endpoints){
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),8500);
+    try{
+      const response=await fetch(endpoint,{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/x-www-form-urlencoded','User-Agent':'FreelanceGrowthOS/0.1 (small public pilot)'},body:new URLSearchParams({data:q})});
+      if(!response.ok){lastFailure='HTTP '+response.status;continue}
+      const candidate=await response.json();
+      if(!candidate||!Array.isArray(candidate.elements)||(typeof candidate.remark==='string'&&candidate.remark.trim())){
+        lastFailure='respuesta inválida o error de Overpass';continue;
+      }
+      payload=candidate;usedEndpoint=endpoint;break;
+    }catch(e){lastFailure=e?.name==='AbortError'?'timeout':'error de red o JSON'}
+    finally{clearTimeout(timer)}
+  }
+  if(!payload)return res.status(503).json({error:'Overpass no disponible en los proveedores públicos consultados ('+lastFailure+'). Reintentá o importá CSV; no se generaron prospectos ficticios.'});
   try{
-    const response=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/x-www-form-urlencoded','User-Agent':'FreelanceGrowthOS/0.1 (small public pilot)'},body:new URLSearchParams({data:q})});
-    if(!response.ok)return res.status(503).json({error:'OpenStreetMap/Overpass respondió HTTP '+response.status+'. Probá nuevamente o usá CSV.'});
-    const payload=await response.json();
     // Overpass may return an HTTP 200 with an error/remark or a non-Overpass JSON body.
     // Never present such failures as a genuine zero-results search.
     if(!payload||!Array.isArray(payload.elements)||typeof payload.remark==='string'&&payload.remark.trim()){
@@ -47,7 +62,6 @@ export default async function handler(req,res){
       const website=https(t.website||t['contact:website']||'');
       return {name:compact(t.name,100),sector:sector.name,city,website,email:compact(t.email||t['contact:email']||'',120),phone:compact(t.phone||t['contact:phone']||'',80),osmId:x.type+'/'+x.id,sourceUrl:'https://www.openstreetmap.org/'+x.type+'/'+x.id};
     });
-    return res.status(200).json({companies:list,source:'OpenStreetMap · Overpass API',at:new Date().toISOString(),license:'ODbL: https://www.openstreetmap.org/copyright',warning:'OSM es una fuente colaborativa; confirmar existencia, web y contacto antes de usar comercialmente.'});
-  }catch(e){return res.status(503).json({error:'No se pudo consultar Overpass dentro del límite del servidor. Importá CSV o reintentá. No se generaron resultados ficticios.'})}
-  finally{clearTimeout(timer);}
+    return res.status(200).json({companies:list,source:'OpenStreetMap · Overpass API',providerUrl:usedEndpoint,at:new Date().toISOString(),license:'ODbL: https://www.openstreetmap.org/copyright',warning:'OSM es una fuente colaborativa; confirmar existencia, web y contacto antes de usar comercialmente.'});
+  }catch(e){return res.status(503).json({error:'No se pudo procesar la respuesta de Overpass. Importá CSV o reintentá. No se generaron resultados ficticios.'})}
 }
