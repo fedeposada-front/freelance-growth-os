@@ -64,3 +64,7 @@ test('SSRF guard rejects private, reserved and documentation IP ranges',()=>{
  for(const ip of ['127.0.0.1','10.2.3.4','172.16.1.1','192.168.1.1','169.254.1.2','100.64.1.2','192.0.2.1','198.51.100.2','203.0.113.8','192.88.99.1','198.18.0.1','224.0.0.1','255.255.255.255','::1','fc00::1','fe80::1','2001:db8::1'])assert.equal(publicAddress(ip),false,ip);
  for(const ip of ['8.8.8.8','1.1.1.1','2606:4700:4700::1111'])assert.equal(publicAddress(ip),true,ip);
 });
+
+test('audit URL validation rejects query arrays and non-string inputs',()=>{
+  for(const input of [undefined,null,[],['https://example.org'],{},42,true,''])assert.equal(validTarget(input),null);
+});
