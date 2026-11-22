@@ -8,8 +8,8 @@ const sectors={
   hvac:{tags:['["craft"="hvac"]','["shop"="heating"]'],name:'Climatización'},
   plumbing:{tags:['["craft"="plumber"]'],name:'Plomería'}
 };
-function compact(value,max=180){return String(value||'').trim().replace(/[\u0000-\u001f]/g,' ').slice(0,max)}
-function https(raw){try{const u=new URL(raw);return u.protocol==='https:'?u.href:''}catch{return ''}}
+function compact(value,max=180){return typeof value==='string'?value.trim().replace(/[\u0000-\u001f\u007f]/g,' ').slice(0,max):''}
+function https(raw){if(typeof raw!=='string')return '';try{const u=new URL(raw);return u.protocol==='https:'&&!u.username&&!u.password&&u.href.length<=1500?u.href:''}catch{return ''}}
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   if(req.method!=='GET')return res.status(405).json({error:'Método no permitido'});
@@ -43,7 +43,7 @@ export default async function handler(req,res){
       return true;
     }).slice(0,60).map(function(x){
       const t=x.tags||{};
-      const city=compact(t['addr:city']||t['addr:suburb']||t['addr:district']||(req.query.zone==='caba'?'CABA':'AMBA'),80);
+      const city=compact([t['addr:city'],t['addr:suburb'],t['addr:district']].find(v=>typeof v==='string'&&v.trim())||(requestedZone==='caba'?'CABA':'AMBA'),80);
       const website=https(t.website||t['contact:website']||'');
       return {name:compact(t.name,100),sector:sector.name,city,website,email:compact(t.email||t['contact:email']||'',120),phone:compact(t.phone||t['contact:phone']||'',80),osmId:x.type+'/'+x.id,sourceUrl:'https://www.openstreetmap.org/'+x.type+'/'+x.id};
     });
