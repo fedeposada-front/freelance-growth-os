@@ -105,3 +105,7 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commits `f3ea9e27e51f5484c7b29dfd3f331fd30bfdc13a` (fix) y `c40375c84d17ac81cfa6762a7434cb31ac2899e7` (regresiones de body ausente y stream vacío).
 - CI nueva pendiente de confirmación; no declarar PASS hasta inspeccionarla. No hay prueba live de Overpass ni persistencia segura. Sin bloqueo humano indispensable; sin correo.
 - Próximo: confirmar CI de `c40375c`, implementar validación live controlada de Overpass en CI y priorizar persistencia/autenticación sin costo.
+
+## 22/11/2026 01:59 ART
+- Commit 86da0f2: CI incluye smoke externo de descubrimiento con timeout 25s, validación de JSON, licencia ODbL y procedencia OSM. Es no bloqueante por depender de Overpass; no equivale a PASS hasta leer logs de GitHub Actions.
+- Persistencia segura y autenticación pendientes. Sin bloqueo humano.
