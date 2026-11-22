@@ -12,6 +12,7 @@ export function publicAddress(address){
   return !(a==='::'||a==='::1'||a.startsWith('fe80:')||a.startsWith('fc')||a.startsWith('fd')||a.startsWith('ff')||a.startsWith('::ffff:')||a.startsWith('2001:db8:'));
 }
 export function validTarget(value){
+  if(typeof value!=='string'||!value.trim())return null;
   try{
     const u=new URL(value);
     if(u.protocol!=='https:'||u.username||u.password||u.port||!u.hostname.includes('.')||u.hostname.length>180||u.href.length>1500)return null;
