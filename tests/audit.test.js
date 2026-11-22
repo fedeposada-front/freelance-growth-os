@@ -68,3 +68,14 @@ test('SSRF guard rejects private, reserved and documentation IP ranges',()=>{
 test('audit URL validation rejects query arrays and non-string inputs',()=>{
   for(const input of [undefined,null,[],['https://example.org'],{},42,true,''])assert.equal(validTarget(input),null);
 });
+
+
+test('heuristic audit ignores fake page markup embedded in scripts, styles and comments',()=>{
+  const fake='<script>const example = \'<title>Not a title</title><h1>Fake</h1><meta name="viewport" content="x"><meta name="description" content="x"><a href="tel:123">call</a><a href="mailto:a@b.com">mail</a>\';</script>';
+  const comments='<!-- <title>Fake</title><h1>Fake</h1><meta name="viewport"><meta name="description"><a href="tel:123"><a href="mailto:a@b.com"> -->';
+  const styles='<style>/* <title>Fake</title><h1>Fake</h1><meta name="viewport"><meta name="description"><a href="tel:123"><a href="mailto:a@b.com"> */</style>';
+  const names=findingsFromHtml('<html><head>'+fake+comments+styles+'</head></html>').map(x=>x.name);
+  assert.equal(names.length,6);
+  assert.ok(names.some(x=>x.includes('Viewport')));
+  assert.ok(names.some(x=>x.includes('Título')));
+});
