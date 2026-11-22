@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validTarget,findingsFromHtml,readLimited} from '../api/audit.js';
+import {validTarget,findingsFromHtml,readLimited,meta} from '../api/audit.js';
 test('accepts only public-looking HTTPS URLs with no port or embedded credentials',()=>{
   assert.ok(validTarget('https://www.sepeliosmoron.com.ar/'));
   for(const s of ['http://example.org','https://localhost/','https://127.0.0.1/','https://user:pass@example.com/','https://example.org:3000/','file:///etc/passwd'])assert.equal(validTarget(s),null);
@@ -49,4 +49,12 @@ test('meta detection supports unquoted attributes and rejects misleading text',(
  const misleading=findingsFromHtml(base+'<meta data-name="viewport"><meta content="name=description">');
  assert.ok(misleading.some(x=>x.name.includes('Viewport')));
  assert.ok(misleading.some(x=>x.name.includes('descripción')));
+});
+
+
+test('description extraction handles reversed attributes and unquoted values without false matches',()=>{
+ assert.equal(meta('<meta content="Servicios funerarios" name="description">','description'),'Servicios funerarios');
+ assert.equal(meta('<meta name=description content=Servicios>','description'),'Servicios');
+ assert.equal(meta('<meta data-name="description" content="Falso">','description'),'');
+ assert.equal(meta('<meta content="name=description" data-name="other">','description'),'');
 });
