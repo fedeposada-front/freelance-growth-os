@@ -136,3 +136,31 @@ test('discovery ignores non-string OSM contacts and credentialed HTTPS URLs',asy
     assert.equal(res.body.companies[1].city,'Morón');
   });
 });
+
+
+test('discovery retries alternate public Overpass endpoint after primary 503',async()=>{
+  const urls=[];
+  await withFetch(async(url)=>{
+    urls.push(url);
+    if(urls.length===1)return {ok:false,status:503};
+    return {ok:true,json:async()=>({elements:[{type:'node',id:77,tags:{name:'Funeraria verificable'}}]})};
+  },async()=>{
+    const res=response();
+    await handler({method:'GET',query:{zone:'caba',sector:'funeral'}},res);
+    assert.equal(res.code,200);
+    assert.equal(res.body.companies[0].osmId,'node/77');
+    assert.equal(res.body.providerUrl,'https://overpass.kumi.systems/api/interpreter');
+    assert.deepEqual(urls,['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter']);
+  });
+});
+
+test('discovery never fabricates results when both providers fail',async()=>{
+  let calls=0;
+  await withFetch(async()=>{calls++;return {ok:false,status:503}},async()=>{
+    const res=response();
+    await handler({method:'GET',query:{}},res);
+    assert.equal(res.code,503);
+    assert.equal(calls,2);
+    assert.equal(res.body.companies,undefined);
+  });
+});
