@@ -167,3 +167,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commits: `7547e3a19642c63761a64ee7d231fa90347d04b3` (código) y `af5968c72c4f437e727cc7a455e6d952086387de` (regresión).
 - Verificación puntual del patrón con Node local: 2 ejemplos de etiquetas meta con orden distinto reconocidos. **No equivale a ejecutar toda la suite ni smoke HTTPS**. CI de estos commits pendiente; no declarar PASS.
 - Siguen pendientes autenticación/persistencia segura y validación live del descubrimiento Overpass. Sin bloqueo humano indispensable confirmado; no se envió email.
+
+
+## 22/11/2026 · 10:03 ART — corrección del detector meta
+- Revisión del código real encontró un error en la corrección previa: expresiones regulares con barras escapadas de más podían seguir atribuyendo ausencia de viewport/description incluso presentes. Además, una búsqueda textual ingenua podía reconocer falsamente `data-name` o texto dentro de `content`.
+- Implementado parser acotado de pares atributo/valor para etiquetas `meta` en `api/audit.js`; acepta atributos entrecomillados o sin comillas, sin confundir `data-name` con `name`. Commits `fca8908`, `dd45098`, `f1a8353`.
+- Regresión añadida en `tests/audit.test.js` para valores sin comillas y atributos engañosos: commit `9c44f6e`.
+- **QA pendiente:** no se verificó aún CI para `f1a8353`, ni despliegue de esta revisión, ni E2E HTTPS. No declarar PASS. Siguiente corrida: inspeccionar CI y corregir fallos, luego priorizar autenticación/persistencia y smoke remoto.
+- Sin bloqueo humano demostrado; no se envió email. Ningún cambio en Co.Municarse ni proyectos corporativos.
