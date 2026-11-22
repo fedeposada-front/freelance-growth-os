@@ -32,6 +32,10 @@ function hasMetaName(html,name){
   });
 }
 export function findingsFromHtml(html){
+  // Inline scripts, styles and comments are not visible page structure.
+  // Their example markup must not count as actual SEO/contact elements.
+  const visibleMarkup=html.replace(/<!--[\s\S]*?-->/g,'').replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi,'').replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi,'');
+  html=visibleMarkup;
   const checks=[];
   if(!hasMetaName(html,'viewport'))checks.push({name:'Viewport móvil no detectado',severity:'high',evidence:'No se encontró meta viewport en el HTML descargado. Revisar experiencia responsive manualmente.'});
   if(!/<title\b[^>]*>[^<]{3,}<\/title>/i.test(html))checks.push({name:'Título de página no identificado',severity:'high',evidence:'No se encontró un elemento <title> con contenido legible.'});
