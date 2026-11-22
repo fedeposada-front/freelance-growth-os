@@ -8,7 +8,64 @@
 #proposal-preview.editing .proposal-page.dark [data-proposal-editable="true"]:focus{background:rgba(255,255,255,.065)}
 #proposal-preview [data-proposal-editable="true"]:empty:before{content:"Escribí acá…";opacity:.4}
 @media print{#proposal-preview [data-proposal-editable="true"]{outline:none!important;background:transparent!important}#proposal-preview [data-proposal-editable="true"]:empty:before{content:""}.proposal-page{overflow:hidden}}
-.actions .secondary,.actions .tertiary{white-space:normal}.bar>.tertiary{margin-inline-start:-10px}.controls .tertiary{align-self:end}.form button.span2{width:100%}@media(max-width:650px){.bar{align-items:stretch}.bar>.primary,.bar>.secondary,.bar>.tertiary{width:100%}.actions{gap:6px}.actions button{flex:1 1 auto}}</style></head><body>
+.actions .secondary,.actions .tertiary{white-space:normal}.bar>.tertiary{margin-inline-start:-10px}.controls .tertiary{align-self:end}.form button.span2{width:100%}@media(max-width:650px){.bar{align-items:stretch}.bar>.primary,.bar>.secondary,.bar>.tertiary{width:100%}.actions{gap:6px}.actions button{flex:1 1 auto}}
+/* Layout editorial fijo 16:9. Las imágenes nunca comparten columna con el texto. */
+.proposal-page.cover-page,.proposal-page.closing-page{
+ display:flex;align-items:center;justify-content:flex-start;isolation:isolate;
+ padding:42px 44px 64px;min-height:640px;
+}
+.proposal-page .cover-copy,.proposal-page .closing-copy{
+ position:relative!important;z-index:3!important;
+ width:53%;max-width:53%;min-width:0;overflow-wrap:anywhere;
+}
+.proposal-page.cover-page .cover-copy h3{font-size:clamp(36px,4.45vw,58px);line-height:1.01;margin:24px 0;}
+.proposal-page.cover-page .cover-copy .large{font-size:18px;line-height:1.3;}
+.proposal-page .cover-photo{
+ position:absolute!important;z-index:2!important;right:1.5%;bottom:57px;
+ width:45%;height:82%;object-fit:contain;object-position:right bottom;
+ pointer-events:none;user-select:none;
+}
+.proposal-page .closing-photo{
+ position:absolute!important;z-index:2!important;right:4%;top:12%;
+ width:40%;height:69%;object-fit:contain;object-position:center;
+ pointer-events:none;user-select:none;
+}
+.proposal-page.closing-page .closing-copy h3{font-size:clamp(35px,4.1vw,55px);line-height:1.01;margin:14px 0 16px;}
+.proposal-page.closing-page .closing-copy p{font-size:12px;line-height:1.5;margin:9px 0;}
+.proposal-page .closing-signature{
+ width:72%;max-width:310px;position:relative;z-index:4!important;
+ padding:2px 0;margin:13px 0 8px;pointer-events:none;user-select:none;
+}
+.proposal-page .signature-art{display:block;width:100%;height:69px;object-fit:contain;object-position:left center}
+.proposal-page .signature-label{display:block;font-size:10px;color:#ddd6db;letter-spacing:.015em;margin-top:1px}
+.proposal-page .fixed-brand-image{max-width:none}
+@media(max-width:650px){
+ .proposal-page.cover-page,.proposal-page.closing-page{padding:20px 20px 50px;min-height:480px}
+ .proposal-page .cover-copy{width:60%;max-width:60%}
+ .proposal-page .closing-copy{width:62%;max-width:62%}
+ .proposal-page.cover-page .cover-copy h3,.proposal-page.closing-page .closing-copy h3{font-size:clamp(28px,7vw,38px);margin:12px 0}
+ .proposal-page .cover-photo{width:40%;height:65%;right:0;bottom:36px}
+ .proposal-page .closing-photo{width:35%;height:45%;top:21%;right:1%}
+ .proposal-page.closing-page .closing-copy p{font-size:11px;line-height:1.35;margin:6px 0}
+ .proposal-page .closing-signature{width:83%;margin:7px 0 4px}
+ .proposal-page .signature-art{height:48px}
+ .proposal-page .signature-label{font-size:8px}
+}
+@media print{
+ .proposal-page.cover-page,.proposal-page.closing-page{
+   display:flex!important;align-items:center!important;padding:18mm 16mm!important;
+   width:297mm!important;height:210mm!important;min-height:210mm!important;
+ }
+ .proposal-page .cover-copy,.proposal-page .closing-copy{width:53%!important;max-width:53%!important}
+ .proposal-page.cover-page .cover-copy h3{font-size:54px!important}
+ .proposal-page.closing-page .closing-copy h3{font-size:52px!important}
+ .proposal-page .cover-photo{height:82%!important;width:43%!important;right:3%!important;bottom:17mm!important}
+ .proposal-page .closing-photo{height:70%!important;width:40%!important;right:4%!important;top:13%!important}
+ .proposal-page .closing-signature{max-width:72mm!important}
+ .proposal-page .signature-art{height:18mm!important}
+ .proposal-page .fixed-brand-image{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
+</style></head><body>
 <header><div class="brand">CO<span class="dot">.</span>MUNICARSE<small>ALICIA CAMAÑO</small></div><span class="headtag">Sistema de prospección · Edición Yara</span></header>
 <main><div class="intro"><div class="eyebrow" style="color:#b71772;letter-spacing:.17em;font-size:11px;font-weight:800">RADAR COMERCIAL · v0.3.2</div><h1>DE EMPRESA A <span>PROPUESTA.</span></h1><p class="sub">Descubrí oportunidades, investigá el contexto de cada empresa y generá una propuesta corporativa con la identidad de Alicia. Todo en un mismo lugar.</p></div>
 <nav class="steps no-print"><button data-step="1" class="active"><b>01</b> Buscar empresas</button><button data-step="2"><b>02</b> Investigar y priorizar</button><button data-step="3"><b>03</b> Contacto y email</button><button data-step="4"><b>04</b> Propuesta visual</button></nav>
@@ -56,6 +113,39 @@ $('restore').onclick=()=>{load();chosen=null;$('next1').disabled=true;$('discove
 $('next1').onclick=()=>{if(!chosen)return;for(const x of ['name','sector','website'])$(x).value=chosen[x]||'';$('why').value=chosen.why||'';analysis=null;$('analysis').textContent='Listo para investigar el sitio oficial.';$('next2').disabled=true;navigate(2)};
 $('analyze').onclick=async()=>{const b=$('analyze');b.disabled=true;$('analysis').textContent='Consultando información pública…';try{const payload={name:$('name').value,sector:$('sector').value,website:$('website').value,why:$('why').value};const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok)throw Error(d.error);analysis=d;const box=$('analysis');box.replaceChildren();const score=document.createElement('div');score.className='score';score.textContent=d.score+'/100';const label=document.createElement('strong');label.textContent='Prioridad '+d.priority;box.append(score,label);for(const txt of ['Fuente: '+d.website,'Estado: '+d.research.status,(d.research.summary||'No se obtuvo contenido del sitio oficial.'),'Criterios detectados: '+(d.signals.join(', ')||'sin señales temáticas')]){const p=document.createElement('p');p.textContent=txt;box.append(p)}const a=document.createElement('a');a.href=d.website;a.rel='noopener noreferrer';a.target='_blank';a.textContent='Abrir fuente original ↗';box.append(a);$('next2').disabled=false}catch(e){$('analysis').textContent='No se completó: '+e.message}finally{b.disabled=false}};
 function section(eyebrow,title,body,dark=false){return '<section class="proposal-page'+(dark?' dark':'')+'"><div class="eyebrow">'+eyebrow+'</div><h3>'+title+'</h3><div class="line"></div>'+body+'<footer><span>ALICIA CAMAÑO · CO.MUNICARSE</span><span>PROPUESTA CONFIDENCIAL · BORRADOR</span></footer></section>'}
+
+/* Identidad institucional fija: estos activos NO participan de la edición del texto. */
+function embedFixedBrandAssets(){
+ const pages=[...$('proposal-preview').querySelectorAll('.proposal-page')];if(pages.length<2)return;
+ const first=pages[0],last=pages[pages.length-1];
+ function contentColumn(page,className){
+  let column=page.querySelector(':scope > .'+className);if(column)return column;
+  column=document.createElement('div');column.className=className;
+  const footer=page.querySelector(':scope > footer');
+  [...page.children].filter(node=>node!==footer&&node.tagName!=='IMG').forEach(node=>column.append(node));
+  page.insertBefore(column,footer||null);
+  return column;
+ }
+ first.classList.add('cover-page');
+ contentColumn(first,'cover-copy');
+ if(!first.querySelector(':scope > img.cover-photo')){
+  const img=document.createElement('img');img.className='cover-photo fixed-brand-image';img.src='/assets/alicia-portada.webp';img.alt='Alicia Camaño comunicando y gesticulando durante una exposición';img.loading='eager';img.decoding='async';img.setAttribute('contenteditable','false');first.insertBefore(img,first.querySelector(':scope > footer'));
+ }
+ last.classList.add('closing-page');
+ const column=contentColumn(last,'closing-copy');
+ if(!last.querySelector(':scope > img.closing-photo')){
+  const img=document.createElement('img');img.className='closing-photo fixed-brand-image';img.src='/assets/alicia-cierre.webp';img.alt='Retrato sonriente de Alicia Camaño';img.loading='eager';img.decoding='async';img.setAttribute('contenteditable','false');last.insertBefore(img,last.querySelector(':scope > footer'));
+ }
+ if(!column.querySelector('.closing-signature')){
+  const block=document.createElement('div');block.className='closing-signature';block.setAttribute('contenteditable','false');
+  const signature=document.createElement('img');signature.src='/assets/alicia-firma-clara.webp';signature.alt='Firma gráfica ilustrativa de Alicia Camaño';signature.className='signature-art fixed-brand-image';signature.loading='eager';
+  block.append(signature);
+  const label=document.createElement('span');label.className='signature-label';label.textContent='Alicia Camaño · Directora y fundadora';block.append(label);
+  const contact=[...column.querySelectorAll('p')].find(p=>p.textContent.includes('somoscomunicarse@'));
+  if(contact)column.insertBefore(block,contact);else column.append(block);
+ }
+}
+
 function bullet(xs){return '<ul>'+xs.map(x=>'<li>'+escapeHTML(x)+'</li>').join('')+'</ul>'}
 function generate(){if(!analysis)return;const name=escapeHTML(analysis.name),sector=escapeHTML(analysis.sector),mode=escapeHTML($('mode').value),hours=escapeHTML($('hours').value),participants=escapeHTML($('participants').value),investment=escapeHTML($('investment').value.trim()||'A definir tras diagnóstico'),need=$('need').value.trim(),notes=$('notes').value.trim(),desc=escapeHTML(analysis.research.summary||''),url=escapeHTML(analysis.website);
 const hypothesis='En una organización del sector '+sector+', puede ser valioso fortalecer la comunicación de propuestas técnicas y comerciales. Esta hipótesis debe contrastarse con las necesidades reales del equipo.';
@@ -72,8 +162,8 @@ parts.push(section('06 · EVALUACIÓN','MÁS ALLÁ<br>DEL <em>TALLER.</em>','<h4
 parts.push(section('07 · RESULTADOS','HERRAMIENTAS<br>PARA <em>ACTUAR.</em>',bullet(['Preparar reuniones y visitas comerciales con mayor claridad.','Identificar oportunidades para conversaciones de valor.','Explicar beneficios técnicos en términos comprensibles.','Gestionar objeciones y preguntas con más recursos.','Practicar conversaciones complejas con feedback.'])+'<p class="footnote">Resultados esperados de aprendizaje, no métricas ni mejoras garantizadas.</p>',true));
 parts.push(section('08 · INVERSIÓN','PROPUESTA<br><em>ECONÓMICA.</em>','<div class="black-block"><div class="eyebrow">INVERSIÓN DE REFERENCIA</div><p class="large">'+investment+'</p></div>'+bullet(['Reunión de alineación previa.','Diseño adaptado de contenidos.','Facilitación y ejercicios del taller.','Material de apoyo.','Evaluación y seguimiento si se incluye en el acuerdo.'])+'<p class="footnote">Condiciones, impuestos, gastos de traslado, forma de pago y vigencia: definir por escrito. No se reutiliza automáticamente el precio histórico de Yara.</p>'));
 parts.push(section('09 · SOBRE ALICIA','UNA VOZ<br><em>PROPIA.</em>','<p><strong>Alicia Camaño</strong> · Directora y fundadora de Co.Municarse.</p><p>Comunicación estratégica, oratoria y entrenamiento de equipos y voceros, con una mirada humana orientada a transformar ideas en mensajes claros y memorables.</p><p><strong>Próximo paso:</strong> reunión de diagnóstico para revisar el desafío, validar destinatarios y definir el alcance final.</p><div class="line"></div><p>somoscomunicarse@gmail.com · @co.municarse · comunicarse.com.ar</p><p class="footnote">Datos de contacto extraídos del material institucional; verificar vigencia antes de enviar.</p>',true));
-$('proposal-preview').innerHTML=parts.join('');}
-$('next2').onclick=()=>{prepareContactStep();navigate(3)};['mode','hours','participants','investment','need','notes'].forEach(id=>$(id).addEventListener('change',()=>{if(proposalDirty&&!confirm('Cambiar los datos regenerará la propuesta. ¿Reemplazar los textos editados?'))return;try{localStorage.removeItem(proposalStorageKey())}catch{}proposalDirty=false;generate();markEditable()}));$('print').onclick=()=>{if(!analysis)return;window.print()};$('copy').onclick=async()=>{const str=$('proposal-preview').innerText;try{await navigator.clipboard.writeText(str);alert('Propuesta copiada')}catch{alert('No se pudo copiar automáticamente')}};
+$('proposal-preview').innerHTML=parts.join('');embedFixedBrandAssets();}
+$('next2').onclick=()=>{prepareContactStep();navigate(3)};['mode','hours','participants','investment','need','notes'].forEach(id=>$(id).addEventListener('change',()=>{if(proposalDirty&&!confirm('Cambiar los datos regenerará la propuesta. ¿Reemplazar los textos editados?'))return;try{localStorage.removeItem(proposalStorageKey())}catch{}proposalDirty=false;generate();markEditable()}));$('print').onclick=async()=>{if(!analysis)return;embedFixedBrandAssets();await Promise.all([...$('proposal-preview').querySelectorAll('img.fixed-brand-image')].map(img=>img.complete?Promise.resolve():img.decode().catch(()=>{})));window.print()};$('copy').onclick=async()=>{const str=$('proposal-preview').innerText;try{await navigator.clipboard.writeText(str);alert('Propuesta copiada')}catch{alert('No se pudo copiar automáticamente')}};
 let contactInfo=null;
 function setContactMessage(msg){$('contact-status').textContent=msg;}
 async function prepareContactStep(){
@@ -150,7 +240,7 @@ function saveProposalDraft(){
 }
 function restoreDraft(){
  const key=proposalStorageKey();proposalLastKey=key;proposalDirty=false;
- try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(saved&&typeof saved.html==='string'&&saved.html.includes('proposal-page')&&saved.html.length<250000){const preview=$('proposal-preview');preview.innerHTML=saved.html;markEditable();proposalDirty=true;$('edit-help').textContent='Recuperé la versión editable guardada para esta empresa en este navegador. Podés continuar y exportar.';return true}}catch{}
+ try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(saved&&typeof saved.html==='string'&&saved.html.includes('proposal-page')&&saved.html.length<250000){const preview=$('proposal-preview');preview.innerHTML=saved.html;embedFixedBrandAssets();markEditable();proposalDirty=true;$('edit-help').textContent='Recuperé la versión editable guardada para esta empresa en este navegador. Podés continuar y exportar.';return true}}catch{}
  $('edit-help').textContent='Para cambiar títulos, párrafos o módulos, tocá «Editar textos» y escribí directamente sobre la propuesta. Los cambios quedan guardados en este navegador.';return false;
 }
 function beginEditing(){
