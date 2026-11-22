@@ -109,3 +109,10 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 ## 22/11/2026 01:59 ART
 - Commit 86da0f2: CI incluye smoke externo de descubrimiento con timeout 25s, validación de JSON, licencia ODbL y procedencia OSM. Es no bloqueante por depender de Overpass; no equivale a PASS hasta leer logs de GitHub Actions.
 - Persistencia segura y autenticación pendientes. Sin bloqueo humano.
+
+## 22/11/2026 · 02:56 ART — evidencia de Overpass y sanitización
+- CI anterior del commit 86da0f2: [MVP CI #44987418766](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44987418766) y [Public URL smoke #44987418755](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44987418755) terminaron con conclusion=success.
+- **Resultado específico de la prueba live** (logs job 137100949329): `LIVE DISCOVERY NOT VERIFIED: Invalid discovery response: 503`. El paso está marcado como exitoso por ser no bloqueante; NO equivale a PASS del descubrimiento. Se requiere diagnosticar si el 503 procede del proveedor, timeout o endpoint desplegado, y considerar un segundo endpoint Overpass público permitido, sin inventar registros.
+- Cambios nuevos: `51827252` endurece la adaptación de campos OSM (no convierte arrays/objetos en textos comerciales, no acepta URL con credenciales, conserva fallback de localidad); `cbea9341` agrega prueba de regresión de valores malformados. CI de estos commits todavía pendiente, no declarar PASS.
+- Persistencia localStorage sin autenticación sigue siendo piloto local y NO apta para datos privados multidispositivo. No hay bloqueo humano demostrado, no se envía email.
+- Prioridad: inspeccionar causa del 503 de descubrimiento remoto y resolver con alternativa gratuita/segura; verificar CI nueva; luego auth/persistencia.
