@@ -64,3 +64,10 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Intento de smoke directo contra `https://freelance-growth-os-mvp.vercel.app/api/discover?zone=caba&sector=funeral`: el entorno de ejecución no resuelve DNS. Esto **no demuestra caída de Vercel**. Validación live Overpass pendiente.
 - Sin bloqueo humano confirmado: seguir con CI y otras rutas de validación; no enviar email de bloqueo.
 - Próxima corrida: comprobar CI del commit 9e472cb2, validar descubrimiento vivo por CI con timeout y verificar protección de APIs; continuar con persistencia segura.
+
+## Ejecución 21/11/2026 · 20:59 ART — causa raíz del CI y corrección
+- GitHub Actions CI del commit 9e472cb: **FAIL**, run https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44959187760, test 6/8. El fallo fue una **fixture de prueba incorrecta**, no un fallo demostrado del endpoint: la cadena de prueba usaba barras invertidas literales `\\n` en lugar de un salto de línea real; por eso el sanitizador devolvió literalmente `A\\nB` en vez de `A B`.
+- El smoke público del mismo commit: **PASS**, run https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44959187828. Esto no prueba el descubrimiento Overpass real.
+- Corregida la fixture con `String.fromCharCode(10)` para probar un carácter de control real, en commit `a3315e8a53472ff63a512cf67bd5f78d7ed91a6f`.
+- CI de la corrección: **pendiente**, sin workflow asociado al commit en la consulta inmediata; no declarar PASS hasta ver resultado.
+- Próximo: verificar CI de a3315e8; probar /api/discover en vivo; continuar seguridad y persistencia. Sin bloqueo humano, sin correo de alerta.
