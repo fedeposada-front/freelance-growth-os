@@ -42,3 +42,11 @@ test('meta checks accept attributes in any order and avoid false findings',()=>{
   const html='<html><head><title>Empresa real</title><meta content="width=device-width" name="viewport"><meta content="Servicios" name="description"></head><body><h1>Inicio</h1><a href="tel:+5411000">Teléfono</a><a href="mailto:info@example.com">Email</a></body></html>';
   assert.deepEqual(findingsFromHtml(html),[]);
 });
+
+test('meta detection supports unquoted attributes and rejects misleading text',()=>{
+ const base='<title>Empresa real</title><h1>Inicio</h1><a href="tel:+5411000">Teléfono</a><a href="mailto:info@example.com">Email</a>';
+ assert.deepEqual(findingsFromHtml(base+'<meta content=width=device-width name=viewport><meta name=description content=Servicios>'),[]);
+ const misleading=findingsFromHtml(base+'<meta data-name="viewport"><meta content="name=description">');
+ assert.ok(misleading.some(x=>x.name.includes('Viewport')));
+ assert.ok(misleading.some(x=>x.name.includes('descripción')));
+});
