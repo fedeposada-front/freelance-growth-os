@@ -182,3 +182,7 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Agregada regresión de descripción con atributos reordenados, sin comillas y atributos engañosos, commit `1cb6db6`.
 - **No se ejecutó suite ni se confirmó CI para el nuevo HEAD**; no declarar PASS ni despliegue. Próximo: confirmar CI, promover a hosting gratuito y verificar respuesta HTTPS, luego priorizar autenticación/persistencia segura.
 - Sin bloqueo humano nuevo confirmado; sin correo.
+
+## 22/11/2026 · 11:55 ART — métricas observadas de auditoría
+- Commit `a57427e613b59eebcdfed8da7f1066483ef262d6`: la respuesta `consultado` de `/api/audit` ahora incluye `httpStatus` real, `elapsedMs` medido desde el inicio de la operación (incluye resolución DNS, red y lectura HTML) y `htmlBytes` del HTML efectivamente descargado. Son medidas del servidor de auditoría, **no** Core Web Vitals, Lighthouse ni tiempos del navegador del cliente. No se generan métricas si la consulta no se completa.
+- QA de esta revisión y despliegue HTTPS **pendientes**; no declarar PASS. Persistencia segura/login y discovery live continúan pendientes. Sin bloqueo humano indispensable confirmado; sin correo.
