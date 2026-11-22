@@ -1,5 +1,7 @@
 import dns from 'node:dns/promises';
 import {isIP} from 'node:net';
+import https from 'node:https';
+import {Readable} from 'node:stream';
 
 export function publicAddress(address){
   if(!address || !isIP(address))return false;
@@ -68,6 +70,21 @@ export async function readLimited(response,max=350000){
     text+=decoder.decode(value,{stream:true});
   }
 }
+// Pin the TLS connection to an already validated public DNS address.
+// Certificate verification and SNI still use the requested hostname.
+export function fetchPinnedHtml(url, addresses, signal){
+  return new Promise((resolve,reject)=>{
+    const address=addresses[0];
+    const request=https.request(url,{
+      method:'GET',signal,agent:false,servername:url.hostname,
+      lookup:(_host,_options,callback)=>callback(null,address.address,address.family),
+      headers:{'User-Agent':'Mozilla/5.0 (compatible; FreelanceGrowthOS/0.1; audit)','Accept':'text/html'}
+    },response=>resolve({status:response.statusCode,ok:response.statusCode>=200&&response.statusCode<300,
+      headers:{get:name=>response.headers[name.toLowerCase()]||''},body:Readable.toWeb(response)}));
+    request.on('error',reject);
+    request.end();
+  });
+}
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   res.setHeader('X-Content-Type-Options','nosniff');
@@ -81,7 +98,7 @@ export default async function handler(req,res){
     if(!addresses.length||addresses.some(a=>!publicAddress(a.address)))return res.status(400).json({error:'El destino no cumple la política de seguridad pública'});
     const ac=new AbortController(), timer=setTimeout(()=>ac.abort(),7000);
     try{
-      const response=await fetch(u.href,{method:'GET',redirect:'manual',signal:ac.signal,headers:{'User-Agent':'Mozilla/5.0 (compatible; FreelanceGrowthOS/0.1; audit)','Accept':'text/html'}});
+      const response=await fetchPinnedHtml(u,addresses,ac.signal);
       if(response.status>=300&&response.status<400)return res.status(200).json({status:'no_consultado',message:'La web redirige. Por seguridad no seguimos redirecciones: ingresá la URL final verificada.',checkedAt,url:u.href});
       if(!response.ok)return res.status(200).json({status:'no_consultado',message:'El sitio respondió HTTP '+response.status+'; no se interpretan problemas UX.',checkedAt,url:u.href});
       const type=response.headers.get('content-type')||'';
