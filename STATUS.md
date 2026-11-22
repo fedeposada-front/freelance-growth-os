@@ -88,3 +88,12 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - CI de los cambios nuevos: pendiente de confirmación; no declarar PASS todavía.
 - El entorno de ejecución continúa sin resolver el dominio Vercel mediante DNS, por lo que no se ha comprobado /api/discover en vivo; no es evidencia de caída de producción.
 - Sin bloqueo humano imprescindible: no enviar correo. Siguiente corrida: verificar CI de 38e7569, intentar smoke remoto vía GitHub Actions y avanzar persistencia/auth sin gastos.
+
+## Ejecución 22/11/2026 · 00:00 ART — evitar falsos hallazgos UX en HTML truncado
+- CI de commit previo `38e7569`: **PASS** en dos workflows, runs [44974318861](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44974318861) y [44974318757](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44974318757).
+- Defecto comprobado por inspección de código: `readLimited` detenía la descarga HTML en 350 KB pero devolvía un fragmento como si fuera el documento completo. Esto podía generar falsos hallazgos de título, H1 o contactos ausentes.
+- Corregido `api/audit.js`: devuelve `{html,truncated}` y el endpoint informa `no_consultado` cuando el documento excede 350 KB, sin atribuir defectos UX. Commits `4450aa0` y `2735ffa`.
+- Agregadas dos regresiones con ReadableStream para respuesta completa y truncada en `tests/audit.test.js`. Commit `06a401a857f3af693a29d2137805e29d3413bb85`.
+- CI del commit nuevo aún sin ejecución disponible en consulta inmediata; **NO declarar PASS**.
+- Overpass en vivo, autenticación/persistencia y evaluación Lighthouse/axe siguen pendientes. Sin intervención manual imprescindible; sin correo de bloqueo.
+- Próximo: confirmar CI de `06a401a`, smoke real de /api/discover vía GitHub Actions, y avanzar persistencia segura.
