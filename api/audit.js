@@ -77,7 +77,12 @@ export function fetchPinnedHtml(url, addresses, signal){
     const address=addresses[0];
     const request=https.request(url,{
       method:'GET',signal,agent:false,servername:url.hostname,
-      lookup:(_host,_options,callback)=>callback(null,address.address,address.family),
+      lookup:(_host,options,callback)=>{
+        // Node may request all addresses when autoSelectFamily is enabled.
+        // Never delegate to system DNS: return only the prevalidated pinned IP.
+        if(options.all)callback(null,[{address:address.address,family:address.family}]);
+        else callback(null,address.address,address.family);
+      },
       headers:{'User-Agent':'Mozilla/5.0 (compatible; FreelanceGrowthOS/0.1; audit)','Accept':'text/html'}
     },response=>resolve({status:response.statusCode,ok:response.statusCode>=200&&response.statusCode<300,
       headers:{get:name=>response.headers[name.toLowerCase()]||''},body:Readable.toWeb(response)}));
