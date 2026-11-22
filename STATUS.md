@@ -116,3 +116,12 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Cambios nuevos: `51827252` endurece la adaptación de campos OSM (no convierte arrays/objetos en textos comerciales, no acepta URL con credenciales, conserva fallback de localidad); `cbea9341` agrega prueba de regresión de valores malformados. CI de estos commits todavía pendiente, no declarar PASS.
 - Persistencia localStorage sin autenticación sigue siendo piloto local y NO apta para datos privados multidispositivo. No hay bloqueo humano demostrado, no se envía email.
 - Prioridad: inspeccionar causa del 503 de descubrimiento remoto y resolver con alternativa gratuita/segura; verificar CI nueva; luego auth/persistencia.
+
+
+## 22/11/2026 · 03:55 ART — fallback Overpass sin datos ficticios
+- Diagnóstico de código: el descubrimiento consultaba exclusivamente `overpass-api.de`; un 503 upstream provocaba fallo de todo el descubrimiento. El run 44987418766 había observado 503 remoto, sin atribución concluyente al proveedor.
+- Implementado fallback secuencial y acotado a `overpass.kumi.systems` si el primario falla (HTTP no-2xx, error JSON, remark o timeout). Cada intento tiene timeout de 8,5 s; sin fuentes válidas devuelve 503 explícito, nunca una lista vacía falsa. Se registra `providerUrl` en la respuesta exitosa.
+- Commits: `f148fa45f920b94982b94410f06687194cca8ddb` (código), `3dbdfbe078f368ccb8c84ea99ba657bae079513b` (dos regresiones: recuperación tras 503 y fallo total).
+- **QA PENDIENTE**: consulta inmediata a workflow runs del último commit devolvió cero resultados. No se ejecutaron tests locales ni se verificó disponibilidad live de ambos proveedores en esta corrida. Verificar CI y smoke remoto en próxima ejecución; no declarar PASS.
+- Advertencia: el presupuesto máximo combinado de dos intentos es ~17 s más procesamiento; revisar límites del runtime Vercel si surge timeout. Los endpoints públicos pueden cambiar o tener restricciones de uso; conservar CSV como alternativa.
+- No hay bloqueo humano imprescindible; no enviar correo. Persistencia segura y autenticación siguen pendientes.
