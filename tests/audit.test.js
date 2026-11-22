@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validTarget,findingsFromHtml,readLimited,meta} from '../api/audit.js';
+import {validTarget,findingsFromHtml,readLimited,meta,publicAddress} from '../api/audit.js';
 test('accepts only public-looking HTTPS URLs with no port or embedded credentials',()=>{
   assert.ok(validTarget('https://www.sepeliosmoron.com.ar/'));
   for(const s of ['http://example.org','https://localhost/','https://127.0.0.1/','https://user:pass@example.com/','https://example.org:3000/','file:///etc/passwd'])assert.equal(validTarget(s),null);
@@ -57,4 +57,10 @@ test('description extraction handles reversed attributes and unquoted values wit
  assert.equal(meta('<meta name=description content=Servicios>','description'),'Servicios');
  assert.equal(meta('<meta data-name="description" content="Falso">','description'),'');
  assert.equal(meta('<meta content="name=description" data-name="other">','description'),'');
+});
+
+
+test('SSRF guard rejects private, reserved and documentation IP ranges',()=>{
+ for(const ip of ['127.0.0.1','10.2.3.4','172.16.1.1','192.168.1.1','169.254.1.2','100.64.1.2','192.0.2.1','198.51.100.2','203.0.113.8','192.88.99.1','198.18.0.1','224.0.0.1','255.255.255.255','::1','fc00::1','fe80::1','2001:db8::1'])assert.equal(publicAddress(ip),false,ip);
+ for(const ip of ['8.8.8.8','1.1.1.1','2606:4700:4700::1111'])assert.equal(publicAddress(ip),true,ip);
 });
