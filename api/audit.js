@@ -32,7 +32,7 @@ export function findingsFromHtml(html){
 function decode(s){return String(s||'').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/&nbsp;/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,500);}
 function meta(html,name){const tags=html.match(/<meta\b[^>]*>/gi)||[];const tag=tags.find(t=>new RegExp('name\\s*=\\s*["\\x27]'+name+'["\\x27]','i').test(t));return decode(tag?.match(/content\s*=\s*["']([^"']*)["']/i)?.[1]||'');}
 export async function readLimited(response,max=350000){
-  const reader=response.body?.getReader();if(!reader)return '';
+  const reader=response.body?.getReader();if(!reader)return {html:'',truncated:false};
   const decoder=new TextDecoder();let text='',count=0;
   while(true){
     const {done,value}=await reader.read();
@@ -61,6 +61,7 @@ export default async function handler(req,res){
       if(!type.includes('text/html'))return res.status(200).json({status:'no_consultado',message:'La respuesta no es HTML accesible.',checkedAt,url:u.href});
       const {html,truncated}=await readLimited(response);
       if(truncated)return res.status(200).json({status:'no_consultado',message:'El HTML supera el límite de análisis (350 KB). No se atribuyen defectos a una respuesta incompleta.',checkedAt,url:u.href});
+      if(!html.trim())return res.status(200).json({status:'no_consultado',message:'La respuesta HTML está vacía; no se atribuyen defectos UX.',checkedAt,url:u.href});
       const title=decode(html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]||'');
       const description=meta(html,'description');
       return res.status(200).json({status:'consultado',title,description,checkedAt,url:u.href,findings:findingsFromHtml(html),method:'HTML estático inicial · prueba heurística limitada',source:'Respuesta pública del sitio indicado'});
