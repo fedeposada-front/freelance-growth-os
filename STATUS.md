@@ -97,3 +97,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - CI del commit nuevo aún sin ejecución disponible en consulta inmediata; **NO declarar PASS**.
 - Overpass en vivo, autenticación/persistencia y evaluación Lighthouse/axe siguen pendientes. Sin intervención manual imprescindible; sin correo de bloqueo.
 - Próximo: confirmar CI de `06a401a`, smoke real de /api/discover vía GitHub Actions, y avanzar persistencia segura.
+
+
+## Ejecución 22/11/2026 · 00:56 ART — respuesta HTML sin cuerpo
+- Confirmada CI de commit previo `06a401a`: MVP CI PASS https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44978670998 y Public URL smoke PASS https://github.com/fedeposada-front/freelance-growth-os/actions/runs/44978670858. Esas ejecuciones no validan los commits nuevos.
+- Corregido `api/audit.js`: `readLimited` devolvía un string vacío cuando `response.body` no existía, violando el contrato esperado `{html,truncated}`. El endpoint ahora clasifica cuerpos HTML vacíos como `no_consultado` y no inventa hallazgos de UX.
+- Commits `f3ea9e27e51f5484c7b29dfd3f331fd30bfdc13a` (fix) y `c40375c84d17ac81cfa6762a7434cb31ac2899e7` (regresiones de body ausente y stream vacío).
+- CI nueva pendiente de confirmación; no declarar PASS hasta inspeccionarla. No hay prueba live de Overpass ni persistencia segura. Sin bloqueo humano indispensable; sin correo.
+- Próximo: confirmar CI de `c40375c`, implementar validación live controlada de Overpass en CI y priorizar persistencia/autenticación sin costo.
