@@ -175,3 +175,10 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Regresión añadida en `tests/audit.test.js` para valores sin comillas y atributos engañosos: commit `9c44f6e`.
 - **QA pendiente:** no se verificó aún CI para `f1a8353`, ni despliegue de esta revisión, ni E2E HTTPS. No declarar PASS. Siguiente corrida: inspeccionar CI y corregir fallos, luego priorizar autenticación/persistencia y smoke remoto.
 - Sin bloqueo humano demostrado; no se envió email. Ningún cambio en Co.Municarse ni proyectos corporativos.
+
+## 22/11/2026 · 11:00 ART — extracción de descripción consistente
+- Inspección del código detectó que `findingsFromHtml` ya reconocía etiquetas meta con atributos reordenados, pero la función `meta()` usada para devolver el texto de descripción todavía exigía `name="description"` y `content` entre comillas; podía devolver una descripción vacía aunque la etiqueta existiera.
+- Corregida extracción con pares atributo/valor y normalización de nombre; evita coincidencias con `data-name`. Commits `82196a5`, `fd532be`.
+- Agregada regresión de descripción con atributos reordenados, sin comillas y atributos engañosos, commit `1cb6db6`.
+- **No se ejecutó suite ni se confirmó CI para el nuevo HEAD**; no declarar PASS ni despliegue. Próximo: confirmar CI, promover a hosting gratuito y verificar respuesta HTTPS, luego priorizar autenticación/persistencia segura.
+- Sin bloqueo humano nuevo confirmado; sin correo.
