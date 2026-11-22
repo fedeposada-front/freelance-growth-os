@@ -118,3 +118,21 @@ test('discovery rejects unsupported zone and sector before network access',async
     }
   });
 });
+
+test('discovery ignores non-string OSM contacts and credentialed HTTPS URLs',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[
+    {type:'node',id:901,tags:{name:'Empresa',website:'https://user:pass@example.com',email:{unexpected:true},phone:['123'],'addr:city':{bad:true}}},
+    {type:'node',id:902,tags:{name:'Empresa 2',website:['https://example.com'],email:'contacto@example.com','addr:city':'Morón'}}
+  ]})}),async()=>{
+    const res=response();
+    await handler({method:'GET',query:{zone:'caba',sector:'funeral'}},res);
+    assert.equal(res.code,200);
+    assert.equal(res.body.companies[0].website,'');
+    assert.equal(res.body.companies[0].email,'');
+    assert.equal(res.body.companies[0].phone,'');
+    assert.equal(res.body.companies[0].city,'CABA');
+    assert.equal(res.body.companies[1].website,'');
+    assert.equal(res.body.companies[1].email,'contacto@example.com');
+    assert.equal(res.body.companies[1].city,'Morón');
+  });
+});
