@@ -224,3 +224,15 @@ test('control-only primary contacts fall back to public alternatives',async()=>{
     assert.equal(res.code,200);assert.equal(res.body.companies[0].email,'publico@example.com');assert.equal(res.body.companies[0].phone,'555-1234');
   });
 });
+
+test('control-only city falls back to sanitized suburb without inventing locality',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[
+    {type:'node',id:981,tags:{name:'Empresa A','addr:city':String.fromCharCode(10,13),'addr:suburb':'Morón'}},
+    {type:'node',id:982,tags:{name:'Empresa B','addr:city':String.fromCharCode(9),'addr:district':String.fromCharCode(10)}},
+    {type:'node',id:983,tags:{name:'Empresa C','addr:city':'La Plata','addr:suburb':'Otro'}}
+  ]})}),async()=>{
+    const res=response();await handler({method:'GET',query:{zone:'amba',sector:'funeral'}},res);
+    assert.equal(res.code,200);
+    assert.deepEqual(res.body.companies.map(x=>x.city),['Morón','','La Plata']);
+  });
+});
