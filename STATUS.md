@@ -349,3 +349,10 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Vercel preview: despliegue `dpl_3M523Z2BhXTvxngcTkRbM9YwPixz`, estado `READY`, mismo SHA; [inspector](https://vercel.com/fedeposadas-projects/freelance-growth-os-mvp/3M523Z2BhXTvxngcTkRbM9YwPixz). READY no demuestra acceso sin autenticación ni E2E.
 - Se revisaron `api/discover.js`, `api/audit.js`, pruebas unitarias y workflows: el descubrimiento live sigue como comprobación informativa (`continue-on-error: true`), no debe presentarse como PASS cuando Overpass responde 503.
 - Pendientes prioritarios sin cambios: login real, persistencia privada multidispositivo, validación Overpass live y prueba E2E HTTPS integral de la revisión actual. No hay bloqueo humano imprescindible identificado; no se envía email de alerta.
+
+
+## Ejecución 23/11/2026 · 17:02 ART — diagnóstico Overpass real en CI
+- Inspeccionada rama personal en commit previo `220d7d3`; workflow MVP CI #45244744906 completado success. PR #1 continúa en borrador. No se tocó Co.Municarse ni repos corporativos.
+- Commit `e45767aff9753c569e34071748041275ad688307`: agregado paso de integración remota en `.github/workflows/live-smoke.yml` para consultar `/api/discover?zone=caba&sector=funeral` desde GitHub Actions. Comprueba HTTP, JSON, procedencia Overpass, ODbL, fecha y URL OSM de cada registro. Distingue explícitamente HTTP 503 de PASS: la indisponibilidad de proveedores no se presenta como resultados reales.
+- El nuevo workflow **no se ha ejecutado/verificado todavía**. No se declara PASS de Overpass ni de la revisión. El siguiente ciclo debe revisar el run y su log `Live Overpass discovery diagnostic`, corregir defectos si los hubiera y continuar con auth/persistencia privada.
+- No se detectó acción manual imprescindible; sin gastos ni correos.
