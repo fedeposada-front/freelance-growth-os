@@ -27,6 +27,10 @@ jobs:
             try {
               const response=await fetch(url,{signal:AbortSignal.timeout(25000)});
               const body=await response.json();
+              const revision=response.headers.get("x-app-revision")||"missing";
+              const expected=process.env.GITHUB_SHA||"unknown";
+              console.log("LIVE DISCOVERY diagnostic: HTTP="+response.status+" revision="+revision+" expected="+expected+" provider="+String(body.providerUrl||"none"));
+              if(revision!=="unknown" && revision!=="missing" && revision!==expected) console.warn("LIVE DISCOVERY STALE DEPLOYMENT: tested public alias does not match workflow commit; do not attribute result to current source");
               if(response.status!==200 || !Array.isArray(body.companies) || !String(body.license).includes("ODbL")) throw Error("Invalid discovery response: "+response.status+"; reason="+String(body.error||"unknown").slice(0,280));
               if(body.companies.some(c=>!c.name || !/^https:\/\/www.openstreetmap.org\//.test(c.sourceUrl))) throw Error("Missing OSM provenance");
               console.log("LIVE DISCOVERY PASS; count="+body.companies.length);
