@@ -322,3 +322,8 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commit `b34a356`: el descubridor ahora descarta emails OSM malformados antes de elegir el principal o alternativo, sin inventar verificación de contactos. Commit `a19346f`: prueba de regresión para email inválido, fallback legítimo y prioridad de principal válido.
 - CI de esta revisión aún NO verificada; no declarar PASS. Overpass en vivo, autenticación, persistencia privada multidispositivo y E2E HTTPS integral siguen pendientes.
 - Sin intervención manual indispensable nueva, gastos ni correos comerciales o de bloqueo.
+
+## 23/11/2026 13:00 ART — diagnóstico de versión pública en CI
+- Vercel personal informa deployment READY `dpl_FP3ktURYRUxwXvAnw8zXXFjTL4Pj` del commit `579167bb9c3be4c21564f44919cea2d88b45ebe3` (rama `mvp/freelance-growth-os`). READY no demuestra E2E ni acceso privado.
+- Commit `17ec70061fb2a605b6afd14278f0401bc7261095`: workflow live discovery ahora registra HTTP, `X-App-Revision`, SHA esperado y proveedor. Advierte explícitamente si el alias público apunta a otro commit, para evitar atribuir falsamente un 503 a la revisión nueva.
+- CI de este cambio pendiente de comprobación; descubrimiento live NO verificado. Autenticación y persistencia privada multidispositivo siguen pendientes. No existe intervención humana indispensable identificada, sin email de bloqueo.
