@@ -94,3 +94,10 @@ test('DNS resolution is bounded and never accepts private or empty results',asyn
  assert.deepEqual(await resolvePublicAddresses('example.com',async()=>[{address:'1.1.1.1',family:4}]),[{address:'1.1.1.1',family:4}]);
  await assert.rejects(resolvePublicAddresses('example.com',()=>new Promise(()=>{}),15),/DNS_TIMEOUT/);
 });
+
+
+test('compressed audit responses cannot be mistaken for uncompressed HTML',async()=>{
+ const {isReadableHtmlEncoding}=await import('../api/audit.js');
+ for(const value of ['',undefined,'identity',' IDENTITY '])assert.equal(isReadableHtmlEncoding(value),true);
+ for(const value of ['gzip','br','deflate','gzip, br'])assert.equal(isReadableHtmlEncoding(value),false);
+});
