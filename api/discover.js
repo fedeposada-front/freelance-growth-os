@@ -9,7 +9,8 @@ const sectors={
   plumbing:{tags:['["craft"="plumber"]'],name:'Plomería'}
 };
 function compact(value,max=180){return typeof value==='string'?value.replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,max):''}
-function publicEmail(raw){const value=compact(raw,120);return /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value)?value:''}\nfunction https(raw){if(typeof raw!=='string')return '';try{const u=new URL(raw);return u.protocol==='https:'&&!u.username&&!u.password&&u.href.length<=1500?u.href:''}catch{return ''}}
+function publicEmail(raw){const value=compact(raw,120);return /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value)?value:''}
+function https(raw){if(typeof raw!=='string')return '';try{const u=new URL(raw);return u.protocol==='https:'&&!u.username&&!u.password&&u.href.length<=1500?u.href:''}catch{return ''}}
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   // Expose only public deployment revision for remote QA; never expose environment secrets.
