@@ -13,6 +13,7 @@ const FONT={
  bold:join(DIR,'node_modules/@expo-google-fonts/dm-sans/700Bold/DMSans_700Bold.ttf')
 };
 let imageCache=null;
+let activePage=0;
 async function assets(){
  if(!imageCache){
   imageCache=Promise.all(['alicia-portada.webp','alicia-cierre.webp','alicia-firma-clara.webp'].map(async name=>{
@@ -41,7 +42,7 @@ function fit(doc,text,x,y,w,h,{font='regular',size=14,min=9,color=C.ink,align='l
   doc.fontSize(current);
   measured=doc.heightOfString(t,{width:w,lineGap,align});
  }
- if(measured>h+1)throw Error('El texto es demasiado largo para la maqueta; reducilo desde el editor antes de descargar.');
+ if(measured>h+1)throw Error('Página '+activePage+' · Revisá el texto «'+t.slice(0,52)+(t.length>52?'…':'')+'»: ocupa más espacio del permitido. Acortá ese párrafo desde «Editar textos» y volvé a generar.');
  doc.fillColor(color).text(t,x,y,{width:w,height:h,lineGap,align,ellipses:false});
  return Math.min(measured,h);
 }
@@ -125,7 +126,7 @@ function renderContext(doc,p){
  sectionLabel(doc,d.rightLabel||'OBJETIVO DEL ENTRENAMIENTO',446,265,316,true);
  fit(doc,d.panelLead,446,299,319,85,{font:'bold',size:22,min:15,color:C.white});
  fit(doc,d.panelBody,446,391,318,86,{font:'regular',size:13.5,min:11,color:'#E8DBE4'});
- fit(doc,d.source,429,505,354,37,{font:'regular',size:10,min:9,color:C.grey});
+ fit(doc,d.source,429,500,354,44,{font:'regular',size:10,min:8.5,color:C.grey});
  pageno(doc,2,false);
 }
 function renderProgram(doc,p){
@@ -272,6 +273,7 @@ export async function renderPresentationPdf(input){
  const draw=[renderCover,renderContext,renderProgram,renderMethod,renderOutcome,renderInvestment,renderClose];
  try{
   for(let i=0;i<7;i++){
+   activePage=i+1;
    doc.addPage({size:'A4',layout:'landscape',margin:0});
    draw[i](doc,p.slides[i],imgs);
   }
