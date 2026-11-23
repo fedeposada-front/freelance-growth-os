@@ -1,4 +1,5 @@
 import http from 'node:http';
+import {randomUUID} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {lookup} from 'node:dns/promises';
 
@@ -112,9 +113,68 @@ function draftCommercialEmail(c,recipient){
  return {to,subject,body,status:'Borrador, no enviado',verification:person?'Nombre proporcionado manualmente: verificar identidad y cargo antes de enviar':'Responsable no identificado; mensaje preparado para canal corporativo'};
 }
 
+
+/* Temporary same-origin HTTP downloads.
+   Android Chrome may block blob: downloads triggered after async canvas work.
+   PDF bytes live in RAM only, not on disk or database, and expire automatically. */
+const PDF_MAX_BYTES=18*1024*1024;
+const PDF_MAX_MEMORY=40*1024*1024;
+const PDF_TTL_MS=10*60*1000;
+const preparedPdfs=new Map();
+function prunePdfs(){
+ const now=Date.now();
+ for(const [id,file] of preparedPdfs){if(file.expires<=now)preparedPdfs.delete(id);}
+ let used=0;for(const file of preparedPdfs.values())used+=file.pdf.length;
+ while(used>PDF_MAX_MEMORY&&preparedPdfs.size){
+   const [id,file]=preparedPdfs.entries().next().value;
+   preparedPdfs.delete(id);used-=file.pdf.length;
+ }
+}
+function safeDownloadFilename(value){
+ const base=String(value??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
+  .replace(/[^A-Za-z0-9 _.-]/g,'').replace(/\s+/g,'-').slice(0,80);
+ return (base&&base.toLowerCase().endsWith('.pdf')?base:base?base+'.pdf':'CoMunicarse-Propuesta.pdf');
+}
+async function preparePdf(req,res){
+ if(!(req.headers['content-type']||'').toLowerCase().startsWith('application/pdf'))return send(res,{error:'Se esperaba un PDF'},415);
+ if(Number(req.headers['content-length'])>PDF_MAX_BYTES)return send(res,{error:'PDF demasiado grande'},413);
+ const parts=[];let length=0;
+ for await(const part of req){
+  length+=part.length;
+  if(length>PDF_MAX_BYTES)return send(res,{error:'PDF demasiado grande'},413);
+  parts.push(part);
+ }
+ const pdf=Buffer.concat(parts,length);
+ if(pdf.length<10000||pdf.subarray(0,5).toString('ascii')!=='%PDF-'||!pdf.subarray(-2048).includes(Buffer.from('%%EOF')))
+  return send(res,{error:'El documento PDF está vacío o incompleto'},422);
+ prunePdfs();
+ const token=randomUUID();
+ const filename=safeDownloadFilename(req.headers['x-pdf-filename']);
+ preparedPdfs.set(token,{pdf,filename,expires:Date.now()+PDF_TTL_MS});
+ prunePdfs();
+ return send(res,{downloadUrl:'/api/pdf-download/'+token,filename,expiresInMinutes:10});
+}
+function downloadPdf(res,token){
+ prunePdfs();
+ const file=preparedPdfs.get(token);
+ if(!file)return send(res,{error:'El PDF expiró. Generá uno nuevo.'},404);
+ res.writeHead(200,{
+  'Content-Type':'application/pdf',
+  'Content-Disposition':'attachment; filename="'+file.filename+'"',
+  'Content-Length':file.pdf.length,
+  'Cache-Control':'private, no-store, max-age=0',
+  'Pragma':'no-cache',
+  'X-Content-Type-Options':'nosniff'
+ });
+ return res.end(file.pdf);
+}
+
 const server=http.createServer(async(req,res)=>{try{
  const url=new URL(req.url,'http://localhost');
- if(req.method==='GET'&&url.pathname==='/api/health')return send(res,{ok:true,version:'0.5.0'});
+ if(req.method==='POST'&&url.pathname==='/api/pdf-prepare')return await preparePdf(req,res);
+ if(req.method==='GET'&&/^\/api\/pdf-download\/[0-9a-f-]{36}$/.test(url.pathname))
+   return downloadPdf(res,url.pathname.split('/').pop());
+ if(req.method==='GET'&&url.pathname==='/api/health')return send(res,{ok:true,version:'0.7.0'});
  if(req.method==='GET'&&url.pathname==='/api/companies')return send(res,COMPANIES);
  if(req.method==='GET'&&url.pathname==='/api/discover'){
  const sector=clean(url.searchParams.get('sector'),30),limit=Math.min(30,Math.max(1,Number(url.searchParams.get('limit'))||10));
