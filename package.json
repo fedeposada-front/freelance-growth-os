@@ -17,5 +17,8 @@
     "sharp": "0.34.5",
     "@expo-google-fonts/bebas-neue": "0.4.1",
     "@expo-google-fonts/dm-sans": "0.4.2"
+  },
+  "devDependencies": {
+    "pdf-lib": "1.17.1"
   }
 }
