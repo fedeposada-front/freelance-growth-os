@@ -62,7 +62,7 @@ export default async function handler(req,res){
       return true;
     }).slice(0,60).map(function(x){
       const t=x.tags||{};
-      const city=compact([t['addr:city'],t['addr:suburb'],t['addr:district']].find(v=>typeof v==='string'&&v.trim())||'',80);
+      const city=[t['addr:city'],t['addr:suburb'],t['addr:district']].map(v=>compact(v,80)).find(Boolean)||'';
       const website=https(t.website)||https(t['contact:website']);
       return {name:compact(t.name,100),sector:sector.name,city,website,email:compact(t.email,120)||compact(t['contact:email'],120),phone:compact(t.phone,80)||compact(t['contact:phone'],80),osmId:x.type+'/'+x.id,sourceUrl:'https://www.openstreetmap.org/'+x.type+'/'+x.id};
     });
