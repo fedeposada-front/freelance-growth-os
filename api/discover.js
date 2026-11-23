@@ -25,13 +25,14 @@ export default async function handler(req,res){
   const bbox=boxes[requestedZone],sector=sectors[requestedSector];
   const clauses=sector.tags.map(function(t){return 'nwr'+t+'('+bbox+');'}).join('');
   const q='[out:json][timeout:14];('+clauses+');out center 60;';
-  // Two public Overpass instances; bounded sequential fallback for transient upstream failure.
+  // Two public Overpass instances; each attempt is capped at 4s (8s total),
+  // avoiding a 17s worst-case wait that can exceed free serverless execution limits.
   // No silent zero-results: every unsuccessful source is reported as unavailable.
   const endpoints=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
   let payload=null,usedEndpoint='',lastFailure='sin respuesta';
   for(const endpoint of endpoints){
     const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),8500);
+    const timer=setTimeout(()=>controller.abort(),4000);
     try{
       const response=await fetch(endpoint,{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/x-www-form-urlencoded','User-Agent':'FreelanceGrowthOS/0.1 (small public pilot)'},body:new URLSearchParams({data:q})});
       if(!response.ok){lastFailure='HTTP '+response.status;continue}
