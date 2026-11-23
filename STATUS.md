@@ -286,3 +286,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commit `53f773eadee8e061820221b6ca94b650717c1b04`: regresión para fallback HTTPS y prioridad de la web primaria válida.
 - **NO PASS aún**: CI y despliegue de estos commits no comprobados; el contenedor no pudo resolver github.com, por lo que no se ejecutó test local remoto. Overpass live y E2E de esta revisión continúan sin verificar.
 - Autenticación y persistencia privada multidispositivo siguen siendo bloqueo de aceptación del MVP, pero no hay acción humana imprescindible identificada; continuar implementando. No hubo gastos ni correo de bloqueo.
+
+
+## 23/11/2026 · 06:00 ART — evitar localidades inventadas en descubrimiento
+- Inspección de `api/discover.js` detectó que los registros OSM sin `addr:city`, `addr:suburb` ni `addr:district` recibían automáticamente `CABA` o `AMBA` según el filtro geográfico. Un bounding box no verifica el domicilio ni la localidad de cada negocio.
+- Commit `c97ed197f7e322588038f6b519ab5c236cb45b40`: ahora `city` queda vacío cuando OSM no publica localidad; conserva los valores explícitos de OSM. No se inventan ubicaciones.
+- Commit `5f693720b478540f8e8a3ae83bd2a89832ade8b8`: ajustada la regresión para distinguir localidad ausente de `addr:city` legítimo.
+- **CI y despliegue de esta revisión pendientes**. No se declara PASS; el entorno local no resuelve github.com para clonar y ejecutar la suite. Descubrimiento Overpass en vivo, autenticación y persistencia privada multidispositivo siguen pendientes.
+- Sin bloqueo que exija intervención humana, sin gastos ni correos.
