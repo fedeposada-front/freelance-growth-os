@@ -315,7 +315,7 @@
 }
 </style></head><body>
 <header><div class="brand">CO<span class="dot">.</span>MUNICARSE<small>ALICIA CAMAÑO</small></div><span class="headtag">Sistema de prospección · Edición Yara</span></header>
-<main><div class="intro"><div class="eyebrow" style="color:#b71772;letter-spacing:.17em;font-size:11px;font-weight:800">RADAR COMERCIAL · v0.6.1</div><h1>DE EMPRESA A <span>PROPUESTA.</span></h1><p class="sub">Descubrí oportunidades, investigá el contexto de cada empresa y generá una propuesta corporativa con la identidad de Alicia. Todo en un mismo lugar.</p></div>
+<main><div class="intro"><div class="eyebrow" style="color:#b71772;letter-spacing:.17em;font-size:11px;font-weight:800">RADAR COMERCIAL · v0.7.0</div><h1>DE EMPRESA A <span>PROPUESTA.</span></h1><p class="sub">Descubrí oportunidades, investigá el contexto de cada empresa y generá una propuesta corporativa con la identidad de Alicia. Todo en un mismo lugar.</p></div>
 <nav class="steps no-print"><button data-step="1" class="active"><b>01</b> Buscar empresas</button><button data-step="2"><b>02</b> Investigar y priorizar</button><button data-step="3"><b>03</b> Contacto y email</button><button data-step="4"><b>04</b> Propuesta visual</button></nav>
 <section class="panel" id="step1"><h2>01 / DESCUBRIR EMPRESAS</h2><p class="muted">Generá un lote nuevo según sector y país. Se consulta una fuente abierta; si no responde, conservamos la lista inicial y mostramos el error sin inventar resultados.</p><div class="controls"><label>País<select id="country"><option value="ambos">Argentina + Uruguay</option><option value="argentina">Argentina</option><option value="uruguay">Uruguay</option></select></label><label>Sector objetivo<select id="target"><option value="agro">Agroindustria</option><option value="industria">Industria / maquinaria</option><option value="tecnologia">Tecnología B2B</option><option value="salud">Salud / equipamiento</option><option value="todos">Otros sectores</option></select></label><label>Máximo de empresas<select id="limit"><option>10</option><option>20</option><option>30</option></select></label><button class="secondary" id="discover">Buscar nuevo lote ↗</button><button class="tertiary" id="restore">Ver empresas iniciales</button></div><p class="status" id="discover-status">Mostrando la base inicial de empresas verificadas.</p><div class="bar"><h2 style="margin-top:18px">EMPRESAS EN EL RADAR</h2><span class="muted" id="count"></span></div><div id="companies" class="cards"></div><div class="notice">La aparición en este radar no implica que la empresa esté buscando una capacitación. Los contactos y oportunidades reales requieren validación.</div><button id="next1" class="primary" disabled>Investigar empresa seleccionada →</button></section>
 <section class="panel hidden" id="step2"><h2>02 / INVESTIGAR Y PRIORIZAR</h2><p class="muted">Usamos información pública del sitio de la empresa. La afinidad calculada es orientativa y no acredita necesidades internas.</p><div class="two"><div class="form"><label>Empresa<input id="name"></label><label>Sector<input id="sector"></label><label class="span2">Sitio oficial HTTPS<input id="website"></label><label class="span2">Motivo de selección<input id="why"></label><button id="analyze" class="secondary span2">Investigar sitio y calcular prioridad</button></div><div><div id="analysis" class="research">Seleccioná una empresa y ejecutá el análisis.</div><p class="muted">Podés corregir el nombre, sector y sitio antes de investigar.</p></div></div><div class="bar" style="margin-top:16px"><button class="tertiary" data-step="1">← Volver al radar</button><button class="primary" id="next2" disabled>Buscar contacto y preparar email →</button></div></section>
@@ -350,7 +350,7 @@
  <div class="notice">El sistema no envía correos automáticamente. «Abrir en mi correo» genera un borrador en tu aplicación de email. Revisá destinatario, consentimiento, pertinencia y texto antes de enviar.</div>
  <div class="bar"><button class="tertiary" data-step="2">← Volver a investigación</button><button class="secondary" id="next3">Crear propuesta visual →</button></div>
 </section>
-<section class="panel hidden" id="step4"><div class="bar"><div><h2>04 / PROPUESTA VISUAL</h2><p class="muted">7 páginas editoriales basadas en la propuesta Yara, adaptadas a cada empresa. Textos editables, fotos con proporción original e identidad Co.Municarse.</p></div><div class="actions no-print"><button class="tertiary" data-step="3">← Contacto y email</button><button class="secondary" id="edit-proposal" aria-pressed="false">✎ Editar textos</button><button class="tertiary" id="reset-proposal">Restaurar propuesta</button><button class="tertiary" id="copy">Copiar texto</button><button class="tertiary" id="print" type="button">Imprimir (versión anterior)</button><button class="primary" id="download-pdf" type="button">Descargar PDF directo ↧</button></div></div><div class="form no-print" style="margin:16px 0"><label>Modalidad<select id="mode"><option>Presencial</option><option>Virtual</option><option>Híbrida</option></select></label><label>Duración propuesta<input id="hours" value="4 horas"></label><label>Participantes estimados<input id="participants" value="Hasta 25 (a confirmar)"></label><label>Inversión<input id="investment" placeholder="A definir luego del diagnóstico"></label><label class="span2">Necesidad confirmada por el cliente (opcional)<textarea id="need" rows="2" placeholder="Si no existe diagnóstico, el documento indicará una hipótesis"></textarea></label><label class="span2">Notas para adaptar los ejemplos / objeciones<textarea id="notes" rows="2" placeholder="No inventar procesos ni dificultades internas"></textarea></label></div><div class="notice no-print">La opción «Descargar PDF directo» intenta guardar un A4 horizontal sin abrir la impresora. Es una prueba: si falla, utilizá «Imprimir (versión anterior)». Antes de exportar, revisá todos los textos; no se envía nada a las empresas.</div><div class="notice no-print" id="edit-help">Podés editar el contenido antes de exportarlo. Tocá «Editar textos» y seleccioná cualquier título, párrafo o ítem de la propuesta. Los cambios se guardan en este navegador para esta empresa.</div><p id="pdf-export-status" class="pdf-export-status no-print" role="status" aria-live="polite" hidden></p><div class="proposal"><div id="proposal-preview"></div></div></section><div class="footer-app no-print">Co.Municarse · Uso interno · No almacena datos en servidor ni envía campañas.</div></main>
+<section class="panel hidden" id="step4"><div class="bar"><div><h2>04 / PROPUESTA VISUAL</h2><p class="muted">7 páginas editoriales basadas en la propuesta Yara, adaptadas a cada empresa. Textos editables, fotos con proporción original e identidad Co.Municarse.</p></div><div class="actions no-print"><button class="tertiary" data-step="3">← Contacto y email</button><button class="secondary" id="edit-proposal" aria-pressed="false">✎ Editar textos</button><button class="tertiary" id="reset-proposal">Restaurar propuesta</button><button class="tertiary" id="copy">Copiar texto</button><button class="tertiary" id="print" type="button">Imprimir (versión anterior)</button><button class="primary" id="download-pdf" type="button">Descargar PDF directo ↧</button></div></div><div class="form no-print" style="margin:16px 0"><label>Modalidad<select id="mode"><option>Presencial</option><option>Virtual</option><option>Híbrida</option></select></label><label>Duración propuesta<input id="hours" value="4 horas"></label><label>Participantes estimados<input id="participants" value="Hasta 25 (a confirmar)"></label><label>Inversión<input id="investment" placeholder="A definir luego del diagnóstico"></label><label class="span2">Necesidad confirmada por el cliente (opcional)<textarea id="need" rows="2" placeholder="Si no existe diagnóstico, el documento indicará una hipótesis"></textarea></label><label class="span2">Notas para adaptar los ejemplos / objeciones<textarea id="notes" rows="2" placeholder="No inventar procesos ni dificultades internas"></textarea></label></div><div class="notice no-print">«Descargar PDF directo» genera el documento A4 horizontal y lo entrega mediante una descarga real desde esta web, sin impresora. Si Chrome Android no lo descarga automáticamente, aparecerá un enlace para tocar y descargarlo. El archivo se mantiene temporalmente en memoria durante 10 minutos y luego caduca. Ninguna propuesta se envía a la empresa.</div><div class="notice no-print" id="edit-help">Podés editar el contenido antes de exportarlo. Tocá «Editar textos» y seleccioná cualquier título, párrafo o ítem de la propuesta. Los cambios se guardan en este navegador para esta empresa.</div><p id="pdf-export-status" class="pdf-export-status no-print" role="status" aria-live="polite" hidden></p><a id="pdf-ready-link" class="secondary no-print hidden" href="" target="_self" style="display:inline-flex;margin:8px 0 16px;text-decoration:none;align-items:center;gap:8px">Descargar archivo PDF listo ↓</a><div class="proposal"><div id="proposal-preview"></div></div></section><div class="footer-app no-print">Co.Municarse · Uso interno · Los PDF preparados se conservan únicamente en memoria por hasta 10 minutos; no se envían campañas.</div></main>
 <script src="/vendor/html2canvas.min.js"></script><script src="/vendor/jspdf.umd.min.js"></script>
 <script>
 const $=id=>document.getElementById(id),escapeHTML=(s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -409,6 +409,7 @@ function concisePublicReference(value){
 }
 function generate(){
  if(!analysis)return;
+ clearReadyPdf();
  const name=escapeHTML(analysis.name),sector=escapeHTML(analysis.sector||'actividad por confirmar'),
  mode=escapeHTML($('mode').value),hours=escapeHTML($('hours').value),
  participants=escapeHTML($('participants').value),investment=escapeHTML($('investment').value.trim()||'A definir tras diagnóstico'),
@@ -483,6 +484,13 @@ $('next2').onclick=()=>{prepareContactStep();navigate(3)};['mode','hours','parti
 
 /* Experimental direct PDF export. Preserves in-page edits; never uses print dialog. */
 let pdfExportRunning=false;
+let pdfReadyUrl='';
+function clearReadyPdf(){
+ pdfReadyUrl='';
+ const link=$('pdf-ready-link');
+ if(link){link.classList.add('hidden');link.removeAttribute('href');}
+}
+
 function updatePdfStatus(message,visible=true){
  const el=$('pdf-export-status');
  el.hidden=!visible;el.textContent=message;
@@ -514,6 +522,7 @@ async function prepareImages(slide){
 }
 async function exportDirectPdf(){
  if(!analysis||pdfExportRunning)return;
+ clearReadyPdf();
  const button=$('download-pdf');pdfExportRunning=true;button.disabled=true;
  const oldLabel=button.textContent;
  let stage=null;
@@ -581,11 +590,26 @@ async function exportDirectPdf(){
    if(pdf.internal.getNumberOfPages()!==pages.length)throw Error('El PDF no tiene todas las páginas.');
    const blob=pdf.output('blob');
    if(blob.size<10000)throw Error('El PDF generado es demasiado pequeño.');
-   const url=URL.createObjectURL(blob);
-   const a=document.createElement('a');a.href=url;a.download=safePdfFilename(analysis.name);
-   document.body.append(a);a.click();a.remove();
-   setTimeout(()=>URL.revokeObjectURL(url),60000);
-   updatePdfStatus('PDF A4 horizontal generado ('+pages.length+' páginas). Revisá Descargas de tu dispositivo.');
+   updatePdfStatus('PDF generado. Preparando la descarga desde el servidor…');
+   const response=await fetch('/api/pdf-prepare',{
+      method:'POST',
+      headers:{'Content-Type':'application/pdf','X-Pdf-Filename':safePdfFilename(analysis.name)},
+      body:blob,cache:'no-store'
+   });
+   const prepared=await response.json().catch(()=>({}));
+   if(!response.ok)throw Error(prepared.error||'El servidor no pudo preparar la descarga');
+   const fileUrl=new URL(prepared.downloadUrl,window.location.href);
+   if(fileUrl.origin!==window.location.origin||!fileUrl.pathname.startsWith('/api/pdf-download/'))
+     throw Error('URL de descarga inválida');
+   pdfReadyUrl=fileUrl.pathname;
+   const downloadLink=$('pdf-ready-link');
+   downloadLink.href=pdfReadyUrl;
+   downloadLink.classList.remove('hidden');
+   downloadLink.textContent='Descargar PDF listo ↓';
+   updatePdfStatus('PDF A4 horizontal preparado ('+pages.length+' páginas). Si Chrome no inicia la descarga, tocá «Descargar PDF listo» debajo de este mensaje.');
+   // A real same-origin HTTP attachment succeeds where late blob: anchor clicks often fail.
+   // The visible link remains available as an explicit second-tap fallback.
+   window.location.assign(pdfReadyUrl);
  }catch(error){
    updatePdfStatus('La exportación directa no se completó: '+(error?.message||'error desconocido')+'. Podés usar «Imprimir (versión anterior)».');
  }finally{
@@ -679,6 +703,7 @@ function markEditable(){
 }
 function saveProposalDraft(){
  if(!analysis)return;
+ clearReadyPdf();
  try{localStorage.setItem(proposalStorageKey(),JSON.stringify({html:$('proposal-preview').innerHTML,savedAt:new Date().toISOString()}));proposalDirty=true;$('edit-help').textContent='Cambios guardados en este navegador. Podés exportar el PDF cuando quieras. No se sincronizan entre dispositivos.'}catch{$('edit-help').textContent='Edición activa. El navegador no permitió guardar cambios localmente; exportá antes de cerrar.'}
 }
 function restoreDraft(){
