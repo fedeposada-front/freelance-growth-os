@@ -34,6 +34,19 @@ try{
   await page.locator('#companyRows').getByText('Empresa QA DEMO').waitFor();
   await page.setViewportSize({width:390,height:844});
   await page.locator('[data-nav="proposal"]').click();
+  // P0 Android regression: verify expanded filters on the ACTUAL HTTPS page, not local fixtures.
+  await page.locator('[data-nav="radar"]').click();
+  const sectorValues=await page.locator('#discoverSector option').evaluateAll(nodes=>nodes.map(n=>n.value));
+  const zoneValues=await page.locator('#discoverZone option').evaluateAll(nodes=>nodes.map(n=>n.value));
+  assert.equal(sectorValues.length,21,'published mobile UI must expose 21 industries');
+  assert.equal(zoneValues.length,11,'published mobile UI must expose 11 regions');
+  assert.ok(sectorValues.includes('restaurant')&&sectorValues.includes('realestate'));
+  assert.ok(zoneValues.includes('mardelplata'));
+  await page.locator('#discoverSector').selectOption('restaurant');
+  await page.locator('#discoverZone').selectOption('caba');
+  assert.equal(await page.locator('#discoverSector').inputValue(),'restaurant');
+  assert.equal(await page.locator('#discoverZone').inputValue(),'caba');
+  await page.locator('[data-nav="proposal"]').click();
   await page.locator('#presentation .slide').first().waitFor();
   assert.equal(await page.locator('#presentation .slide').count(),3,'three proposal slides');
   assert.deepEqual(errors,[],'no browser JS errors');
