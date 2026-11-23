@@ -71,7 +71,17 @@ async function discoverCompanies(sector,limit,exclude,country='ambos'){
   let r;try{r=await fetch('https://query.wikidata.org/sparql?format=json&query='+encodeURIComponent(query),{signal:ctl.signal,headers:{'User-Agent':'CoMunicarseOS/0.2 (public-data discovery; info@comunicarse.com.ar)','Accept':'application/sparql-results+json'},redirect:'error'})}finally{clearTimeout(timer)}
   if(!r.ok)throw new Error('Wikidata HTTP '+r.status);
   const data=await r.json();
-  const matches=(data.results?.bindings||[]).map(row=>({name:clean(row.companyLabel?.value,100),sector:clean(row.industryLabel?.value,120)||'Sector por verificar',website:safeURL(row.website?.value),why:'Empresa registrada en fuente abierta; validar afinidad',country:country==='uruguay'||row.country?.value?.endsWith('Q77')?'Uruguay':'Argentina',source:'Wikidata · consulta abierta',sourceUrl:row.company?.value})).filter(c=>c.name&&!/^Q\d+$/.test(c.name)&&c.website&&!exclude.has(c.name.toLowerCase())&&(!words.length||words.some(w=>(c.name+' '+c.sector).toLowerCase().includes(w))));
+  const matches=(data.results?.bindings||[]).map(row=>({name:clean(row.companyLabel?.value,100),sector:clean(row.industryLabel?.value,120)||'Sector por verificar',website:safeURL(row.website?.value),why:'Empresa registrada en fuente abierta; validar afinidad',country:country==='uruguay'||row.country?.value?.endsWith('Q77')?'Uruguay':'Argentina',source:'Wikidata · consulta abierta',sourceUrl:row.company?.value})).filter(c=>{
+   if(!c.name||/^Q\d+$/.test(c.name)||!c.website||exclude.has(c.name.toLowerCase()))return false;
+   // Wikidata P17 + website also matches events, institutions and museums.
+   // Never suggest these as business prospects just because their name contains "technology".
+   if(/(?:festival|museo|museum|universidad|college|escuela|exhibici[oó]n|conferencia|congreso|partido|parlamento|ministerio|municipalidad|gobierno|archivo|biblioteca|teatro|asociaci[oó]n|fundaci[oó]n)/i.test(c.name))return false;
+   if(!words.length)return true;
+   // Industry has to be categorised, or the business name must have a clearly commercial cue.
+   const industryKnown=c.sector!=='Sector por verificar';
+   const inSector=words.some(w=>(c.name+' '+c.sector).toLowerCase().includes(w));
+   return inSector&&(industryKnown||/(?:s\.a\.|srl|ltda|sas|group|labs|systems|tech|software|soluciones|tecnolog[ií]a|industria|compa[ñn][ií]a|agro|fertilizante)/i.test(c.name));
+  });
   for(const c of matches){if(!out.some(x=>x.website===c.website))out.push(c);if(out.length>=limit)break}
   queryMessage='Búsqueda en Wikidata completada.';
   querySource='Wikidata SPARQL';
