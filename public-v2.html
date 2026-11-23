@@ -535,15 +535,34 @@ async function exportDirectPdf(){
      updatePdfStatus('Generando PDF horizontal: página '+(i+1)+' de '+pages.length+'…');
      const capture=buildCaptureNode(pages[i]);stage=capture.stage;
      await prepareImages(capture.slide);
+     let layoutIssue='';
      const canvas=await window.html2canvas(capture.slide,{
        backgroundColor:pages[i].classList.contains('dark')?'#121212':'#ffffff',
        useCORS:true,allowTaint:false,logging:false,scale,width:1123,height:794,
        windowWidth:1200,windowHeight:850,scrollX:0,scrollY:0,
        onclone:clonedDocument=>{
          const exportRoot=clonedDocument.querySelector('.pdf-export-stage');
-         if(exportRoot){exportRoot.style.left='0px';exportRoot.style.top='0px';exportRoot.style.zIndex='1';}
+         if(exportRoot){
+           exportRoot.style.left='0px';exportRoot.style.top='0px';exportRoot.style.zIndex='1';
+           const page=exportRoot.querySelector('.pdf-capture');
+           if(page){
+             const foot=page.querySelector('footer');
+             const content=page.querySelector('.slide-body');
+             if(content&&foot&&content.getBoundingClientRect().bottom>foot.getBoundingClientRect().top-8)
+               layoutIssue='El contenido llega al pie de la página';
+             for(const img of page.querySelectorAll('img.fixed-brand-image')){
+               if(!img.naturalWidth||!img.naturalHeight)continue;
+               const b=img.getBoundingClientRect(),actual=b.width/b.height,natural=img.naturalWidth/img.naturalHeight;
+               if(b.height>2&&Math.abs(actual/natural-1)>.035){
+                 layoutIssue='Una fotografía o firma aparece deformada ('+img.alt+')';
+                 break;
+               }
+             }
+           }
+         }
        }
      });
+     if(layoutIssue)throw Error('Página '+(i+1)+': '+layoutIssue+'. Ajustá la extensión de los textos antes de exportar.');
      if(canvas.width<1000||canvas.height<700)throw Error('No se pudo dibujar la página '+(i+1));
      const jpg=canvas.toDataURL('image/jpeg',0.92);
      if(jpg.length<3500)throw Error('La página '+(i+1)+' se generó vacía.');
