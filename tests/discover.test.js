@@ -202,3 +202,18 @@ test('discovery excludes names made only of control characters after sanitizatio
     assert.deepEqual(res.body.companies.map(x=>x.name),['Funeraria real']);
   });
 });
+
+test('discovery falls back to legitimate public contact tags after malformed primary values',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[
+    {type:'node',id:961,tags:{name:'Empresa A',email:{bad:true},'contact:email':'publico@example.com',phone:['bad'],'contact:phone':'+54 11 1234 5678'}},
+    {type:'node',id:962,tags:{name:'Empresa B',email:'principal@example.com','contact:email':'alterno@example.com',phone:'1234','contact:phone':'5678'}}
+  ]})}),async()=>{
+    const res=response();
+    await handler({method:'GET',query:{zone:'caba',sector:'funeral'}},res);
+    assert.equal(res.code,200);
+    assert.equal(res.body.companies[0].email,'publico@example.com');
+    assert.equal(res.body.companies[0].phone,'+54 11 1234 5678');
+    assert.equal(res.body.companies[1].email,'principal@example.com');
+    assert.equal(res.body.companies[1].phone,'1234');
+  });
+});
