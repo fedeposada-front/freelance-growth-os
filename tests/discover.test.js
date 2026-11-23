@@ -189,3 +189,16 @@ test('discovery prefers valid HTTPS contact website when primary website is inva
     assert.equal(res.body.companies[1].website,'https://principal.example/');
   });
 });
+
+
+test('discovery excludes names made only of control characters after sanitization',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[
+    {type:'node',id:951,tags:{name:String.fromCharCode(10,13,9)}},
+    {type:'node',id:952,tags:{name:'Funeraria real'}}
+  ]})}),async()=>{
+    const res=response();
+    await handler({method:'GET',query:{zone:'caba',sector:'funeral'}},res);
+    assert.equal(res.code,200);
+    assert.deepEqual(res.body.companies.map(x=>x.name),['Funeraria real']);
+  });
+});
