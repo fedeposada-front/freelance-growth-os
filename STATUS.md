@@ -239,3 +239,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Vercel personal reportó preview `dpl_2tuYWhV7kQ2cyayeHGu1Rd91x17L` en estado READY para `2eca065` (rama `mvp/freelance-growth-os`, `target=null`). **No se promovió a producción**: READY no demuestra auditoría real de red ni seguridad multidispositivo.
 - Se releyeron `api/audit.js` y `tests/audit.test.js`: el pinning respeta `lookup(options.all)` y existe regresión para impedir fallback a DNS del hostname. La CI verde valida la suite existente; sigue sin ser una prueba E2E remota de auditoría con el nuevo transporte.
 - Prioridades sin cerrar: prueba remota del endpoint `/api/audit` en el preview, descubrimiento Overpass real, autenticación y persistencia privada segura, QA E2E integral. Sin intervención manual indispensable identificada, sin correo de bloqueo.
+
+## 22/11/2026 · 21:58 ART — límite de tiempo DNS del auditor
+- Inspeccionados código, pruebas y despliegues personales. El auditor fijaba un timeout de 7 s **después** de `dns.lookup`; una resolución DNS lenta podía mantener la función esperando indefinidamente antes de iniciar la protección de red.
+- Commit `c202f1c`: `resolvePublicAddresses` limita la espera DNS a 3 s, valida que las direcciones sean públicas y conserva el pinning TLS posterior. El límite del socket HTTPS sigue siendo 7 s. Una resolución DNS ya iniciada puede continuar en el sistema, aunque la petición deja de esperarla.
+- Commit `6bccb5d`: prueba de regresión para resolución lenta, direcciones privadas, respuesta vacía y dirección pública.
+- **CI y publicación de esta revisión no verificadas todavía**; no declarar PASS ni promoción. Persisten como P0 autenticación/persistencia privada y E2E remoto de Overpass/auditor.
+- Vercel registra despliegues recientes de la rama aislada de Co.Municarse dentro del mismo proyecto, que **no se modificaron**. No se debe inferir que el último READY corresponde a Growth OS.
+- Sin bloqueo humano demostrado ni correo de alerta.
