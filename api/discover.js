@@ -63,7 +63,7 @@ export default async function handler(req,res){
     }).slice(0,60).map(function(x){
       const t=x.tags||{};
       const city=compact([t['addr:city'],t['addr:suburb'],t['addr:district']].find(v=>typeof v==='string'&&v.trim())||(requestedZone==='caba'?'CABA':'AMBA'),80);
-      const website=https(t.website||t['contact:website']||'');
+      const website=https(t.website)||https(t['contact:website']);
       return {name:compact(t.name,100),sector:sector.name,city,website,email:compact(t.email||t['contact:email']||'',120),phone:compact(t.phone||t['contact:phone']||'',80),osmId:x.type+'/'+x.id,sourceUrl:'https://www.openstreetmap.org/'+x.type+'/'+x.id};
     });
     return res.status(200).json({companies:list,source:'OpenStreetMap · Overpass API',providerUrl:usedEndpoint,at:new Date().toISOString(),license:'ODbL: https://www.openstreetmap.org/copyright',warning:'OSM es una fuente colaborativa; confirmar existencia, web y contacto antes de usar comercialmente.'});
