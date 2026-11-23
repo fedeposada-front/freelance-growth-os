@@ -174,6 +174,7 @@ test('discovery exposes a safe deployment revision header for remote QA',async()
     assert.equal(res.code,200);
     assert.match(res.headers['X-App-Revision'],/^(unknown|[a-f0-9]{40})$/i);
     assert.equal(res.headers['Cache-Control'],'no-store');
+    assert.equal(res.headers['X-Content-Type-Options'],'nosniff');
   });
 });
 
