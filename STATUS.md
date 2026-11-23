@@ -294,3 +294,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commit `5f693720b478540f8e8a3ae83bd2a89832ade8b8`: ajustada la regresión para distinguir localidad ausente de `addr:city` legítimo.
 - **CI y despliegue de esta revisión pendientes**. No se declara PASS; el entorno local no resuelve github.com para clonar y ejecutar la suite. Descubrimiento Overpass en vivo, autenticación y persistencia privada multidispositivo siguen pendientes.
 - Sin bloqueo que exija intervención humana, sin gastos ni correos.
+
+
+## 23/11/2026 · 07:00 ART — nombres OSM vacíos tras sanitización
+- Inspeccionados `STATUS.md`, `api/discover.js`, `tests/discover.test.js`, `package.json` y rama personal `mvp/freelance-growth-os`.
+- Defecto comprobado por inspección: un `tags.name` compuesto sólo por caracteres de control pasaba el filtro `trim()` y se convertía luego en cadena vacía al normalizar, generando un registro sin nombre. Commit `cfb63cbf9de409ba1d47274db14c5d0a2da3f50a` valida el nombre después de `compact` antes de incluir el registro.
+- Commit `31a7363834de2f08cfda73c4e4cf52b943cfa4e6`: regresión que exige excluir nombres con controles y conservar nombres legítimos.
+- Verificación inmediata: estado Vercel `pending` para commit de test y GitHub no devolvió workflows asociados aún. **NO PASS**; no se ejecutó la suite local ni E2E de este cambio. Overpass live, autenticación/persistencia privada y E2E remoto integral siguen pendientes.
+- No hay intervención humana imprescindible identificada. Sin correos ni gastos; no se tocaron ramas o servicios ajenos.
