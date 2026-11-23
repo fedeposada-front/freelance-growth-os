@@ -135,6 +135,184 @@
 .pdf-export-stage .proposal-page.pdf-capture .signature-art{height:68px!important}
 .pdf-export-stage .proposal-page.pdf-capture [contenteditable]{outline:none!important}
 .pdf-export-stage .proposal-page.pdf-capture [data-proposal-editable="true"]:empty::before{content:""!important}
+
+/* V0.6 — Editorial proposal system (7 deliberate pages, A4 landscape) */
+.proposal-page.v2-slide{
+ --page-pink:#ff33cc;--page-gold:#fdc300;--dark:#111111;
+ min-height:640px;
+ padding:43px 43px 56px;
+ display:flex;flex-direction:column;gap:0;
+}
+.proposal-page.v2-slide .slide-mast{position:relative;z-index:3;flex:0 0 auto}
+.proposal-page.v2-slide .slide-mast h3{
+ font-family:'Bebas Neue',Impact,'Arial Narrow',sans-serif;
+ font-size:clamp(42px,5.3vw,59px);line-height:1.035;letter-spacing:.008em;
+ margin:14px 0 12px;max-width:95%;
+}
+.proposal-page.v2-slide .slide-mast .eyebrow{
+ color:#ae126b;font-size:11px;letter-spacing:.14em;font-weight:800;
+}
+.proposal-page.v2-slide.dark .slide-mast .eyebrow{color:var(--page-gold)}
+.proposal-page.v2-slide .slide-mast .line{height:5px;width:55px;margin:13px 0 22px}
+.proposal-page.v2-slide .slide-body{position:relative;z-index:3;flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.proposal-page.v2-slide p,.proposal-page.v2-slide li{font-size:15px;line-height:1.55;margin:0 0 11px}
+.proposal-page.v2-slide p strong,.proposal-page.v2-slide li strong{font-weight:800}
+.proposal-page.v2-slide h4{font-size:18px;font-weight:800;line-height:1.3;letter-spacing:-.02em;margin:5px 0 11px}
+.proposal-page.v2-slide footer{
+ padding-top:10px;font-size:10px;letter-spacing:.045em;
+ left:43px;right:43px;bottom:23px;z-index:5;
+}
+.proposal-page.v2-slide .micro-note{font-size:11px!important;line-height:1.5!important;color:#746d74;margin-top:9px!important}
+.proposal-page.v2-slide.dark .micro-note{color:#c9bbc4}
+.proposal-page.v2-slide .section-label{display:block;font-size:11px;letter-spacing:.11em;font-weight:800;color:#9c1664;margin-bottom:10px}
+.proposal-page.v2-slide.dark .section-label{color:var(--page-gold)}
+.proposal-page.v2-slide .slide-lead{font-size:24px!important;font-weight:800;line-height:1.17!important;margin-bottom:12px!important;letter-spacing:-.025em}
+.proposal-page.v2-slide .slide-paragraph{font-size:15px!important;line-height:1.6!important}
+.proposal-page.v2-slide .source-foot{font-size:10px!important;overflow-wrap:anywhere;color:#847b80;margin-top:12px!important}
+.proposal-page.v2-slide .editorial-columns{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch;flex:1}
+.proposal-page.v2-slide .editorial-left{padding:9px 6px 6px 0}
+.proposal-page.v2-slide .editorial-right{display:flex;flex-direction:column;gap:12px}
+.proposal-page.v2-slide .accent-panel{background:#111;color:#fff;border-radius:5px;padding:23px 23px 19px;flex:1;min-height:235px}
+.proposal-page.v2-slide .accent-panel .section-label{color:#fdc300}
+.proposal-page.v2-slide .accent-panel p{color:#f7eff3}
+.proposal-page.v2-slide .panel-lead{font-size:23px!important;font-weight:800;line-height:1.25!important;color:#fff!important;letter-spacing:-.01em}
+.proposal-page.v2-slide .program-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;align-content:stretch}
+.proposal-page.v2-slide .program-card{background:#f9f5f7;border:1px solid #e8dce3;border-radius:9px;padding:18px 20px;min-height:145px;position:relative}
+.proposal-page.v2-slide .program-number{display:block;font-family:'Bebas Neue',sans-serif;font-size:25px;color:#ae136f;line-height:1}
+.proposal-page.v2-slide .program-card h4{font-size:18px;line-height:1.25;margin:8px 0}
+.proposal-page.v2-slide .program-card p{font-size:13.5px;line-height:1.5;margin:0}
+.proposal-page.v2-slide .spec-strip{display:grid;grid-template-columns:repeat(3,1fr);margin:5px 0 29px;gap:10px}
+.proposal-page.v2-slide .spec-strip>div{border-top:3px solid #fdc300;background:#242026;padding:15px 13px;min-height:85px}
+.proposal-page.v2-slide .spec-strip span{display:block;color:#d6becb;font-size:10px;font-weight:800;letter-spacing:.13em;margin-bottom:12px}
+.proposal-page.v2-slide .spec-strip strong{display:block;color:#fff;font-size:19px;font-weight:800;line-height:1.16}
+.proposal-page.v2-slide .method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1;align-items:stretch}
+.proposal-page.v2-slide .method-grid>div{border-left:1px solid #54444e;padding:10px 17px 11px 10px}
+.proposal-page.v2-slide .method-grid>div:first-child{border-left:none}
+.proposal-page.v2-slide .method-index{font-family:'Bebas Neue',sans-serif;color:#ff33cc;font-size:35px;line-height:1}
+.proposal-page.v2-slide .method-grid h4{color:white;font-size:23px;margin:10px 0}
+.proposal-page.v2-slide .method-grid p{font-size:13.5px;line-height:1.55;color:#e1d6dc}
+.proposal-page.v2-slide .outcomes-grid{display:grid;grid-template-columns:1fr .9fr;gap:28px;flex:1}
+.proposal-page.v2-slide .outcomes-grid ul{padding-left:19px;margin:13px 0}
+.proposal-page.v2-slide .outcomes-grid li{font-size:16px;line-height:1.52;margin-bottom:18px}
+.proposal-page.v2-slide .outcomes-grid li::marker{color:#c01378}
+.proposal-page.v2-slide .evaluation-card{background:#f8f2f6;border-radius:9px;padding:23px 22px 16px;align-self:stretch}
+.proposal-page.v2-slide .evaluation-item{border-top:1px solid #dfcbd5;padding:18px 0 12px}
+.proposal-page.v2-slide .evaluation-item strong{font-size:17px}
+.proposal-page.v2-slide .evaluation-item p{font-size:14px;line-height:1.55;margin:7px 0}
+.proposal-page.v2-slide .investment-grid{display:grid;grid-template-columns:1.04fr .96fr;gap:22px;min-height:250px;flex:1}
+.proposal-page.v2-slide .investment-card{background:#111;color:white;padding:29px 27px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.proposal-page.v2-slide .investment-card .section-label{color:#fdc300}
+.proposal-page.v2-slide .investment-value{font-size:26px!important;line-height:1.2!important;font-weight:800;overflow-wrap:anywhere;margin:10px 0 18px!important}
+.proposal-page.v2-slide .investment-card p:not(.investment-value){font-size:12.5px;color:#ebdfe6}
+.proposal-page.v2-slide .inclusions{padding:10px 2px}
+.proposal-page.v2-slide .inclusions ul{padding-left:17px;margin:10px 0}
+.proposal-page.v2-slide .inclusions li{font-size:14px;line-height:1.55;margin-bottom:7px}
+.proposal-page.v2-slide .inclusions li::marker{color:#c0197a}
+.proposal-page.v2-slide .next-step-band{display:grid;grid-template-columns:125px 1fr;gap:16px;align-items:center;border-top:2px solid #f4c321;padding:16px 0 8px;margin-top:17px}
+.proposal-page.v2-slide .next-step-band .section-label{margin:0}
+.proposal-page.v2-slide .next-step-band p{font-size:15px;font-weight:700;margin:0;line-height:1.45}
+.proposal-page.v2-slide.cover-page,.proposal-page.v2-slide.closing-page{display:flex;align-items:center;justify-content:flex-start}
+.proposal-page.v2-slide.cover-page .cover-copy,.proposal-page.v2-slide.closing-page .closing-copy{width:53%;max-width:53%;min-width:0;z-index:3}
+.proposal-page.v2-slide.cover-page .slide-mast h3{font-size:clamp(39px,4.5vw,60px);margin:18px 0 11px}
+.proposal-page.v2-slide .cover-client{font-size:24px!important;font-weight:800;line-height:1.25!important;margin-top:20px!important}
+.proposal-page.v2-slide .cover-description{font-size:15px;line-height:1.65;max-width:450px}
+.proposal-page.v2-slide .cover-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:23px}
+.proposal-page.v2-slide .cover-meta span{font-size:11px;font-weight:700;border:1px solid #5b4c57;border-radius:20px;padding:7px 11px;white-space:nowrap}
+.proposal-page.v2-slide .closing-intro{font-size:21px!important;font-weight:800;line-height:1.3!important;margin-bottom:16px!important}
+.proposal-page.v2-slide .closing-cta{font-size:16px!important;margin-top:17px!important}
+.proposal-page.v2-slide .closing-contact{font-size:12px!important;line-height:1.45!important;overflow-wrap:anywhere}
+.proposal-page.v2-slide.closing-page .closing-copy .slide-mast h3{font-size:clamp(37px,4.3vw,57px)}
+/* Images: only set a width. Never force both width and height; preserve intrinsic aspect. */
+.proposal-page.v2-slide.cover-page img.cover-photo{
+ position:absolute!important;right:5%!important;bottom:8%!important;
+ width:36%!important;height:auto!important;max-height:none!important;
+ object-fit:initial!important;aspect-ratio:auto!important;
+ pointer-events:none;z-index:2!important;
+}
+.proposal-page.v2-slide.closing-page img.closing-photo{
+ position:absolute!important;right:6%!important;top:19%!important;
+ width:35%!important;height:auto!important;max-height:none!important;
+ object-fit:initial!important;aspect-ratio:auto!important;
+ pointer-events:none;z-index:2!important;
+}
+.proposal-page.v2-slide .closing-signature{width:235px;max-width:80%;margin:13px 0 9px}
+.proposal-page.v2-slide img.signature-art{
+ display:block;width:100%!important;height:auto!important;max-height:none!important;
+ object-fit:initial!important;aspect-ratio:auto!important;
+}
+.proposal-page.v2-slide .signature-label{font-size:10px;margin-top:1px}
+@media(max-width:650px){
+ .proposal-page.v2-slide{min-height:560px;padding:23px 22px 51px}
+ .proposal-page.v2-slide footer{left:22px;right:22px;bottom:19px}
+ .proposal-page.v2-slide .slide-mast h3{font-size:34px}
+ .proposal-page.v2-slide p,.proposal-page.v2-slide li{font-size:12px;line-height:1.45}
+ .proposal-page.v2-slide .editorial-columns{gap:10px}
+ .proposal-page.v2-slide .accent-panel{padding:14px;min-height:160px}
+ .proposal-page.v2-slide .panel-lead{font-size:14px!important}
+ .proposal-page.v2-slide .program-grid{gap:7px}
+ .proposal-page.v2-slide .program-card{padding:10px;min-height:122px}
+ .proposal-page.v2-slide .program-card h4{font-size:13px}
+ .proposal-page.v2-slide .program-card p{font-size:11px}
+ .proposal-page.v2-slide .method-grid p{font-size:11px}
+ .proposal-page.v2-slide .outcomes-grid{gap:8px}
+ .proposal-page.v2-slide .outcomes-grid li{font-size:12px;margin-bottom:6px}
+ .proposal-page.v2-slide .evaluation-card{padding:12px}
+ .proposal-page.v2-slide .investment-grid{gap:7px}
+ .proposal-page.v2-slide .investment-card{padding:10px}
+ .proposal-page.v2-slide .inclusions li{font-size:11px}
+ .proposal-page.v2-slide .spec-strip strong{font-size:12px}
+ .proposal-page.v2-slide .spec-strip>div{padding:8px;min-height:60px}
+ .proposal-page.v2-slide .cover-client{font-size:16px!important}
+ .proposal-page.v2-slide .cover-description{font-size:12px!important}
+ .proposal-page.v2-slide .cover-meta span{font-size:8px}
+}
+@media print{
+ .proposal-page.v2-slide{width:297mm!important;height:210mm!important;min-height:210mm!important;padding:17mm 16mm 15mm!important}
+ .proposal-page.v2-slide .slide-mast h3{font-size:58px!important}
+ .proposal-page.v2-slide.cover-page img.cover-photo{width:36%!important;height:auto!important;max-height:none!important;bottom:8%!important}
+ .proposal-page.v2-slide.closing-page img.closing-photo{width:35%!important;height:auto!important;max-height:none!important;top:19%!important}
+}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide{
+ display:flex!important;flex-direction:column!important;gap:0!important;
+ width:1123px!important;height:794px!important;min-height:794px!important;
+ padding:60px 60px 57px!important;
+}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .slide-mast h3{font-size:65px!important}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .slide-body{flex:1!important}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide footer{bottom:32px!important;left:60px!important;right:60px!important}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide p{font-size:17px}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide li{font-size:17px}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .micro-note{font-size:12px!important}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .program-card h4{font-size:23px}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .program-card p{font-size:17px}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .program-card{padding:21px 25px}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .method-grid p{font-size:16px}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .outcomes-grid li{font-size:19px}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .evaluation-item p{font-size:16px}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .inclusions li{font-size:17px}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .spec-strip strong{font-size:22px}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide .investment-value{font-size:34px!important}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide.cover-page,
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide.closing-page{
+ display:flex!important;flex-direction:row!important;align-items:center!important;
+}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide.cover-page .cover-copy,
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide.closing-page .closing-copy{
+ width:53%!important;max-width:53%!important;
+}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide.cover-page .slide-mast h3,
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide.closing-page .slide-mast h3{font-size:66px!important}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide.cover-page img.cover-photo{
+ width:370px!important;height:auto!important;max-height:none!important;
+ right:5%!important;bottom:7%!important;object-fit:initial!important;
+}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide.closing-page img.closing-photo{
+ width:365px!important;height:auto!important;max-height:none!important;
+ right:5%!important;top:21%!important;object-fit:initial!important;
+}
+.pdf-export-stage .proposal-page.pdf-capture.v2-slide img.signature-art{
+ width:235px!important;height:auto!important;max-height:none!important;object-fit:initial!important;
+}
 </style></head><body>
 <header><div class="brand">CO<span class="dot">.</span>MUNICARSE<small>ALICIA CAMAÑO</small></div><span class="headtag">Sistema de prospección · Edición Yara</span></header>
 <main><div class="intro"><div class="eyebrow" style="color:#b71772;letter-spacing:.17em;font-size:11px;font-weight:800">RADAR COMERCIAL · v0.6.0</div><h1>DE EMPRESA A <span>PROPUESTA.</span></h1><p class="sub">Descubrí oportunidades, investigá el contexto de cada empresa y generá una propuesta corporativa con la identidad de Alicia. Todo en un mismo lugar.</p></div>
