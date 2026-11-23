@@ -175,3 +175,16 @@ test('discovery exposes a safe deployment revision header for remote QA',async()
     assert.equal(res.headers['Cache-Control'],'no-store');
   });
 });
+
+test('discovery prefers valid HTTPS contact website when primary website is invalid',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[
+    {type:'node',id:911,tags:{name:'Funeraria ejemplo',website:'http://inseguro.example','contact:website':'https://seguro.example/contacto'}},
+    {type:'node',id:912,tags:{name:'Funeraria ejemplo 2',website:'https://principal.example','contact:website':'https://secundario.example'}}
+  ]})}),async()=>{
+    const res=response();
+    await handler({method:'GET',query:{zone:'caba',sector:'funeral'}},res);
+    assert.equal(res.code,200);
+    assert.equal(res.body.companies[0].website,'https://seguro.example/contacto');
+    assert.equal(res.body.companies[1].website,'https://principal.example/');
+  });
+});
