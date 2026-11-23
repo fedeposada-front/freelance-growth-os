@@ -9,7 +9,7 @@ test('reports missing semantic page features as heuristics, not definitive UX ve
  const a=findingsFromHtml('<html><head></head><body><p>Hola</p></body></html>');
  assert.ok(a.some(x=>x.name.includes('Viewport')));
  assert.ok(a.some(x=>x.name.includes('Título')));
- const b=findingsFromHtml('<html><head><title>Empresa</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Servicios"></head><body><h1>Hola</h1><a href="tel:+5411111">Llamar</a><a href="mailto:contacto@example.com">Escribir</a></body></html>');
+ const b=findingsFromHtml('<html lang="es"><head><title>Empresa</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Servicios"></head><body><h1>Hola</h1><a href="tel:+5411111">Llamar</a><a href="mailto:contacto@example.com">Escribir</a></body></html>');
  assert.equal(b.length,0);
 });
 
@@ -39,13 +39,13 @@ test('bounded reader handles an empty stream without fabricated findings',async(
 
 
 test('meta checks accept attributes in any order and avoid false findings',()=>{
-  const html='<html><head><title>Empresa real</title><meta content="width=device-width" name="viewport"><meta content="Servicios" name="description"></head><body><h1>Inicio</h1><a href="tel:+5411000">Teléfono</a><a href="mailto:info@example.com">Email</a></body></html>';
+  const html='<html lang="es"><head><title>Empresa real</title><meta content="width=device-width" name="viewport"><meta content="Servicios" name="description"></head><body><h1>Inicio</h1><a href="tel:+5411000">Teléfono</a><a href="mailto:info@example.com">Email</a></body></html>';
   assert.deepEqual(findingsFromHtml(html),[]);
 });
 
 test('meta detection supports unquoted attributes and rejects misleading text',()=>{
  const base='<title>Empresa real</title><h1>Inicio</h1><a href="tel:+5411000">Teléfono</a><a href="mailto:info@example.com">Email</a>';
- assert.deepEqual(findingsFromHtml(base+'<meta content=width=device-width name=viewport><meta name=description content=Servicios>'),[]);
+ assert.deepEqual(findingsFromHtml('<html lang="es">'+base+'<meta content=width=device-width name=viewport><meta name=description content=Servicios></html>'),[]);
  const misleading=findingsFromHtml(base+'<meta data-name="viewport"><meta content="name=description">');
  assert.ok(misleading.some(x=>x.name.includes('Viewport')));
  assert.ok(misleading.some(x=>x.name.includes('descripción')));
@@ -75,7 +75,7 @@ test('heuristic audit ignores fake page markup embedded in scripts, styles and c
   const comments='<!-- <title>Fake</title><h1>Fake</h1><meta name="viewport"><meta name="description"><a href="tel:123"><a href="mailto:a@b.com"> -->';
   const styles='<style>/* <title>Fake</title><h1>Fake</h1><meta name="viewport"><meta name="description"><a href="tel:123"><a href="mailto:a@b.com"> */</style>';
   const names=findingsFromHtml('<html><head>'+fake+comments+styles+'</head></html>').map(x=>x.name);
-  assert.equal(names.length,6);
+  assert.equal(names.length,7);
   assert.ok(names.some(x=>x.includes('Viewport')));
   assert.ok(names.some(x=>x.includes('Título')));
 });
@@ -106,4 +106,12 @@ test('compressed audit responses cannot be mistaken for uncompressed HTML',async
 test('IPv6 audit guard rejects tunnels, non-global and documentation ranges',()=>{
  for(const ip of ['2002:c0a8:0101::1','2001:0:abcd::1','2001::1','fe90::1','febf::1','fec0::1','64:ff9b::c0a8:101','3fff::1','::ffff:192.168.1.1'])assert.equal(publicAddress(ip),false,ip);
  for(const ip of ['2606:4700:4700::1111','2a00:1450:4001::1'])assert.equal(publicAddress(ip),true,ip);
+});
+
+test('document language is a heuristic checked only on the html root tag',()=>{
+ const base='<head><title>Empresa real</title><meta name="viewport" content="width=device-width"><meta name="description" content="Servicios"></head><body><h1>Inicio</h1><a href="tel:+5411000">Llamar</a><a href="mailto:info@example.com">Correo</a></body>';
+ assert.equal(findingsFromHtml('<html lang="es-AR">'+base+'</html>').length,0);
+ assert.ok(findingsFromHtml('<html><div lang="es">'+base+'</div></html>').some(x=>x.name.includes('Idioma')));
+ assert.ok(findingsFromHtml('<html data-lang="es">'+base+'</html>').some(x=>x.name.includes('Idioma')));
+ assert.ok(findingsFromHtml('<html lang="">'+base+'</html>').some(x=>x.name.includes('Idioma')));
 });
