@@ -306,7 +306,11 @@ async function exportDirectPdf(){
      const canvas=await window.html2canvas(capture.slide,{
        backgroundColor:pages[i].classList.contains('dark')?'#121212':'#ffffff',
        useCORS:true,allowTaint:false,logging:false,scale,width:1123,height:794,
-       windowWidth:1200,windowHeight:850,scrollX:0,scrollY:0
+       windowWidth:1200,windowHeight:850,scrollX:0,scrollY:0,
+       onclone:clonedDocument=>{
+         const exportRoot=clonedDocument.querySelector('.pdf-export-stage');
+         if(exportRoot){exportRoot.style.left='0px';exportRoot.style.top='0px';exportRoot.style.zIndex='1';}
+       }
      });
      if(canvas.width<1000||canvas.height<700)throw Error('No se pudo dibujar la página '+(i+1));
      const jpg=canvas.toDataURL('image/jpeg',0.92);
