@@ -548,8 +548,12 @@ async function exportDirectPdf(){
            if(page){
              const foot=page.querySelector('footer');
              const content=page.querySelector('.slide-body');
-             if(content&&foot&&content.getBoundingClientRect().bottom>foot.getBoundingClientRect().top-8)
-               layoutIssue='El contenido llega al pie de la página';
+             if(content&&foot){
+               const footerTop=foot.getBoundingClientRect().top;
+               const textNodes=[...content.querySelectorAll('h3,h4,p,li,strong,.signature-art,.closing-signature')];
+               if(textNodes.some(el=>el.getBoundingClientRect().height>0&&el.getBoundingClientRect().bottom>footerTop-12))
+                 layoutIssue='El contenido llega al pie de la página';
+             }
              for(const img of page.querySelectorAll('img.fixed-brand-image')){
                if(!img.naturalWidth||!img.naturalHeight)continue;
                const b=img.getBoundingClientRect(),actual=b.width/b.height,natural=img.naturalWidth/img.naturalHeight;
