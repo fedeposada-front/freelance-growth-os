@@ -11,7 +11,12 @@ export function publicAddress(address){
     if(n[0]===0||n[0]===10||n[0]===127||n[0]>=224||n[0]===169&&n[1]===254||n[0]===192&&n[1]===168||n[0]===172&&n[1]>=16&&n[1]<=31||n[0]===100&&n[1]>=64&&n[1]<=127||n[0]===198&&(n[1]===18||n[1]===19)||n[0]===192&&(n[1]===0||n[1]===88&&n[2]===99)||n[0]===192&&n[1]===0&&n[2]===2||n[0]===198&&n[1]===51&&n[2]===100||n[0]===203&&n[1]===0&&n[2]===113)return false;
     return true;
   }
-  return !(a==='::'||a==='::1'||a.startsWith('fe80:')||a.startsWith('fc')||a.startsWith('fd')||a.startsWith('ff')||a.startsWith('::ffff:')||a.startsWith('2001:db8:'));
+  // Only native global-unicast IPv6 is eligible. Reject transition/tunnel ranges
+  // that can encode non-public IPv4 destinations (6to4/Teredo), as well as
+  // documentation, site-local, unique-local and link-local addresses.
+  if(!/^[23][0-9a-f]{3}:/.test(a))return false;
+  if(a.startsWith('2002:')||a.startsWith('2001:0:')||a.startsWith('2001:db8:')||a.startsWith('3fff:'))return false;
+  return true;
 }
 export function validTarget(value){
   if(typeof value!=='string'||!value.trim())return null;
