@@ -217,3 +217,10 @@ test('discovery falls back to legitimate public contact tags after malformed pri
     assert.equal(res.body.companies[1].phone,'1234');
   });
 });
+
+test('control-only primary contacts fall back to public alternatives',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[{type:'node',id:971,tags:{name:'Funeraria A',email:String.fromCharCode(10,13),'contact:email':'publico@example.com',phone:String.fromCharCode(9),'contact:phone':'555-1234'}}]})}),async()=>{
+    const res=response();await handler({method:'GET',query:{}},res);
+    assert.equal(res.code,200);assert.equal(res.body.companies[0].email,'publico@example.com');assert.equal(res.body.companies[0].phone,'555-1234');
+  });
+});
