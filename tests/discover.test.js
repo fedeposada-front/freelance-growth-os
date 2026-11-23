@@ -236,3 +236,15 @@ test('control-only city falls back to sanitized suburb without inventing localit
     assert.deepEqual(res.body.companies.map(x=>x.city),['Morón','','La Plata']);
   });
 });
+
+test('discovery rejects malformed emails and uses valid alternate public email',async()=>{
+  await withFetch(async()=>({ok:true,json:async()=>({elements:[
+    {type:'node',id:991,tags:{name:'Empresa A',email:'not-an-email','contact:email':'publico@example.com'}},
+    {type:'node',id:992,tags:{name:'Empresa B',email:'bad @example.com','contact:email':'also-invalid'}},
+    {type:'node',id:993,tags:{name:'Empresa C',email:'principal@example.com','contact:email':'alterno@example.com'}}
+  ]})}),async()=>{
+    const res=response();await handler({method:'GET',query:{zone:'amba',sector:'funeral'}},res);
+    assert.equal(res.code,200);
+    assert.deepEqual(res.body.companies.map(x=>x.email),['publico@example.com','','principal@example.com']);
+  });
+});
