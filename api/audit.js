@@ -44,6 +44,9 @@ export function findingsFromHtml(html){
   const visibleMarkup=html.replace(/<!--[\s\S]*?-->/g,'').replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi,'').replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi,'');
   html=visibleMarkup;
   const checks=[];
+  // Heuristic only: the initial HTML should declare a document language for assistive technologies.
+  const htmlTag=html.match(/<html\b[^>]*>/i)?.[0]||'';
+  if(!/\blang\s*=\s*(?:"[a-z]{2,3}(?:-[a-z0-9]+)*"|'[a-z]{2,3}(?:-[a-z0-9]+)*'|[a-z]{2,3}(?:-[a-z0-9]+)*)\s*(?=[\s>])/i.test(htmlTag))checks.push({name:'Idioma del documento no declarado',severity:'medium',evidence:'No se identificó un atributo lang válido en la etiqueta HTML inicial. Es una señal heurística de accesibilidad, no una auditoría WCAG completa.'});
   if(!hasMetaName(html,'viewport'))checks.push({name:'Viewport móvil no detectado',severity:'high',evidence:'No se encontró meta viewport en el HTML descargado. Revisar experiencia responsive manualmente.'});
   if(!/<title\b[^>]*>[^<]{3,}<\/title>/i.test(html))checks.push({name:'Título de página no identificado',severity:'high',evidence:'No se encontró un elemento <title> con contenido legible.'});
   if(!hasMetaName(html,'description'))checks.push({name:'Meta descripción no detectada',severity:'medium',evidence:'La respuesta HTML no incluye una etiqueta meta description reconocible. No implica automáticamente mala indexación.'});
