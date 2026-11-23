@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
+import {mkdir,writeFile} from 'node:fs/promises';
 import {PDFDocument} from 'pdf-lib';
 import {setTimeout as sleep} from 'node:timers/promises';
 
@@ -52,7 +53,11 @@ test('Render creates real vector PDF A4 landscape with 7 editable-data slides fo
   const pdfbytes=Buffer.from(await get.arrayBuffer());
   assert.equal(pdfbytes.subarray(0,5).toString(),'%PDF-');
   assert.ok(pdfbytes.length>15000);
-  const parsed=await PDFDocument.load(pdfbytes);
+  if(company==='Nidera Semillas'){
+   await mkdir('qa-artifacts',{recursive:true});
+   await writeFile('qa-artifacts/Nidera-CoMunicarse-servidor.pdf',pdfbytes);
+  }
+    const parsed=await PDFDocument.load(pdfbytes);
   assert.equal(parsed.getPageCount(),7);
   for(const pg of parsed.getPages()){
    assert.ok(Math.abs(pg.getWidth()-841.89)<1,'A4 width');
