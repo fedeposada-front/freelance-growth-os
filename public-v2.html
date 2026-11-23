@@ -391,7 +391,8 @@ function embedFixedBrandAssets(){
   block.append(signature);
   const label=document.createElement('span');label.className='signature-label';label.textContent='Alicia Camaño · Directora y fundadora';block.append(label);
   const contact=[...column.querySelectorAll('p')].find(p=>p.textContent.includes('somoscomunicarse@'));
-  if(contact)column.insertBefore(block,contact);else column.append(block);
+  if(contact?.parentNode)contact.parentNode.insertBefore(block,contact);
+  else (column.querySelector('.slide-body')||column).append(block);
  }
 }
 
