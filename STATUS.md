@@ -302,3 +302,8 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commit `31a7363834de2f08cfda73c4e4cf52b943cfa4e6`: regresión que exige excluir nombres con controles y conservar nombres legítimos.
 - Verificación inmediata: estado Vercel `pending` para commit de test y GitHub no devolvió workflows asociados aún. **NO PASS**; no se ejecutó la suite local ni E2E de este cambio. Overpass live, autenticación/persistencia privada y E2E remoto integral siguen pendientes.
 - No hay intervención humana imprescindible identificada. Sin correos ni gastos; no se tocaron ramas o servicios ajenos.
+
+## 23/11/2026 · 09:03 ART — fallback de contactos OSM
+- Inspección de la rama personal identificó que `email` o `phone` con tipo inválido (objeto/array) ocultaban `contact:email` y `contact:phone` legítimos porque se seleccionaban antes de sanitizar. No se alteraron fuentes ni se inventaron contactos.
+- Commit `37b5ecb`: sanitiza primero cada valor, luego elige el campo principal válido o el fallback público. Commit `1e93213`: regresión para fallback y prioridad del campo principal.
+- CI y despliegue de estos commits NO verificados en esta corrida; no declarar PASS. Overpass live, autenticación, persistencia privada y E2E HTTPS siguen pendientes. No hubo gastos, correos ni intervención humana indispensable.
