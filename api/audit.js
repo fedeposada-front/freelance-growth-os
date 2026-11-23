@@ -90,6 +90,18 @@ export function fetchPinnedHtml(url, addresses, signal){
     request.end();
   });
 }
+// Bound DNS latency separately: a stalled resolver must not hold the serverless request indefinitely.
+export async function resolvePublicAddresses(hostname, lookup=dns.lookup, timeoutMs=3000){
+  let timer;
+  try{
+    const addresses=await Promise.race([
+      Promise.resolve().then(()=>lookup(hostname,{all:true,verbatim:true})),
+      new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('DNS_TIMEOUT')),timeoutMs);})
+    ]);
+    if(!Array.isArray(addresses)||!addresses.length||addresses.some(a=>!a||!publicAddress(a.address)))return null;
+    return addresses;
+  }finally{clearTimeout(timer);}
+}
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   res.setHeader('X-Content-Type-Options','nosniff');
@@ -99,8 +111,8 @@ export default async function handler(req,res){
   const checkedAt=new Date().toISOString();
   const startedAt=performance.now();
   try{
-    const addresses=await dns.lookup(u.hostname,{all:true,verbatim:true});
-    if(!addresses.length||addresses.some(a=>!publicAddress(a.address)))return res.status(400).json({error:'El destino no cumple la política de seguridad pública'});
+    const addresses=await resolvePublicAddresses(u.hostname);
+    if(!addresses)return res.status(400).json({error:'El destino no cumple la política de seguridad pública'});
     const ac=new AbortController(), timer=setTimeout(()=>ac.abort(),7000);
     try{
       const response=await fetchPinnedHtml(u,addresses,ac.signal);
