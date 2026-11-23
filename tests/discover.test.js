@@ -130,8 +130,9 @@ test('discovery ignores non-string OSM contacts and credentialed HTTPS URLs',asy
     assert.equal(res.body.companies[0].website,'');
     assert.equal(res.body.companies[0].email,'');
     assert.equal(res.body.companies[0].phone,'');
-    assert.equal(res.body.companies[0].city,'CABA');
+    assert.equal(res.body.companies[0].city,'');
     assert.equal(res.body.companies[1].website,'');
+    // Only address tags establish a locality; search bounding boxes are not addresses.
     assert.equal(res.body.companies[1].email,'contacto@example.com');
     assert.equal(res.body.companies[1].city,'Morón');
   });
