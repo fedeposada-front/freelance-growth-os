@@ -118,8 +118,12 @@ export default async function handler(req,res){
       const response=await fetchPinnedHtml(u,addresses,ac.signal);
       if(response.status>=300&&response.status<400)return res.status(200).json({status:'no_consultado',message:'La web redirige. Por seguridad no seguimos redirecciones: ingresá la URL final verificada.',checkedAt,url:u.href});
       if(!response.ok)return res.status(200).json({status:'no_consultado',message:'El sitio respondió HTTP '+response.status+'; no se interpretan problemas UX.',checkedAt,url:u.href});
+      // The pinned transport returns raw bytes: compressed HTML must not be parsed as text.
+      // Report an unverified audit rather than manufacturing missing-page findings.
+      const encoding=(response.headers.get('content-encoding')||'').trim().toLowerCase();
+      if(encoding && encoding!=='identity')return res.status(200).json({status:'no_consultado',message:'El servidor respondió HTML comprimido; esta versión del auditor no lo descomprime y no atribuye defectos UX.',checkedAt,url:u.href});
       const type=response.headers.get('content-type')||'';
-      if(!type.includes('text/html'))return res.status(200).json({status:'no_consultado',message:'La respuesta no es HTML accesible.',checkedAt,url:u.href});
+      if(!type.toLowerCase().includes('text/html'))return res.status(200).json({status:'no_consultado',message:'La respuesta no es HTML accesible.',checkedAt,url:u.href});
       const {html,truncated}=await readLimited(response);
       if(truncated)return res.status(200).json({status:'no_consultado',message:'El HTML supera el límite de análisis (350 KB). No se atribuyen defectos a una respuesta incompleta.',checkedAt,url:u.href});
       if(!html.trim())return res.status(200).json({status:'no_consultado',message:'La respuesta HTML está vacía; no se atribuyen defectos UX.',checkedAt,url:u.href});
