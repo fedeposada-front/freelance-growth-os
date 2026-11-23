@@ -278,3 +278,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Inspeccionado `api/discover.js`: dos consultas secuenciales a Overpass de 8.5 segundos podían sumar ~17 segundos, arriesgando timeout de funciones gratuitas antes de devolver un error honesto o el fallback. Commit `742ed4943c315047da108b425464513711115ac9`: límite de 4 segundos por proveedor (~8 segundos en total, más procesamiento), manteniendo dos fuentes y error 503 sin leads ficticios.
 - **CI de `742ed49` y prueba Overpass real pendientes**: cambio inspeccionado y persistido, no declarar PASS ni afirmar disponibilidad de la fuente. Un límite menor puede descartar respuestas lentas: CSV sigue como alternativa.
 - Autenticación/persistencia privada multidispositivo y E2E HTTPS integral siguen P0. Sin bloqueo humano nuevo ni email; no hubo gastos ni envíos comerciales.
+
+## 23/11/2026 · 05:00 ART — recuperación de URL HTTPS alternativa desde OSM
+- Inspeccionados STATUS.md, package.json, api/discover.js y tests/discover.test.js en rama personal; no se tocó Co.Municarse.
+- Defecto confirmado por inspección: al mapear registros OSM, un `website` presente pero no HTTPS ocultaba un `contact:website` válido y HTTPS. Se descartaba una web pública legítima, afectando el flujo descubrimiento → auditoría.
+- Commit `0c4d21acb46cc0942bc11346f641350fd5fe8bed`: se evalúan ambos campos con la misma validación HTTPS, prefiriendo `website` válido y usando `contact:website` válido como fallback.
+- Commit `53f773eadee8e061820221b6ca94b650717c1b04`: regresión para fallback HTTPS y prioridad de la web primaria válida.
+- **NO PASS aún**: CI y despliegue de estos commits no comprobados; el contenedor no pudo resolver github.com, por lo que no se ejecutó test local remoto. Overpass live y E2E de esta revisión continúan sin verificar.
+- Autenticación y persistencia privada multidispositivo siguen siendo bloqueo de aceptación del MVP, pero no hay acción humana imprescindible identificada; continuar implementando. No hubo gastos ni correo de bloqueo.
