@@ -311,3 +311,8 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 ## 23/11/2026 09:54 ART
 - Commits e5412947 y 10c3702: corregido fallback de contactos OSM cuando el primario contiene solo controles; prueba de regresión agregada.
 - CI, despliegue y E2E de esta revisión pendientes. Persistencia privada y auth pendientes. No PASS, sin correos ni gastos.
+
+## 23/11/2026 · 10:57 ART — localidad OSM sanitizada antes de fallback
+- Verificada CI del commit anterior `cd3b807`: MVP CI [45178773424](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45178773424) y Public URL smoke [45178770464](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45178770464), ambos `completed/success`. Vercel muestra despliegue READY para `cd3b807` (`dpl_F2HxDYuMMCbaBTKTYodjcGgC2W9L`), lo cual NO acredita E2E integral ni Overpass live.
+- Defecto detectado por inspección: `addr:city` compuesto exclusivamente por controles podía bloquear un `addr:suburb` legítimo, al elegir el campo antes de normalizarlo. Cambio `5b91dda30e6d4ce46aaa3a686b2b573a376d0acd`: normalizar cada localidad antes de seleccionar la primera no vacía. Regresión `27ecc944257754cb7f50e04bbaae1bf443f5d27d`: fallback, localidad desconocida vacía y prioridad de ciudad válida.
+- **CI, despliegue y E2E de los dos commits nuevos todavía NO verificados**. Sigue pendiente autenticación y persistencia privada multidispositivo; descubrimiento Overpass real no acreditado. No hay bloqueo humano imprescindible identificado, sin gastos ni emails.
