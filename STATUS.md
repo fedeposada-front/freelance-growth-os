@@ -261,3 +261,9 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Implementación: commits `23e7b1d` y `053630a`; regresiones añadidas en `tests/audit.test.js` commit `3e25829`.
 - **Pruebas de esta revisión: pendiente de CI**. No atribuir PASS a estos cambios hasta verificar los workflows. Producción HTTPS no promovida ni E2E validado en esta corrida.
 - Bloqueos humanos nuevos: ninguno. Sin gastos, sin contactos comerciales, sin correos de bloqueo. Próximo: verificar CI, smoke de endpoint y avanzar autenticación/persistencia privada.
+
+## 23/11/2026 · 01:54 ART — heurística de idioma del documento
+- Verificados workflows de `bbfeb95`: Public URL smoke `45103256322` completed/success; CI previa también reportada exitosa. Estos checks no cubren la revisión nueva.
+- Implementado en `api/audit.js` aviso heurístico de accesibilidad cuando la etiqueta raíz `<html>` no declara un `lang` válido. No se presenta como fallo WCAG confirmado; no se confunden atributos `data-lang` ni `lang` de descendientes.
+- Commits `cdc8bf96` (implementación) y `386d47b5` (prueba y fixtures). La CI de estos commits aún no fue confirmada: NO declarar PASS ni promoción.
+- Autenticación y persistencia privada multidispositivo, Overpass live y E2E HTTPS siguen pendientes. Sin gastos, emails ni intervención manual requerida.
