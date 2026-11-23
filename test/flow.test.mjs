@@ -51,6 +51,13 @@ for(const [index,c] of companies.entries()){
     assert.ok(doc.querySelector('img.cover-photo'),'foto portada fija');
     assert.ok(doc.querySelector('img.closing-photo'),'foto cierre fija');
     assert.ok(doc.querySelector('img.signature-art'),'firma fija');
+    const description=$('proposal-preview').querySelector('.cover-description');
+    description.textContent='Capacitación adaptada y editada para '+c.name;
+    const payload=win.eval('buildServerPdfPayload()');
+    assert.equal(payload.slides.length,7,'el PDF recibe las siete diapositivas');
+    assert.equal(payload.slides[0].data.description,'Capacitación adaptada y editada para '+c.name,'edición de portada llega al PDF servidor');
+    assert.equal(payload.company,c.name,'empresa correcta');
+
     assert.deepEqual(errors,[],'sin errores JS');
    }finally{win.close()}
  });
