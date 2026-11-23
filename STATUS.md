@@ -307,3 +307,7 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Inspección de la rama personal identificó que `email` o `phone` con tipo inválido (objeto/array) ocultaban `contact:email` y `contact:phone` legítimos porque se seleccionaban antes de sanitizar. No se alteraron fuentes ni se inventaron contactos.
 - Commit `37b5ecb`: sanitiza primero cada valor, luego elige el campo principal válido o el fallback público. Commit `1e93213`: regresión para fallback y prioridad del campo principal.
 - CI y despliegue de estos commits NO verificados en esta corrida; no declarar PASS. Overpass live, autenticación, persistencia privada y E2E HTTPS siguen pendientes. No hubo gastos, correos ni intervención humana indispensable.
+
+## 23/11/2026 09:54 ART
+- Commits e5412947 y 10c3702: corregido fallback de contactos OSM cuando el primario contiene solo controles; prueba de regresión agregada.
+- CI, despliegue y E2E de esta revisión pendientes. Persistencia privada y auth pendientes. No PASS, sin correos ni gastos.
