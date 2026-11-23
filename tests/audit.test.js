@@ -101,3 +101,9 @@ test('compressed audit responses cannot be mistaken for uncompressed HTML',async
  for(const value of ['',undefined,'identity',' IDENTITY '])assert.equal(isReadableHtmlEncoding(value),true);
  for(const value of ['gzip','br','deflate','gzip, br'])assert.equal(isReadableHtmlEncoding(value),false);
 });
+
+
+test('IPv6 audit guard rejects tunnels, non-global and documentation ranges',()=>{
+ for(const ip of ['2002:c0a8:0101::1','2001:0:abcd::1','2001::1','fe90::1','febf::1','fec0::1','64:ff9b::c0a8:101','3fff::1','::ffff:192.168.1.1'])assert.equal(publicAddress(ip),false,ip);
+ for(const ip of ['2606:4700:4700::1111','2a00:1450:4001::1'])assert.equal(publicAddress(ip),true,ip);
+});
