@@ -40,7 +40,7 @@ function sample(company,edited=false){
  ]};
 }
 test('Render creates real vector PDF A4 landscape with 7 editable-data slides for multiple companies',async()=>{
- for(const company of ['Nidera Semillas','Summit Agro Argentina','Empresa B2B genérica']){
+ for(const company of ['Nidera Semillas','Summit Agro Argentina','BASF Soluciones para la Agricultura','Empresa B2B genérica']){
   const r=await fetch(base+'/api/pdf-render',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(sample(company,true))});
   const body=await r.json();
   assert.equal(r.status,200,JSON.stringify(body));

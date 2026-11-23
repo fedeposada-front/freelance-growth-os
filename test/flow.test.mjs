@@ -58,6 +58,23 @@ for(const [index,c] of companies.entries()){
     assert.equal(payload.slides[0].data.description,'Capacitación adaptada y editada para '+c.name,'edición de portada llega al PDF servidor');
     assert.equal(payload.company,c.name,'empresa correcta');
 
+    const originalFetch=win.fetch;
+    win.fetch=async(url,opts={})=>{
+      if(String(url)==='/api/pdf-render')return {ok:false,status:422,
+        json:async()=>({error:'No se pudo generar el PDF: Página 2 · El texto fuente es demasiado largo.'})};
+      return originalFetch(url,opts);
+    };
+    await win.eval('exportDirectPdf()');
+    assert.equal($('download-pdf').disabled,true,'el botón evita reintentos repetidos');
+    assert.equal($('pdf-export-status').hidden,false,'el aviso se muestra junto a la acción');
+    assert.equal($('pdf-toast').classList.contains('hidden'),false,'toast visible desde cualquier scroll');
+    assert.equal($('pdf-retry').classList.contains('hidden'),false,'reintento explícito disponible');
+    assert.equal(($('pdf-export-status').textContent.match(/No se pudo generar el PDF/g)||[]).length,0,'sin errores duplicados');
+    $('hours').value='5 horas';
+    $('hours').dispatchEvent(new win.Event('change',{bubbles:true}));
+    assert.equal($('download-pdf').disabled,false,'un cambio permite generar nuevamente');
+    assert.equal($('pdf-toast').classList.contains('hidden'),true,'editar despeja el aviso anterior');
+
     assert.deepEqual(errors,[],'sin errores JS');
    }finally{win.close()}
  });
