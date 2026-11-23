@@ -341,3 +341,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Seguridad incremental: `api/discover.js` incorpora `X-Content-Type-Options: nosniff` (`3133fa7`), con aserción de regresión en `tests/discover.test.js` (`c7ebbfe`). La revisión nueva NO tiene CI/HTTPS E2E verificada todavía.
 - Intento directo de acceso HTTPS desde contenedor falló por DNS (`Could not resolve host`), limitación del entorno de comprobación, no evidencia de caída del sitio.
 - Pendientes P0: autenticación y almacenamiento privado multidispositivo, prueba Overpass live, pruebas integrales en URL HTTPS. No hubo gasto, envío de correo ni bloqueo que requiera intervención humana.
+
+
+## Verificación 23/11/2026 · 16:01 ART — CI y preview de la revisión actual
+- HEAD de rama personal: `5abe4feed2cbaa8ab8cdcc24bf9f89864f479a0a`; sin cambios en otras ramas.
+- MVP CI run [45233235848](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45233235848): `completed/success` para ese SHA. Esto valida las pruebas del workflow, no la funcionalidad integral del MVP.
+- Vercel preview: despliegue `dpl_3M523Z2BhXTvxngcTkRbM9YwPixz`, estado `READY`, mismo SHA; [inspector](https://vercel.com/fedeposadas-projects/freelance-growth-os-mvp/3M523Z2BhXTvxngcTkRbM9YwPixz). READY no demuestra acceso sin autenticación ni E2E.
+- Se revisaron `api/discover.js`, `api/audit.js`, pruebas unitarias y workflows: el descubrimiento live sigue como comprobación informativa (`continue-on-error: true`), no debe presentarse como PASS cuando Overpass responde 503.
+- Pendientes prioritarios sin cambios: login real, persistencia privada multidispositivo, validación Overpass live y prueba E2E HTTPS integral de la revisión actual. No hay bloqueo humano imprescindible identificado; no se envía email de alerta.
