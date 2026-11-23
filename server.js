@@ -1,4 +1,5 @@
 import http from 'node:http';
+import {renderPresentationPdf} from './pdf-renderer.js';
 import {randomUUID} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {lookup} from 'node:dns/promises';
@@ -154,6 +155,37 @@ async function preparePdf(req,res){
  prunePdfs();
  return send(res,{downloadUrl:'/api/pdf-download/'+token,filename,expiresInMinutes:10});
 }
+
+let renderBusy=false;
+async function renderPdfOnServer(req,res){
+ if(renderBusy)return send(res,{error:'Se está preparando otro documento; volvé a intentar en unos segundos.'},429);
+ if(!(req.headers['content-type']||'').toLowerCase().startsWith('application/json'))
+  return send(res,{error:'El servidor esperaba la propuesta en JSON.'},415);
+ let raw='';let size=0;
+ for await(const part of req){
+  size+=part.length;
+  if(size>95000)return send(res,{error:'La propuesta contiene demasiado texto.'},413);
+  raw+=part;
+ }
+ let body;
+ try{body=JSON.parse(raw)}catch{return send(res,{error:'No se pudo interpretar la propuesta.'},400)}
+ renderBusy=true;
+ try{
+  const pdf=await renderPresentationPdf(body);
+  if(pdf.length<15000||pdf.length>PDF_MAX_BYTES)throw Error('El PDF generado es inválido o demasiado grande.');
+  prunePdfs();
+  const token=randomUUID();
+  const filename=safeDownloadFilename('CoMunicarse-Propuesta-'+String(body.company||'Empresa')+'-A4-horizontal.pdf');
+  preparedPdfs.set(token,{pdf,filename,expires:Date.now()+PDF_TTL_MS});
+  prunePdfs();
+  console.info('server_pdf_ready pages=7 bytes='+pdf.length);
+  return send(res,{downloadUrl:'/api/pdf-download/'+token,filename,pages:7,expiresInMinutes:10,engine:'server-vector'});
+ }catch(err){
+  const message=String(err?.message||'Error desconocido').slice(0,220);
+  console.error('server_pdf_error '+message);
+  return send(res,{error:'No se pudo generar el PDF: '+message},422);
+ }finally{renderBusy=false}
+}
 function downloadPdf(res,token){
  prunePdfs();
  const file=preparedPdfs.get(token);
@@ -174,7 +206,8 @@ const server=http.createServer(async(req,res)=>{try{
  if(req.method==='POST'&&url.pathname==='/api/pdf-prepare')return await preparePdf(req,res);
  if(req.method==='GET'&&/^\/api\/pdf-download\/[0-9a-f-]{36}$/.test(url.pathname))
    return downloadPdf(res,url.pathname.split('/').pop());
- if(req.method==='GET'&&url.pathname==='/api/health')return send(res,{ok:true,version:'0.7.0'});
+ if(req.method==='POST'&&url.pathname==='/api/pdf-render')return await renderPdfOnServer(req,res);
+ if(req.method==='GET'&&url.pathname==='/api/health')return send(res,{ok:true,version:'0.8.0'});
  if(req.method==='GET'&&url.pathname==='/api/companies')return send(res,COMPANIES);
  if(req.method==='GET'&&url.pathname==='/api/discover'){
  const sector=clean(url.searchParams.get('sector'),30),limit=Math.min(30,Math.max(1,Number(url.searchParams.get('limit'))||10));

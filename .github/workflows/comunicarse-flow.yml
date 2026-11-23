@@ -4,6 +4,7 @@ on:
     branches:
       - 'qa/comunicarse-generic-proposal-flow-20261123'
       - 'qa/comunicarse-android-http-download-20261123'
+      - 'qa/comunicarse-server-pdf-20261123'
       - 'comunicarse-os-v01-20261120'
   pull_request:
     branches:
@@ -21,3 +22,10 @@ jobs:
       - run: npm install --no-fund --no-audit
       - run: npm install --no-save jsdom@26 --no-fund --no-audit
       - run: npm test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nidera-server-pdf-qa
+          path: qa-artifacts/Nidera-CoMunicarse-servidor.pdf
+          if-no-files-found: warn
+          retention-days: 3
