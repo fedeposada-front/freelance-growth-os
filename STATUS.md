@@ -267,3 +267,8 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Implementado en `api/audit.js` aviso heurístico de accesibilidad cuando la etiqueta raíz `<html>` no declara un `lang` válido. No se presenta como fallo WCAG confirmado; no se confunden atributos `data-lang` ni `lang` de descendientes.
 - Commits `cdc8bf96` (implementación) y `386d47b5` (prueba y fixtures). La CI de estos commits aún no fue confirmada: NO declarar PASS ni promoción.
 - Autenticación y persistencia privada multidispositivo, Overpass live y E2E HTTPS siguen pendientes. Sin gastos, emails ni intervención manual requerida.
+
+## 23/11/2026 · Corrección de CI idioma HTML
+- CI de `617df7e` falló: 29/30 pruebas, caso `data-lang` reconocido erróneamente como `lang` (run 45114645471, test 17). Public URL smoke sí pasó (45114645396); preview READY no implica E2E.
+- Corregido en `7051991c1512e4eaf68aaba3922b4cef202ad20f`: exige espacio antes del atributo `lang` de `<html>` para evitar coincidir con `data-lang`. Regresión ya existente en `tests/audit.test.js` cubre `data-lang`, `lang` vacío, atributo de hijo y `es-AR`.
+- CI del nuevo commit pendiente de comprobación. No promover a producción ni declarar MVP PASS hasta E2E real y privacidad/persistencia adecuadas.
