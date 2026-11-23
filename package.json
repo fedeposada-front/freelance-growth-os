@@ -12,6 +12,10 @@
   },
   "dependencies": {
     "html2canvas": "1.4.1",
-    "jspdf": "4.2.1"
+    "jspdf": "4.2.1",
+    "pdfkit": "0.21.0",
+    "sharp": "0.34.5",
+    "@expo-google-fonts/bebas-neue": "0.4.1",
+    "@expo-google-fonts/dm-sans": "0.4.2"
   }
 }
