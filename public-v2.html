@@ -313,6 +313,29 @@
 .pdf-export-stage .proposal-page.pdf-capture.v2-slide img.signature-art{
  width:235px!important;height:auto!important;max-height:none!important;object-fit:initial!important;
 }
+
+/* Mobile export feedback: always close to action, plus sticky toast near top. */
+.pdf-result{flex-basis:100%;display:flex;flex-wrap:wrap;gap:9px;align-items:center;max-width:100%;padding:0;margin-top:4px}
+.pdf-result .pdf-export-status{width:100%;font-size:13px;font-weight:700;line-height:1.45;padding:12px 14px;border-radius:8px;margin:0;border-left:4px solid #e90085}
+.pdf-export-status[data-status="error"]{background:#fff0f5;border-color:#b42360;color:#6c1c42}
+.pdf-export-status[data-status="success"]{background:#f8f3f8;border-color:#0b7a62;color:#183d33}
+.pdf-export-status[data-status="loading"]{background:#f6f1f5;border-color:#deaa00;color:#45363e}
+#pdf-ready-link{display:inline-flex;text-decoration:none;font-size:13px;align-items:center;justify-content:center}
+#pdf-ready-link.hidden,#pdf-retry.hidden{display:none!important}
+.pdf-toast{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 14px);z-index:10000;
+ display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 12px 14px 16px;
+ background:#111;color:white;border:2px solid #ff33cc;border-radius:12px;box-shadow:0 12px 35px #0006;
+ font-size:14px;line-height:1.4;font-weight:700;max-width:640px;margin:0 auto}
+.pdf-toast[data-status="success"]{border-color:#fdc300}
+.pdf-toast .tertiary{color:white;padding:8px;flex:0 0 auto}
+.pdf-toast .tertiary:hover{color:#fdc300;background:#333}
+.pdf-toast.hidden{display:none!important}
+@media(max-width:650px){
+ #download-pdf{width:100%;min-height:50px}
+ .pdf-result,#pdf-ready-link,#pdf-retry{width:100%;flex:1 1 100%}
+ .pdf-result{margin:6px 0 12px}
+ .pdf-toast{font-size:13px}
+}
 </style></head><body>
 <header><div class="brand">CO<span class="dot">.</span>MUNICARSE<small>ALICIA CAMAÑO</small></div><span class="headtag">Sistema de prospección · Edición Yara</span></header>
 <main><div class="intro"><div class="eyebrow" style="color:#b71772;letter-spacing:.17em;font-size:11px;font-weight:800">RADAR COMERCIAL · v0.8.0</div><h1>DE EMPRESA A <span>PROPUESTA.</span></h1><p class="sub">Descubrí oportunidades, investigá el contexto de cada empresa y generá una propuesta corporativa con la identidad de Alicia. Todo en un mismo lugar.</p></div>
@@ -350,7 +373,10 @@
  <div class="notice">El sistema no envía correos automáticamente. «Abrir en mi correo» genera un borrador en tu aplicación de email. Revisá destinatario, consentimiento, pertinencia y texto antes de enviar.</div>
  <div class="bar"><button class="tertiary" data-step="2">← Volver a investigación</button><button class="secondary" id="next3">Crear propuesta visual →</button></div>
 </section>
-<section class="panel hidden" id="step4"><div class="bar"><div><h2>04 / PROPUESTA VISUAL</h2><p class="muted">7 páginas editoriales basadas en la propuesta Yara, adaptadas a cada empresa. Textos editables, fotos con proporción original e identidad Co.Municarse.</p></div><div class="actions no-print"><button class="tertiary" data-step="3">← Contacto y email</button><button class="secondary" id="edit-proposal" aria-pressed="false">✎ Editar textos</button><button class="tertiary" id="reset-proposal">Restaurar propuesta</button><button class="tertiary" id="copy">Copiar texto</button><button class="tertiary" id="print" type="button">Imprimir (versión anterior)</button><button class="primary" id="download-pdf" type="button">Generar PDF para descargar ↧</button></div></div><div class="form no-print" style="margin:16px 0"><label>Modalidad<select id="mode"><option>Presencial</option><option>Virtual</option><option>Híbrida</option></select></label><label>Duración propuesta<input id="hours" value="4 horas"></label><label>Participantes estimados<input id="participants" value="Hasta 25 (a confirmar)"></label><label>Inversión<input id="investment" placeholder="A definir luego del diagnóstico"></label><label class="span2">Necesidad confirmada por el cliente (opcional)<textarea id="need" rows="2" placeholder="Si no existe diagnóstico, el documento indicará una hipótesis"></textarea></label><label class="span2">Notas para adaptar los ejemplos / objeciones<textarea id="notes" rows="2" placeholder="No inventar procesos ni dificultades internas"></textarea></label></div><div class="notice no-print">«Generar PDF para descargar» prepara las siete páginas en Render sin exigir procesamiento al celular. Cuando aparezca «Descargar archivo PDF ahora», tocá ese enlace para guardarlo desde Android. El archivo dura 10 minutos en memoria. Ninguna propuesta se envía a empresas.</div><div class="notice no-print" id="edit-help">Podés editar el contenido antes de exportarlo. Tocá «Editar textos» y seleccioná cualquier título, párrafo o ítem de la propuesta. Los cambios se guardan en este navegador para esta empresa.</div><p id="pdf-export-status" class="pdf-export-status no-print" role="status" aria-live="polite" hidden></p><a id="pdf-ready-link" class="secondary no-print hidden" href="" target="_self" style="display:inline-flex;margin:8px 0 16px;text-decoration:none;align-items:center;gap:8px">Descargar archivo PDF listo ↓</a><div class="proposal"><div id="proposal-preview"></div></div></section><div class="footer-app no-print">Co.Municarse · Uso interno · Los PDF preparados se conservan únicamente en memoria por hasta 10 minutos; no se envían campañas.</div></main>
+<section class="panel hidden" id="step4"><div class="bar"><div><h2>04 / PROPUESTA VISUAL</h2><p class="muted">7 páginas editoriales basadas en la propuesta Yara, adaptadas a cada empresa. Textos editables, fotos con proporción original e identidad Co.Municarse.</p></div><div class="actions no-print"><button class="tertiary" data-step="3">← Contacto y email</button><button class="secondary" id="edit-proposal" aria-pressed="false">✎ Editar textos</button><button class="tertiary" id="reset-proposal">Restaurar propuesta</button><button class="tertiary" id="copy">Copiar texto</button><button class="tertiary" id="print" type="button">Imprimir (versión anterior)</button><button class="primary" id="download-pdf" type="button">Generar PDF para descargar ↧</button><div id="pdf-result" class="pdf-result no-print"><p id="pdf-export-status" class="pdf-export-status" role="status" aria-live="polite" hidden></p><a id="pdf-ready-link" class="primary hidden" href="" target="_self">Descargar archivo PDF ahora ↓</a><button id="pdf-retry" class="secondary hidden" type="button">Volver a intentar</button></div></div></div><div class="form no-print" style="margin:16px 0"><label>Modalidad<select id="mode"><option>Presencial</option><option>Virtual</option><option>Híbrida</option></select></label><label>Duración propuesta<input id="hours" value="4 horas"></label><label>Participantes estimados<input id="participants" value="Hasta 25 (a confirmar)"></label><label>Inversión<input id="investment" placeholder="A definir luego del diagnóstico"></label><label class="span2">Necesidad confirmada por el cliente (opcional)<textarea id="need" rows="2" placeholder="Si no existe diagnóstico, el documento indicará una hipótesis"></textarea></label><label class="span2">Notas para adaptar los ejemplos / objeciones<textarea id="notes" rows="2" placeholder="No inventar procesos ni dificultades internas"></textarea></label></div><p class="muted no-print" id="edit-help">Podés editar el texto antes de generar el PDF. Guardamos tus cambios en este navegador.</p><div class="proposal"><div id="proposal-preview"></div></div></section><div class="footer-app no-print">Co.Municarse · Uso interno · Los PDF preparados se conservan únicamente en memoria por hasta 10 minutos; no se envían campañas.</div></main>
+<div id="pdf-toast" class="pdf-toast hidden" role="status" aria-live="polite">
+ <span id="pdf-toast-text"></span><button type="button" id="pdf-toast-close" class="tertiary" aria-label="Cerrar aviso">✕</button>
+</div>
 <script>
 const $=id=>document.getElementById(id),escapeHTML=(s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let companies=[],chosen=null,analysis=null;function navigate(n){document.querySelectorAll('.steps button').forEach(b=>b.classList.toggle('active',b.dataset.step==n));[1,2,3,4].forEach(i=>$('step'+i).classList.toggle('hidden',i!=n));window.scrollTo({top:0,behavior:'instant'})}document.querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.step)));
@@ -418,8 +444,9 @@ function generate(){
  const context=need?
   '<p class="slide-paragraph">'+escapeHTML(need)+'</p><p class="micro-note">Necesidad ingresada para confirmar con la empresa antes de enviar.</p>':
   '<p class="slide-paragraph">En empresas de '+sector+' que combinan conocimiento técnico y actividad comercial, puede ser valioso fortalecer la manera de presentar soluciones, explicar beneficios y responder preguntas de sus clientes.</p><p class="micro-note">Hipótesis de capacitación; no implica diagnóstico ni interés confirmado de '+name+'.</p>';
- const source=publicRef?'<p class="micro-note"><strong>Información pública:</strong> '+publicRef+'</p>':
-  (reason?'<p class="micro-note"><strong>Referencia preliminar del radar:</strong> '+reason+'. Debe contrastarse con información corporativa.</p>':'');
+ // The full company research remains available in step 02. A short, sourced
+ // reference belongs in the PDF; raw scraped navigation must never overflow it.
+ const source='<p class="micro-note"><strong>Fuente para validar:</strong> '+url+'</p>';
  const program=[
   ['01','Preparar la conversación','Planificación de visitas, objetivos comerciales y preguntas pertinentes para cada encuentro.'],
   ['02','Comunicar valor','Convertir atributos técnicos en beneficios concretos y argumentos relevantes para clientes.'],
