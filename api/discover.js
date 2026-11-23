@@ -13,6 +13,7 @@ function publicEmail(raw){const value=compact(raw,120);return /^[^\s@<>]+@[^\s@<
 function https(raw){if(typeof raw!=='string')return '';try{const u=new URL(raw);return u.protocol==='https:'&&!u.username&&!u.password&&u.href.length<=1500?u.href:''}catch{return ''}}
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
+  res.setHeader('X-Content-Type-Options','nosniff');
   // Expose only public deployment revision for remote QA; never expose environment secrets.
   const revision=typeof process.env.VERCEL_GIT_COMMIT_SHA==='string'&&/^[a-f0-9]{40}$/i.test(process.env.VERCEL_GIT_COMMIT_SHA)?process.env.VERCEL_GIT_COMMIT_SHA:'unknown';
   res.setHeader('X-App-Revision',revision);
