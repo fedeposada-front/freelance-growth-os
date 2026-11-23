@@ -18,6 +18,10 @@ jobs:
           grep -q 'Freelance Growth OS' /tmp/home.html
           grep -q 'id="view-radar"' /tmp/home.html
           grep -q 'id="view-proposal"' /tmp/home.html
+          # Regression: the public domain must expose the expanded search filters.
+          grep -q 'value="realestate"' /tmp/home.html
+          grep -q 'value="restaurant"' /tmp/home.html
+          grep -q 'value="mardelplata"' /tmp/home.html
       - name: Public audit endpoint returns JSON and is not a fake UX verdict
         run: |
           set -euo pipefail
