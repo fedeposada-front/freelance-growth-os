@@ -137,7 +137,7 @@
 .pdf-export-stage .proposal-page.pdf-capture [data-proposal-editable="true"]:empty::before{content:""!important}
 </style></head><body>
 <header><div class="brand">CO<span class="dot">.</span>MUNICARSE<small>ALICIA CAMAÑO</small></div><span class="headtag">Sistema de prospección · Edición Yara</span></header>
-<main><div class="intro"><div class="eyebrow" style="color:#b71772;letter-spacing:.17em;font-size:11px;font-weight:800">RADAR COMERCIAL · v0.5.0</div><h1>DE EMPRESA A <span>PROPUESTA.</span></h1><p class="sub">Descubrí oportunidades, investigá el contexto de cada empresa y generá una propuesta corporativa con la identidad de Alicia. Todo en un mismo lugar.</p></div>
+<main><div class="intro"><div class="eyebrow" style="color:#b71772;letter-spacing:.17em;font-size:11px;font-weight:800">RADAR COMERCIAL · v0.6.0</div><h1>DE EMPRESA A <span>PROPUESTA.</span></h1><p class="sub">Descubrí oportunidades, investigá el contexto de cada empresa y generá una propuesta corporativa con la identidad de Alicia. Todo en un mismo lugar.</p></div>
 <nav class="steps no-print"><button data-step="1" class="active"><b>01</b> Buscar empresas</button><button data-step="2"><b>02</b> Investigar y priorizar</button><button data-step="3"><b>03</b> Contacto y email</button><button data-step="4"><b>04</b> Propuesta visual</button></nav>
 <section class="panel" id="step1"><h2>01 / DESCUBRIR EMPRESAS</h2><p class="muted">Generá un lote nuevo según sector y país. Se consulta una fuente abierta; si no responde, conservamos la lista inicial y mostramos el error sin inventar resultados.</p><div class="controls"><label>País<select id="country"><option value="ambos">Argentina + Uruguay</option><option value="argentina">Argentina</option><option value="uruguay">Uruguay</option></select></label><label>Sector objetivo<select id="target"><option value="agro">Agroindustria</option><option value="industria">Industria / maquinaria</option><option value="tecnologia">Tecnología B2B</option><option value="salud">Salud / equipamiento</option><option value="todos">Otros sectores</option></select></label><label>Máximo de empresas<select id="limit"><option>10</option><option>20</option><option>30</option></select></label><button class="secondary" id="discover">Buscar nuevo lote ↗</button><button class="tertiary" id="restore">Ver empresas iniciales</button></div><p class="status" id="discover-status">Mostrando la base inicial de empresas verificadas.</p><div class="bar"><h2 style="margin-top:18px">EMPRESAS EN EL RADAR</h2><span class="muted" id="count"></span></div><div id="companies" class="cards"></div><div class="notice">La aparición en este radar no implica que la empresa esté buscando una capacitación. Los contactos y oportunidades reales requieren validación.</div><button id="next1" class="primary" disabled>Investigar empresa seleccionada →</button></section>
 <section class="panel hidden" id="step2"><h2>02 / INVESTIGAR Y PRIORIZAR</h2><p class="muted">Usamos información pública del sitio de la empresa. La afinidad calculada es orientativa y no acredita necesidades internas.</p><div class="two"><div class="form"><label>Empresa<input id="name"></label><label>Sector<input id="sector"></label><label class="span2">Sitio oficial HTTPS<input id="website"></label><label class="span2">Motivo de selección<input id="why"></label><button id="analyze" class="secondary span2">Investigar sitio y calcular prioridad</button></div><div><div id="analysis" class="research">Seleccioná una empresa y ejecutá el análisis.</div><p class="muted">Podés corregir el nombre, sector y sitio antes de investigar.</p></div></div><div class="bar" style="margin-top:16px"><button class="tertiary" data-step="1">← Volver al radar</button><button class="primary" id="next2" disabled>Buscar contacto y preparar email →</button></div></section>
@@ -217,23 +217,77 @@ function embedFixedBrandAssets(){
  }
 }
 
+
 function bullet(xs){return '<ul>'+xs.map(x=>'<li>'+escapeHTML(x)+'</li>').join('')+'</ul>'}
-function generate(){if(!analysis)return;const name=escapeHTML(analysis.name),sector=escapeHTML(analysis.sector),mode=escapeHTML($('mode').value),hours=escapeHTML($('hours').value),participants=escapeHTML($('participants').value),investment=escapeHTML($('investment').value.trim()||'A definir tras diagnóstico'),need=$('need').value.trim(),notes=$('notes').value.trim(),desc=escapeHTML(analysis.research.summary||''),url=escapeHTML(analysis.website);
-const hypothesis='En una organización del sector '+sector+', puede ser valioso fortalecer la comunicación de propuestas técnicas y comerciales. Esta hipótesis debe contrastarse con las necesidades reales del equipo.';
-const context=need?'<div class="block"><strong>Necesidad informada para validar:</strong><p>'+escapeHTML(need)+'</p></div>':'<div class="block"><strong>Hipótesis inicial, no diagnóstico confirmado</strong><p>'+hypothesis+'</p></div>';
-const modules=[['01 · PREPARAR LA CONVERSACIÓN','Objetivos de reunión, planificación de visitas y preguntas relevantes.'],['02 · COMUNICAR VALOR','Traducir características técnicas en beneficios comerciales comprensibles.'],['03 · GESTIONAR OBJECIONES','Precio, financiación, competencia, plazos y dudas habituales; se adaptan al contexto validado.'],['04 · PRÁCTICA Y FEEDBACK','Simulaciones de conversaciones, análisis de casos y recomendaciones de mejora.']];
-const parts=[];
-parts.push(section('PROPUESTA DE CAPACITACIÓN','COMUNICACIÓN<br><em>QUE GENERA IMPACTO.</em>','<p class="large">'+name+'</p><p>Entrenamiento en comunicación comercial y gestión de conversaciones con clientes</p><p style="margin-top:35px">'+mode+' · '+hours+' · '+participants+'</p>',true));
-parts.push(section('01 · CONTEXTO','ENTENDER ANTES<br>DE <em>COMUNICAR.</em>','<p><strong>Empresa:</strong> '+name+' · <strong>Sector:</strong> '+sector+'</p><p><strong>Referencia pública:</strong> '+(desc||'El sitio no pudo consultarse automáticamente. Datos pendientes de verificación.')+'</p>'+context+'<p class="footnote">Fuente: '+url+' · Información pública sujeta a comprobación. No se atribuyen problemas internos no verificados.</p>'));
-parts.push(section('02 · OBJETIVO','CONVERSACIONES<br>CON <em>MÁS VALOR.</em>','<p>Fortalecer la capacidad de los equipos comerciales y técnicos para preparar encuentros, comunicar beneficios relevantes y desenvolverse con confianza ante preguntas u objeciones de sus clientes.</p><div class="black-block">Conocimiento técnico + comprensión del negocio + herramientas de comunicación aplicadas a conversaciones reales.</div>'));
-parts.push(section('03 · DESTINATARIOS','UNA PROPUESTA<br><em>A MEDIDA.</em>','<p><strong>Participantes propuestos:</strong> '+participants+'</p><p><strong>Modalidad:</strong> '+mode+'</p><p><strong>Duración:</strong> '+hours+'</p><p><strong>Destinatarios:</strong> equipos comerciales y técnicos; confirmar perfiles y tamaño con la organización.</p><p class="footnote">Fecha, lugar y alcance definitivo pendientes de coordinación.</p>'));
-parts.push(section('04 · CONTENIDOS','CUATRO EJES<br>DE <em>TRABAJO.</em>',modules.map(x=>'<div class="block"><strong>'+x[0]+'</strong><p>'+x[1]+'</p></div>').join('')+(notes?'<p><strong>Contexto adicional provisto:</strong> '+escapeHTML(notes)+'</p>':'')));
-parts.push(section('05 · METODOLOGÍA','APRENDER<br><em>HACIENDO.</em>',bullet(['Reunión previa de alineación y diagnóstico.','Diseño de herramientas adaptadas a la organización.','Exposición conceptual breve y participación activa.','Ejercicios individuales y grupales.','Role plays, observación y feedback.','Transferencia a situaciones concretas de trabajo.'])));
-parts.push(section('06 · EVALUACIÓN','MÁS ALLÁ<br>DEL <em>TALLER.</em>','<h4>1. Evaluación de satisfacción</h4><p>Encuesta posterior sobre utilidad, claridad y aplicabilidad de los contenidos.</p><h4>2. Seguimiento de aplicación</h4><p>Relevamiento breve a los 30–45 días para explorar qué herramientas se incorporaron al trabajo cotidiano, sujeto a alcance acordado.</p>'));
-parts.push(section('07 · RESULTADOS','HERRAMIENTAS<br>PARA <em>ACTUAR.</em>',bullet(['Preparar reuniones y visitas comerciales con mayor claridad.','Identificar oportunidades para conversaciones de valor.','Explicar beneficios técnicos en términos comprensibles.','Gestionar objeciones y preguntas con más recursos.','Practicar conversaciones complejas con feedback.'])+'<p class="footnote">Resultados esperados de aprendizaje, no métricas ni mejoras garantizadas.</p>',true));
-parts.push(section('08 · INVERSIÓN','PROPUESTA<br><em>ECONÓMICA.</em>','<div class="black-block"><div class="eyebrow">INVERSIÓN DE REFERENCIA</div><p class="large">'+investment+'</p></div>'+bullet(['Reunión de alineación previa.','Diseño adaptado de contenidos.','Facilitación y ejercicios del taller.','Material de apoyo.','Evaluación y seguimiento si se incluye en el acuerdo.'])+'<p class="footnote">Condiciones, impuestos, gastos de traslado, forma de pago y vigencia: definir por escrito. No se reutiliza automáticamente el precio histórico de Yara.</p>'));
-parts.push(section('09 · SOBRE ALICIA','UNA VOZ<br><em>PROPIA.</em>','<p><strong>Alicia Camaño</strong> · Directora y fundadora de Co.Municarse.</p><p>Comunicación estratégica, oratoria y entrenamiento de equipos y voceros, con una mirada humana orientada a transformar ideas en mensajes claros y memorables.</p><p><strong>Próximo paso:</strong> reunión de diagnóstico para revisar el desafío, validar destinatarios y definir el alcance final.</p><div class="line"></div><p>somoscomunicarse@gmail.com · @co.municarse · comunicarse.com.ar</p><p class="footnote">Datos de contacto extraídos del material institucional; verificar vigencia antes de enviar.</p>',true));
-$('proposal-preview').innerHTML=parts.join('');embedFixedBrandAssets();}
+function editorialSection(kicker,heading,body,variant=''){
+ return '<section class="proposal-page v2-slide '+variant+'"><div class="slide-mast"><div class="eyebrow">'+kicker+'</div><h3>'+heading+'</h3><div class="line"></div></div><div class="slide-body">'+body+'</div><footer><span>ALICIA CAMAÑO · CO.MUNICARSE</span><span>PROPUESTA CONFIDENCIAL · BORRADOR</span></footer></section>';
+}
+function concisePublicReference(value){
+ const text=String(value||'').replace(/\s+/g,' ').replace(/<[^>]+>/g,'').trim();
+ if(!text||text.length>310||/skip to main|search menu|facebook|instagram|twitter|youtube|cookies|close search|select your country|contactanos.*(facebook|twitter)|inicio inicio/i.test(text))return '';
+ if(text.split(' ').length<5)return '';
+ return escapeHTML(text);
+}
+function generate(){
+ if(!analysis)return;
+ const name=escapeHTML(analysis.name),sector=escapeHTML(analysis.sector||'actividad por confirmar'),
+ mode=escapeHTML($('mode').value),hours=escapeHTML($('hours').value),
+ participants=escapeHTML($('participants').value),investment=escapeHTML($('investment').value.trim()||'A definir tras diagnóstico'),
+ need=$('need').value.trim(),notes=$('notes').value.trim(),url=escapeHTML(analysis.website);
+ const publicRef=concisePublicReference(analysis.research?.summary);
+ const reason=escapeHTML(analysis.why||'');
+ const context=need?
+  '<p class="slide-paragraph">'+escapeHTML(need)+'</p><p class="micro-note">Necesidad ingresada para confirmar con la empresa antes de enviar.</p>':
+  '<p class="slide-paragraph">En empresas de '+sector+' que combinan conocimiento técnico y actividad comercial, puede ser valioso fortalecer la manera de presentar soluciones, explicar beneficios y responder preguntas de sus clientes.</p><p class="micro-note">Hipótesis de capacitación; no implica diagnóstico ni interés confirmado de '+name+'.</p>';
+ const source=publicRef?'<p class="micro-note"><strong>Información pública:</strong> '+publicRef+'</p>':
+  (reason?'<p class="micro-note"><strong>Referencia preliminar del radar:</strong> '+reason+'. Debe contrastarse con información corporativa.</p>':'');
+ const program=[
+  ['01','Preparar la conversación','Planificación de visitas, objetivos comerciales y preguntas pertinentes para cada encuentro.'],
+  ['02','Comunicar valor','Convertir atributos técnicos en beneficios concretos y argumentos relevantes para clientes.'],
+  ['03','Gestionar objeciones','Practicar respuestas sobre precio, financiación, disponibilidad, operación y alternativas.'],
+  ['04','Aplicación práctica','Trabajar casos, simulaciones de conversaciones, role plays y feedback accionable.']
+ ];
+ const cards=program.map(([n,t,d])=>'<div class="program-card"><span class="program-number">'+n+'</span><h4>'+t+'</h4><p>'+d+'</p></div>').join('');
+ const note=notes?'<p class="micro-note"><strong>Aspectos a contemplar:</strong> '+escapeHTML(notes)+'</p>':'';
+ const parts=[];
+ // 01 · Cover
+ parts.push(editorialSection('PROPUESTA CORPORATIVA · CO.MUNICARSE',
+  'COMUNICACIÓN<br><em>QUE GENERA IMPACTO.</em>',
+  '<p class="cover-client">'+name+'</p><p class="cover-description">Entrenamiento en comunicación comercial y gestión de conversaciones con clientes.</p><div class="cover-meta"><span>'+mode+'</span><span>'+hours+'</span><span>'+participants+'</span></div>',
+  'dark cover-layout'));
+ // 02 · Context + objective
+ parts.push(editorialSection('01 · OPORTUNIDAD',
+  'ENTENDER EL CONTEXTO.<br><em>COMUNICAR VALOR.</em>',
+  '<div class="editorial-columns"><div class="editorial-left"><span class="section-label">PUNTO DE PARTIDA</span><p class="slide-lead">'+name+'</p><p class="micro-note"><strong>Sector:</strong> '+sector+'</p>'+context+'</div><div class="editorial-right"><div class="accent-panel"><span class="section-label">OBJETIVO DEL ENTRENAMIENTO</span><p class="panel-lead">Preparar conversaciones que conecten el conocimiento técnico con las necesidades de cada cliente.</p><p>Fortalecer la comunicación, la argumentación de valor y la gestión de preguntas y objeciones.</p></div>'+source+'</div></div><p class="source-foot">Referencia para validación: '+url+'</p>',
+  'context-layout'));
+ // 03 · Program contents
+ parts.push(editorialSection('02 · PROGRAMA',
+  'CUATRO EJES.<br><em>UNA EXPERIENCIA APLICADA.</em>',
+  '<div class="program-grid">'+cards+'</div>'+note,
+  'program-layout'));
+ // 04 · Work format and methodology
+ parts.push(editorialSection('03 · EXPERIENCIA DE APRENDIZAJE',
+  'APRENDER<br><em>HACIENDO.</em>',
+  '<div class="spec-strip"><div><span>MODALIDAD</span><strong>'+mode+'</strong></div><div><span>DURACIÓN</span><strong>'+hours+'</strong></div><div><span>PARTICIPANTES</span><strong>'+participants+'</strong></div></div><div class="method-grid"><div><span class="method-index">01</span><h4>Antes</h4><p>Alineación y diagnóstico para adaptar ejemplos, objetivos y situaciones reales de la organización.</p></div><div><span class="method-index">02</span><h4>Durante</h4><p>Exposición breve, ejercicios individuales y grupales, casos comerciales y simulaciones con feedback.</p></div><div><span class="method-index">03</span><h4>Después</h4><p>Materiales de apoyo y transferencia de herramientas al trabajo cotidiano del equipo.</p></div></div><p class="micro-note">Fecha, lugar y destinatarios definitivos a confirmar en la reunión de diagnóstico.</p>',
+  'dark method-layout'));
+ // 05 · Benefits and evaluation
+ parts.push(editorialSection('04 · TRANSFERENCIA Y SEGUIMIENTO',
+  'DEL TALLER<br><em>AL DÍA A DÍA.</em>',
+  '<div class="outcomes-grid"><div><span class="section-label">EL EQUIPO SE LLEVA</span>'+bullet(['Guías para preparar reuniones y visitas comerciales.','Recursos para traducir características técnicas en valor.','Herramientas para manejar objeciones y preguntas.','Práctica aplicada y feedback sobre casos concretos.'])+'</div><div class="evaluation-card"><span class="section-label">CÓMO EVALUAMOS</span><div class="evaluation-item"><strong>01 · Satisfacción</strong><p>Relevamiento inmediato de utilidad, claridad y aplicabilidad.</p></div><div class="evaluation-item"><strong>02 · Aplicación</strong><p>Seguimiento breve a los 30–45 días, sujeto al alcance acordado.</p></div></div></div><p class="micro-note">Son objetivos de aprendizaje y transferencia, no resultados comerciales garantizados.</p>',
+  'outcome-layout'));
+ // 06 · Offer and investment
+ parts.push(editorialSection('05 · INVERSIÓN Y ALCANCE',
+  'UNA PROPUESTA<br><em>A MEDIDA.</em>',
+  '<div class="investment-grid"><div class="investment-card"><span class="section-label">INVERSIÓN PROPUESTA</span><p class="investment-value">'+investment+'</p><p>El presupuesto final se define según alcance, modalidad, participantes y condiciones acordadas.</p></div><div class="inclusions"><span class="section-label">ALCANCE SUGERIDO</span>'+bullet(['Reunión inicial de alineación.','Diseño y adecuación de contenidos.','Facilitación y práctica del taller.','Materiales de apoyo.','Evaluación y seguimiento si se acuerdan.'])+'</div></div><div class="next-step-band"><span class="section-label">SIGUIENTE PASO</span><p>Una conversación breve para validar el desafío de '+name+' y ajustar esta propuesta.</p></div><p class="micro-note">Impuestos, traslado, forma de pago y vigencia: pendientes de definición. No se replica automáticamente el precio histórico del taller Yara.</p>',
+  'investment-layout'));
+ // 07 · Signature and brand close
+ parts.push(editorialSection('ALICIA CAMAÑO · DIRECTORA Y FUNDADORA',
+  'UNA VOZ.<br><em>MUCHAS POSIBILIDADES.</em>',
+  '<p class="closing-intro">Comunicar mejor es conectar ideas, personas y decisiones.</p><p>Co.Municarse combina comunicación estratégica, oratoria y entrenamiento práctico para equipos y voceros.</p><p class="closing-cta"><strong>Conversemos sobre el próximo desafío de '+name+'.</strong></p><p class="closing-contact">somoscomunicarse@gmail.com · @co.municarse · comunicarse.com.ar</p><p class="micro-note">Verificar vigencia de los canales de contacto antes de enviar.</p>',
+  'dark closing-layout'));
+ $('proposal-preview').innerHTML=parts.join('');
+ embedFixedBrandAssets();
+}
 $('next2').onclick=()=>{prepareContactStep();navigate(3)};['mode','hours','participants','investment','need','notes'].forEach(id=>$(id).addEventListener('change',()=>{if(proposalDirty&&!confirm('Cambiar los datos regenerará la propuesta. ¿Reemplazar los textos editados?'))return;try{localStorage.removeItem(proposalStorageKey())}catch{}proposalDirty=false;generate();markEditable()}));async function ensureProposalFonts(){
  if(!document.fonts||typeof document.fonts.load!=='function')return false;
  try{
@@ -408,7 +462,7 @@ $('open-mail').addEventListener('click',()=>{
 // Editor de contenido por empresa: nunca edita el PDF binario; modifica la fuente HTML antes de imprimir.
 let proposalEditMode=false,proposalLastKey='',proposalDirty=false;
 const editorSelector='.proposal-page h3,.proposal-page h4,.proposal-page p,.proposal-page li,.proposal-page .block strong,.proposal-page .black-block .large';
-function proposalStorageKey(){return 'comunicarse:proposal:v1:'+(analysis?.website||analysis?.name||'sin-empresa').toLowerCase()}
+function proposalStorageKey(){return 'comunicarse:proposal:v2:'+(analysis?.website||analysis?.name||'sin-empresa').toLowerCase()}
 function markEditable(){
  const preview=$('proposal-preview');preview.querySelectorAll(editorSelector).forEach(el=>{
   if(el.closest('footer'))return;
