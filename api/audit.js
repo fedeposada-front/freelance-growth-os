@@ -15,7 +15,7 @@ export function publicAddress(address){
   // that can encode non-public IPv4 destinations (6to4/Teredo), as well as
   // documentation, site-local, unique-local and link-local addresses.
   if(!/^[23][0-9a-f]{3}:/.test(a))return false;
-  if(a.startsWith('2002:')||a.startsWith('2001:0:')||a.startsWith('2001:db8:')||a.startsWith('3fff:'))return false;
+  if(a.startsWith('2002:')||/^2001:(?:0:|:)/.test(a)||a.startsWith('2001:db8:')||a.startsWith('3fff:'))return false;
   return true;
 }
 export function validTarget(value){
