@@ -254,3 +254,10 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Corregido para clasificar contenido comprimido como `no_consultado` y explicitar la limitación; no atribuir defectos UX sin HTML legible. También se normaliza la comparación de Content-Type. Commits `763af6e`, `082c1ef`, `7d47f43` (test unitario de codificaciones).
 - CI del commit `7d47f43`: pendiente de verificación, no declarar PASS. Vercel mostró preview READY de la rama en revisión anterior `c2fb40f`, no prueba del cambio nuevo.
 - Pendiente: autenticación/persistencia privada, Overpass live y E2E de revisión publicada. Sin bloqueo humano demostrado; sin correo de alerta ni promoción a producción.
+
+
+## Ejecución 22/11/2026 · 23:58 ART — protección IPv6 SSRF
+- Auditoría de `api/audit.js`: el filtro IPv6 previo sólo rechazaba `fe80:` y algunos prefijos; podía aceptar direcciones no globales y mecanismos de transición IPv4 embebida. Se endureció la política para aceptar únicamente IPv6 global-unicast nativa y excluir Teredo (`2001:0::/32`), 6to4 (`2002::/16`), documentación (`2001:db8::/32`, `3fff::/20`), NAT64 y direcciones no globales. La conexión sigue fijada a la IP validada con TLS del dominio.
+- Implementación: commits `23e7b1d` y `053630a`; regresiones añadidas en `tests/audit.test.js` commit `3e25829`.
+- **Pruebas de esta revisión: pendiente de CI**. No atribuir PASS a estos cambios hasta verificar los workflows. Producción HTTPS no promovida ni E2E validado en esta corrida.
+- Bloqueos humanos nuevos: ninguno. Sin gastos, sin contactos comerciales, sin correos de bloqueo. Próximo: verificar CI, smoke de endpoint y avanzar autenticación/persistencia privada.
