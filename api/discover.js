@@ -55,7 +55,7 @@ export default async function handler(req,res){
     const elements=payload.elements.slice(0,300);
     const seen=new Set();
     const list=elements.filter(function(x){
-      if(!x||!['node','way','relation'].includes(x.type)||!Number.isSafeInteger(x.id)||x.id<=0||!x.tags||typeof x.tags.name!=='string'||!x.tags.name.trim())return false;
+      if(!x||!['node','way','relation'].includes(x.type)||!Number.isSafeInteger(x.id)||x.id<=0||!x.tags||typeof x.tags.name!=='string'||!compact(x.tags.name,100))return false;
       const key=x.type+'/'+x.id;
       if(seen.has(key))return false;
       seen.add(key);
