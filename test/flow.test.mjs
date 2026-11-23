@@ -33,8 +33,9 @@ for(const [index,c] of companies.entries()){
    const {win,doc,errors}=setup();const $=id=>doc.getElementById(id);
    try{
     await pause();
-    assert.equal($('preset').options.length,4,'carga catálogo');
-    $('preset').value=String(index);$('preset').dispatchEvent(new win.Event('change',{bubbles:true}));
+    assert.equal(doc.querySelectorAll('.company').length,3,'carga catálogo');
+    doc.querySelectorAll('.company')[index].click();
+    assert.equal($('next1').disabled,false,'empresa seleccionada');
     $('next1').click();assert.equal($('step2').classList.contains('hidden'),false,'accede investigación');
     $('analyze').click();await pause();
     assert.equal($('next2').disabled,false,'análisis completado');
