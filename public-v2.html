@@ -511,16 +511,41 @@ $('next2').onclick=()=>{prepareContactStep();navigate(3)};['mode','hours','parti
 /* Experimental direct PDF export. Preserves in-page edits; never uses print dialog. */
 let pdfExportRunning=false;
 let pdfReadyUrl='';
+let pdfExportBlocked=false;
+function hidePdfToast(){
+ const toast=$('pdf-toast');
+ if(toast)toast.classList.add('hidden');
+}
+function showPdfToast(message,kind){
+ const toast=$('pdf-toast');
+ toast.dataset.status=kind;
+ $('pdf-toast-text').textContent=message;
+ toast.classList.remove('hidden');
+}
+$('pdf-toast-close').addEventListener('click',hidePdfToast);
 function clearReadyPdf(){
  pdfReadyUrl='';
- const link=$('pdf-ready-link');
+ pdfExportBlocked=false;
+ const link=$('pdf-ready-link'),retry=$('pdf-retry'),button=$('download-pdf');
  if(link){link.classList.add('hidden');link.removeAttribute('href');}
+ if(retry)retry.classList.add('hidden');
+ if(button&&!pdfExportRunning){button.disabled=false;button.textContent='Generar PDF para descargar ↓'}
+ const status=$('pdf-export-status');
+ if(status){status.hidden=true;status.textContent=''}
+ hidePdfToast();
 }
-
-function updatePdfStatus(message,visible=true){
+function updatePdfStatus(message,visible=true,kind='loading'){
  const el=$('pdf-export-status');
  el.hidden=!visible;el.textContent=message;
+ el.dataset.status=kind;
+ if(kind==='error')showPdfToast('No se pudo generar el PDF. Revisá el detalle debajo del botón.',kind);
+ if(kind==='success')showPdfToast('PDF listo. Tocá «Descargar archivo PDF ahora».',kind);
 }
+$('pdf-retry').addEventListener('click',()=>{
+ if(pdfExportRunning)return;
+ clearReadyPdf();
+ exportDirectPdf();
+});
 function safePdfFilename(name){
  const stem=String(name||'Empresa').normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
    .replace(/[^a-zA-Z0-9 _-]/g,'').replace(/\s+/g,'-').slice(0,75);
@@ -619,17 +644,17 @@ function buildServerPdfPayload(){
  return {company:analysis.name,slides};
 }
 async function exportDirectPdf(){
- if(!analysis||pdfExportRunning)return;
- clearReadyPdf();pdfExportRunning=true;
- const button=$('download-pdf'),previous=button.textContent;
- button.disabled=true;button.textContent='Preparando propuesta…';
+ if(!analysis||pdfExportRunning||pdfExportBlocked)return;
+ clearReadyPdf();
+ pdfExportRunning=true;
+ const button=$('download-pdf');
+ button.disabled=true;button.textContent='Generando PDF…';
  try{
   embedFixedBrandAssets();
-  updatePdfStatus('Generando PDF en Render. Esta vez el teléfono no procesa las páginas…');
+  updatePdfStatus('Preparando el PDF en el servidor…');
   const payload=buildServerPdfPayload();
   const response=await fetch('/api/pdf-render',{method:'POST',
-   headers:{'Content-Type':'application/json'},
-   body:JSON.stringify(payload),cache:'no-store'});
+   headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),cache:'no-store'});
   const result=await response.json().catch(()=>({}));
   if(!response.ok)throw Error(result.error||'El servidor no pudo generar el PDF.');
   if(result.engine!=='server-vector'||result.pages!==7)throw Error('Respuesta inesperada del servidor.');
@@ -638,15 +663,26 @@ async function exportDirectPdf(){
    throw Error('El enlace de descarga no es válido.');
   pdfReadyUrl=url.pathname;
   const link=$('pdf-ready-link');
-  link.href=pdfReadyUrl;
-  link.classList.remove('hidden');
+  link.href=pdfReadyUrl;link.classList.remove('hidden');
   link.textContent='Descargar archivo PDF ahora ↓';
-  link.focus();
-  updatePdfStatus('PDF listo: 7 páginas A4 horizontales. Tocá «Descargar archivo PDF ahora» para guardarlo desde Chrome Android. El enlace dura 10 minutos.');
+  pdfExportBlocked=true;
+  $('pdf-retry').textContent='Generar un PDF nuevo';
+  $('pdf-retry').classList.remove('hidden');
+  updatePdfStatus('Listo: PDF horizontal de 7 páginas. Tocá el botón «Descargar archivo PDF ahora»; el archivo dura 10 minutos.',true,'success');
  }catch(error){
-  updatePdfStatus('No se pudo generar el PDF: '+(error?.message||'error desconocido')+'. Podés usar «Imprimir (versión anterior)».');
+  pdfExportBlocked=true;
+  const detail=String(error?.message||'Error desconocido').replace(/^(?:No se pudo generar el PDF:\s*)+/i,'');
+  const isTextError=/texto|página|maqueta|espacio|acort|párrafo/i.test(detail);
+  $('pdf-retry').textContent='Volver a intentar';
+  $('pdf-retry').classList.remove('hidden');
+  updatePdfStatus(
+    (isTextError?'Revisá el contenido de la propuesta. ':'No se pudo generar el PDF. ')+detail+
+    (isTextError?' Tocá «Editar textos», corregilo y luego generá de nuevo.':' Podés usar «Volver a intentar» o «Imprimir (versión anterior)».'),
+    true,'error');
  }finally{
-  pdfExportRunning=false;button.disabled=false;button.textContent=previous;
+  pdfExportRunning=false;
+  button.disabled=pdfExportBlocked;
+  button.textContent=pdfReadyUrl?'PDF generado ✓':pdfExportBlocked?'Corregí el error para continuar':'Generar PDF para descargar ↓';
  }
 }
 $('download-pdf').addEventListener('click',exportDirectPdf);
