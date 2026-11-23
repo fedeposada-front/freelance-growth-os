@@ -333,3 +333,11 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commit `8e4113e632a138b6d43b51aa09daa117dc283691`: reemplazado exclusivamente el separador defectuoso por salto de línea real; no se tocaron repos corporativos ni Co.Municarse.
 - Evidencia: lectura del archivo y comprobación literal del fragmento defectuoso antes de modificarlo; escritura confirmada por GitHub. CI, build y endpoint remoto del commit nuevo **pendientes de verificación**, NO declarar PASS.
 - Siguiente prioridad: comprobar CI y despliegue de `8e4113e`, ejecutar `/api/discover` HTTPS en vivo y seguir con auth/persistencia privada. No se identificó acción humana indispensable, sin correo de bloqueo.
+
+
+## Ejecución 23/11/2026 · 14:56 ART — QA previo y cabecera de seguridad
+- Verificados los workflows del commit `7db0e2aaccfb2485e9a6d08f6f503907e838b57f`: MVP CI `45223510306` y Public URL smoke `45223510153`, ambos `completed/success` según GitHub Actions. El smoke no demuestra descubrimiento real de Overpass ni E2E privado multidispositivo.
+- Vercel personal: despliegue preview `dpl_9PqTfVb71dhYWG8ZT6su3mumvn9B`, estado `READY`, asociado a `7db0e2a` y rama `mvp/freelance-growth-os` (consultado 23/11). READY no equivale a QA funcional completa.
+- Seguridad incremental: `api/discover.js` incorpora `X-Content-Type-Options: nosniff` (`3133fa7`), con aserción de regresión en `tests/discover.test.js` (`c7ebbfe`). La revisión nueva NO tiene CI/HTTPS E2E verificada todavía.
+- Intento directo de acceso HTTPS desde contenedor falló por DNS (`Could not resolve host`), limitación del entorno de comprobación, no evidencia de caída del sitio.
+- Pendientes P0: autenticación y almacenamiento privado multidispositivo, prueba Overpass live, pruebas integrales en URL HTTPS. No hubo gasto, envío de correo ni bloqueo que requiera intervención humana.
