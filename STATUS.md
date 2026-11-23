@@ -247,3 +247,10 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - **CI y publicación de esta revisión no verificadas todavía**; no declarar PASS ni promoción. Persisten como P0 autenticación/persistencia privada y E2E remoto de Overpass/auditor.
 - Vercel registra despliegues recientes de la rama aislada de Co.Municarse dentro del mismo proyecto, que **no se modificaron**. No se debe inferir que el último READY corresponde a Growth OS.
 - Sin bloqueo humano demostrado ni correo de alerta.
+
+
+## 22/11/2026 · 22:56 ART — auditoría de respuestas comprimidas
+- Inspeccionado `api/audit.js`, pruebas y despliegues personales. El transporte HTTPS fijado a IP usa `https.request` y entrega bytes crudos, sin descompresión automática. Si el servidor envía `Content-Encoding: gzip/br/deflate`, interpretar esos bytes como HTML puede producir falsos hallazgos de título, H1 y contacto ausentes.
+- Corregido para clasificar contenido comprimido como `no_consultado` y explicitar la limitación; no atribuir defectos UX sin HTML legible. También se normaliza la comparación de Content-Type. Commits `763af6e`, `082c1ef`, `7d47f43` (test unitario de codificaciones).
+- CI del commit `7d47f43`: pendiente de verificación, no declarar PASS. Vercel mostró preview READY de la rama en revisión anterior `c2fb40f`, no prueba del cambio nuevo.
+- Pendiente: autenticación/persistencia privada, Overpass live y E2E de revisión publicada. Sin bloqueo humano demostrado; sin correo de alerta ni promoción a producción.
