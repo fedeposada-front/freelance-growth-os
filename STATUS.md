@@ -327,3 +327,9 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Vercel personal informa deployment READY `dpl_FP3ktURYRUxwXvAnw8zXXFjTL4Pj` del commit `579167bb9c3be4c21564f44919cea2d88b45ebe3` (rama `mvp/freelance-growth-os`). READY no demuestra E2E ni acceso privado.
 - Commit `17ec70061fb2a605b6afd14278f0401bc7261095`: workflow live discovery ahora registra HTTP, `X-App-Revision`, SHA esperado y proveedor. Advierte explícitamente si el alias público apunta a otro commit, para evitar atribuir falsamente un 503 a la revisión nueva.
 - CI de este cambio pendiente de comprobación; descubrimiento live NO verificado. Autenticación y persistencia privada multidispositivo siguen pendientes. No existe intervención humana indispensable identificada, sin email de bloqueo.
+
+## 23/11/2026 · 14:03 ART — reparación P0 de sintaxis del descubridor
+- Inspección directa de `api/discover.js` en rama personal detectó un `\\n` literal entre `publicEmail` y `function https`, en vez de un salto de línea JavaScript. Esto rompe el parsing del módulo completo, por lo que el descubrimiento puede fallar incluso antes de consultar Overpass. No atribuirlo a disponibilidad del proveedor.
+- Commit `8e4113e632a138b6d43b51aa09daa117dc283691`: reemplazado exclusivamente el separador defectuoso por salto de línea real; no se tocaron repos corporativos ni Co.Municarse.
+- Evidencia: lectura del archivo y comprobación literal del fragmento defectuoso antes de modificarlo; escritura confirmada por GitHub. CI, build y endpoint remoto del commit nuevo **pendientes de verificación**, NO declarar PASS.
+- Siguiente prioridad: comprobar CI y despliegue de `8e4113e`, ejecutar `/api/discover` HTTPS en vivo y seguir con auth/persistencia privada. No se identificó acción humana indispensable, sin correo de bloqueo.
