@@ -85,3 +85,12 @@ test('pinned HTTPS transport cannot fall back to hostname DNS',async()=>{
  const {fetchPinnedHtml}=await import('../api/audit.js');
  await assert.rejects(fetchPinnedHtml(new URL('https://example.com/'),[{address:'127.0.0.1',family:4}],AbortSignal.timeout(1000)),/ECONNREFUSED|abort|timeout|connect/i);
 });
+
+
+test('DNS resolution is bounded and never accepts private or empty results',async()=>{
+ const {resolvePublicAddresses}=await import('../api/audit.js');
+ assert.equal(await resolvePublicAddresses('example.com',async()=>[{address:'127.0.0.1',family:4}]),null);
+ assert.equal(await resolvePublicAddresses('example.com',async()=>[]),null);
+ assert.deepEqual(await resolvePublicAddresses('example.com',async()=>[{address:'1.1.1.1',family:4}]),[{address:'1.1.1.1',family:4}]);
+ await assert.rejects(resolvePublicAddresses('example.com',()=>new Promise(()=>{}),15),/DNS_TIMEOUT/);
+});
