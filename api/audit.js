@@ -59,6 +59,10 @@ export function meta(html,name){
   }
   return '';
 }
+export function isReadableHtmlEncoding(value){
+  const encoding=String(value||'').trim().toLowerCase();
+  return !encoding||encoding==='identity';
+}
 export async function readLimited(response,max=350000){
   const reader=response.body?.getReader();if(!reader)return {html:'',truncated:false};
   const decoder=new TextDecoder();let text='',count=0;
@@ -120,8 +124,7 @@ export default async function handler(req,res){
       if(!response.ok)return res.status(200).json({status:'no_consultado',message:'El sitio respondió HTTP '+response.status+'; no se interpretan problemas UX.',checkedAt,url:u.href});
       // The pinned transport returns raw bytes: compressed HTML must not be parsed as text.
       // Report an unverified audit rather than manufacturing missing-page findings.
-      const encoding=(response.headers.get('content-encoding')||'').trim().toLowerCase();
-      if(encoding && encoding!=='identity')return res.status(200).json({status:'no_consultado',message:'El servidor respondió HTML comprimido; esta versión del auditor no lo descomprime y no atribuye defectos UX.',checkedAt,url:u.href});
+      if(!isReadableHtmlEncoding(response.headers.get('content-encoding')))return res.status(200).json({status:'no_consultado',message:'El servidor respondió HTML comprimido; esta versión del auditor no lo descomprime y no atribuye defectos UX.',checkedAt,url:u.href});
       const type=response.headers.get('content-type')||'';
       if(!type.toLowerCase().includes('text/html'))return res.status(200).json({status:'no_consultado',message:'La respuesta no es HTML accesible.',checkedAt,url:u.href});
       const {html,truncated}=await readLimited(response);
