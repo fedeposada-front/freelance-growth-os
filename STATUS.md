@@ -272,3 +272,9 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - CI de `617df7e` falló: 29/30 pruebas, caso `data-lang` reconocido erróneamente como `lang` (run 45114645471, test 17). Public URL smoke sí pasó (45114645396); preview READY no implica E2E.
 - Corregido en `7051991c1512e4eaf68aaba3922b4cef202ad20f`: exige espacio antes del atributo `lang` de `<html>` para evitar coincidir con `data-lang`. Regresión ya existente en `tests/audit.test.js` cubre `data-lang`, `lang` vacío, atributo de hijo y `es-AR`.
 - CI del nuevo commit pendiente de comprobación. No promover a producción ni declarar MVP PASS hasta E2E real y privacidad/persistencia adecuadas.
+
+## 23/11/2026 · 04:01 ART — presupuesto de ejecución Overpass
+- Verificada CI de corrección anterior `4d0caa5`: MVP CI run [45121328148](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45121328148) y Public URL smoke [45121328014](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45121328014), ambos `completed/success`. Smoke público no demuestra que el commit nuevo esté desplegado.
+- Inspeccionado `api/discover.js`: dos consultas secuenciales a Overpass de 8.5 segundos podían sumar ~17 segundos, arriesgando timeout de funciones gratuitas antes de devolver un error honesto o el fallback. Commit `742ed4943c315047da108b425464513711115ac9`: límite de 4 segundos por proveedor (~8 segundos en total, más procesamiento), manteniendo dos fuentes y error 503 sin leads ficticios.
+- **CI de `742ed49` y prueba Overpass real pendientes**: cambio inspeccionado y persistido, no declarar PASS ni afirmar disponibilidad de la fuente. Un límite menor puede descartar respuestas lentas: CSV sigue como alternativa.
+- Autenticación/persistencia privada multidispositivo y E2E HTTPS integral siguen P0. Sin bloqueo humano nuevo ni email; no hubo gastos ni envíos comerciales.
