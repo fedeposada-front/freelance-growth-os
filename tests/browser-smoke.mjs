@@ -46,9 +46,30 @@ try{
   await page.locator('#discoverZone').selectOption('caba');
   assert.equal(await page.locator('#discoverSector').inputValue(),'restaurant');
   assert.equal(await page.locator('#discoverZone').inputValue(),'caba');
+  // Deterministic mobile UX test: synthetic HTTP response is only a browser test fixture.
+  // No test company is inserted and there is no external Overpass request.
+  let discoveryCalls=0;
+  await page.route('**/api/discover?**',async route=>{
+    discoveryCalls++;
+    await new Promise(resolve=>setTimeout(resolve,250));
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({companies:[]})});
+  });
+  await page.clock.install();
+  const searchButton=page.locator('#discoverBtn');
+  await searchButton.click();
+  assert.equal(await searchButton.isDisabled(),true,'search is disabled immediately');
+  assert.match(await searchButton.innerText(),/Buscando empresas/,'running label appears');
+  await page.waitForFunction(()=>document.querySelector('#discoverBtn').textContent.includes('Reintentar en'));
+  assert.equal(discoveryCalls,1,'only one discovery request was sent');
+  assert.equal(await searchButton.isDisabled(),true,'cooldown blocks second request');
+  assert.match(await searchButton.innerText(),/Reintentar en 1[45] s/,'retry countdown is visible');
+  await page.clock.fastForward(16000);
+  await page.waitForFunction(()=>!document.querySelector('#discoverBtn').disabled);
+  assert.match(await searchButton.innerText(),/Buscar empresas reales/,'button reactivates after countdown');
+  assert.equal(discoveryCalls,1,'countdown never triggers another request');
   await page.locator('[data-nav="proposal"]').click();
   await page.locator('#presentation .slide').first().waitFor();
   assert.equal(await page.locator('#presentation .slide').count(),3,'three proposal slides');
   assert.deepEqual(errors,[],'no browser JS errors');
-  console.log('PASS: desktop + mobile navigation; create, save, stage, persist and proposal');
+  console.log('PASS: desktop/mobile CRM, proposal and disabled-search retry countdown');
 }finally{await browser.close()}
