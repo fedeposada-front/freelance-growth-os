@@ -13,7 +13,7 @@ async function withFetch(mock,fn){
 
 test('discovery returns sourced OSM records, no fabricated company',async()=>{
   await withFetch(async (url,opts)=>{
-    assert.equal(url,'https://overpass-api.de/api/interpreter');
+    assert.equal(url,'https://overpass.private.coffee/api/interpreter');
     assert.equal(opts.method,'POST');
     assert.match(String(opts.body),/data=/);
     return {ok:true,json:async()=>({elements:[
@@ -150,8 +150,8 @@ test('discovery retries alternate public Overpass endpoint after primary 503',as
     await handler({method:'GET',query:{zone:'caba',sector:'funeral'}},res);
     assert.equal(res.code,200);
     assert.equal(res.body.companies[0].osmId,'node/77');
-    assert.equal(res.body.providerUrl,'https://overpass.kumi.systems/api/interpreter');
-    assert.deepEqual(urls,['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter']);
+    assert.equal(res.body.providerUrl,'https://overpass-api.de/api/interpreter');
+    assert.deepEqual(urls,['https://overpass.private.coffee/api/interpreter','https://overpass-api.de/api/interpreter']);
   });
 });
 
@@ -247,5 +247,41 @@ test('discovery rejects malformed emails and uses valid alternate public email',
     const res=response();await handler({method:'GET',query:{zone:'amba',sector:'funeral'}},res);
     assert.equal(res.code,200);
     assert.deepEqual(res.body.companies.map(x=>x.email),['publico@example.com','','principal@example.com']);
+  });
+});
+
+
+test('real-estate, health and food categories use known OSM tags and accepted regions', async()=>{
+  const cases=[
+    ['realestate','zonanorte','estate_agent'],
+    ['dentistry','caba','dentist'],
+    ['restaurant','rosario','restaurant'],
+    ['construction','cordoba','builder'],
+    ['fashion','mendoza','clothes']
+  ];
+  for (const [sector,zone,osmValue] of cases){
+    await withFetch(async(url,opts)=>{
+      assert.equal(url,'https://overpass.private.coffee/api/interpreter');
+      const q=new URLSearchParams(String(opts.body)).get('data');
+      assert.match(q,new RegExp(osmValue));
+      assert.match(q,/out center 60/);
+      return {ok:true,json:async()=>({elements:[{type:'node',id:881,tags:{name:'Local de prueba',website:'https://local.example'}}]})};
+    },async()=>{
+      const res=response();
+      await handler({method:'GET',query:{sector,zone}},res);
+      assert.equal(res.code,200);
+      assert.equal(res.body.companies.length,1);
+      assert.equal(res.body.companies[0].sourceUrl,'https://www.openstreetmap.org/node/881');
+    });
+  }
+});
+
+test('unknown custom sector is rejected instead of fabricating geographic leads', async()=>{
+  await withFetch(async()=>{throw Error('network must not be queried')},async()=>{
+    const res=response();
+    await handler({method:'GET',query:{sector:'bitcoin',zone:'caba'}},res);
+    assert.equal(res.code,400);
+    assert.equal(res.body.allowedSectors.length,21);
+    assert.equal(res.body.allowedZones.length,11);
   });
 });
