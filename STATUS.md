@@ -356,3 +356,10 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commit `e45767aff9753c569e34071748041275ad688307`: agregado paso de integración remota en `.github/workflows/live-smoke.yml` para consultar `/api/discover?zone=caba&sector=funeral` desde GitHub Actions. Comprueba HTTP, JSON, procedencia Overpass, ODbL, fecha y URL OSM de cada registro. Distingue explícitamente HTTP 503 de PASS: la indisponibilidad de proveedores no se presenta como resultados reales.
 - El nuevo workflow **no se ha ejecutado/verificado todavía**. No se declara PASS de Overpass ni de la revisión. El siguiente ciclo debe revisar el run y su log `Live Overpass discovery diagnostic`, corregir defectos si los hubiera y continuar con auth/persistencia privada.
 - No se detectó acción manual imprescindible; sin gastos ni correos.
+
+## 23/11/2026 · 17:58 ART — QA P0 filtros móviles en HTTPS
+- Vercel personal confirma producción READY para commit `fbbe22b` (deploy `dpl_EkLzLDaJVvLNRRBVMUPN5oLij3Z2`) y preview READY de `bf28410` (deploy `dpl_7Q373YruGupXzhXpqooYLWSBFjpg`). READY no equivale a funcionalidad E2E ni a respuesta Overpass 200.
+- Inspección de `index.html`: 21 rubros y 11 zonas declarados, y `api/discover.js` usa `overpass.private.coffee` con fallback y timeout de 12 s por intento. Son verificaciones de código, no de navegador publicado.
+- Commit `fa7fcded14adb89e13e5f607260657733b275566`: extendido `tests/browser-smoke.mjs` para comprobar en Chromium móvil contra el dominio HTTPS REAL el número de opciones, rubros nuevos, zonas y selección funcional. No se ha observado aún la ejecución del workflow para este commit: **PENDIENTE, no PASS**.
+- El acceso web directo de esta ejecución no permitió cargar el dominio, por lo que no hay prueba de búsqueda OSM genuina ni de éxito del smoke móvil. Prioridad siguiente: consultar resultado del workflow del nuevo commit y logs del diagnóstico live; si 503 persiste, desarrollar una alternativa de datos públicos verificables sin fabricar prospectos.
+- Sin acción humana imprescindible, sin email ni gasto. No se tocaron otras ramas o proyectos.
