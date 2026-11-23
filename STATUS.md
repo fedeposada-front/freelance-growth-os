@@ -316,3 +316,9 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Verificada CI del commit anterior `cd3b807`: MVP CI [45178773424](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45178773424) y Public URL smoke [45178770464](https://github.com/fedeposada-front/freelance-growth-os/actions/runs/45178770464), ambos `completed/success`. Vercel muestra despliegue READY para `cd3b807` (`dpl_F2HxDYuMMCbaBTKTYodjcGgC2W9L`), lo cual NO acredita E2E integral ni Overpass live.
 - Defecto detectado por inspección: `addr:city` compuesto exclusivamente por controles podía bloquear un `addr:suburb` legítimo, al elegir el campo antes de normalizarlo. Cambio `5b91dda30e6d4ce46aaa3a686b2b573a376d0acd`: normalizar cada localidad antes de seleccionar la primera no vacía. Regresión `27ecc944257754cb7f50e04bbaae1bf443f5d27d`: fallback, localidad desconocida vacía y prioridad de ciudad válida.
 - **CI, despliegue y E2E de los dos commits nuevos todavía NO verificados**. Sigue pendiente autenticación y persistencia privada multidispositivo; descubrimiento Overpass real no acreditado. No hay bloqueo humano imprescindible identificado, sin gastos ni emails.
+
+## 23/11/2026 · 11:54 ART — validación de emails públicos OSM
+- Inspeccionado `api/discover.js`, pruebas y STATUS.md; Vercel personal muestra READY para revisión anterior `4011035`, pero READY no acredita E2E ni descubrimiento real.
+- Commit `b34a356`: el descubridor ahora descarta emails OSM malformados antes de elegir el principal o alternativo, sin inventar verificación de contactos. Commit `a19346f`: prueba de regresión para email inválido, fallback legítimo y prioridad de principal válido.
+- CI de esta revisión aún NO verificada; no declarar PASS. Overpass en vivo, autenticación, persistencia privada multidispositivo y E2E HTTPS integral siguen pendientes.
+- Sin intervención manual indispensable nueva, gastos ni correos comerciales o de bloqueo.
