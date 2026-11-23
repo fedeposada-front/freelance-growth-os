@@ -1,0 +1,22 @@
+name: Co.Municarse generic funnel smoke
+on:
+  push:
+    branches:
+      - 'qa/comunicarse-generic-proposal-flow-20261123'
+      - 'comunicarse-os-v01-20261120'
+  pull_request:
+    branches:
+      - 'comunicarse-os-v01-20261120'
+  workflow_dispatch:
+jobs:
+  flow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-fund --no-audit
+      - run: npm install --no-save jsdom@26 --no-fund --no-audit
+      - run: node --test test/flow.test.mjs
