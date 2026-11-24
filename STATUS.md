@@ -363,3 +363,9 @@ No tocar Co.Municarse ni WEBINOW; no autoenviar correos.
 - Commit `fa7fcded14adb89e13e5f607260657733b275566`: extendido `tests/browser-smoke.mjs` para comprobar en Chromium móvil contra el dominio HTTPS REAL el número de opciones, rubros nuevos, zonas y selección funcional. No se ha observado aún la ejecución del workflow para este commit: **PENDIENTE, no PASS**.
 - El acceso web directo de esta ejecución no permitió cargar el dominio, por lo que no hay prueba de búsqueda OSM genuina ni de éxito del smoke móvil. Prioridad siguiente: consultar resultado del workflow del nuevo commit y logs del diagnóstico live; si 503 persiste, desarrollar una alternativa de datos públicos verificables sin fabricar prospectos.
 - Sin acción humana imprescindible, sin email ni gasto. No se tocaron otras ramas o proyectos.
+
+## Cierre P0 23/11/2026 — OFF_TRACK en descubrimiento real
+- Informe de cierre auditado y prioridades de mañana: [docs/daily-reviews/2026-11-23.md](docs/daily-reviews/2026-11-23.md).
+- GitHub Actions Public URL smoke #45265057137: Chromium desktop/mobile CRM y propuesta PASS, pero descubrimiento real **HTTP 503** por respuesta Overpass **HTTP 502**; revisión evaluada `fbbe22b`, no la versión de producción más reciente `d517ce63` (Vercel READY). No declarar éxito de captación.
+- Decisión obligatoria próxima ejecución 24/11: **dejar de hacer microcorrecciones**, implementar fuente alternativa legítima de negocios reales (con licencia, URL y fecha) e integrarla con el recorrido comercial; probar E2E móvil en URL HTTPS con mismo SHA. Si falla, documentar causa y variar estrategia, sin inventar empresas.
+- Sin bloqueo humano imprescindible; no correos ni gastos. Leer primero el informe del día antes de actuar.
