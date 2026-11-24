@@ -1,0 +1,38 @@
+name: MVP CI
+on:
+  push:
+    branches: [mvp/freelance-growth-os]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Unit tests
+        run: npm test
+      - name: Parse browser app JS
+        run: |
+          node --input-type=module -e "import fs from 'node:fs'; import vm from 'node:vm'; const s=fs.readFileSync('index.html','utf8').match(/<script>([\s\S]*?)<\/script>/)?.[1]; if (!s) process.exit(1); new vm.Script(s);"
+      - name: Live discovery smoke (informational, external service)
+        continue-on-error: true
+        run: |
+          node --input-type=module -e '
+            const url="https://freelance-growth-os-mvp.vercel.app/api/discover?zone=caba&sector=funeral";
+            try {
+              const response=await fetch(url,{signal:AbortSignal.timeout(25000)});
+              const body=await response.json();
+              const revision=response.headers.get("x-app-revision")||"missing";
+              const expected=process.env.GITHUB_SHA||"unknown";
+              console.log("LIVE DISCOVERY diagnostic: HTTP="+response.status+" revision="+revision+" expected="+expected+" provider="+String(body.providerUrl||"none"));
+              if(revision!=="unknown" && revision!=="missing" && revision!==expected) console.warn("LIVE DISCOVERY STALE DEPLOYMENT: tested public alias does not match workflow commit; do not attribute result to current source");
+              if(response.status!==200 || !Array.isArray(body.companies) || !String(body.license).includes("ODbL")) throw Error("Invalid discovery response: "+response.status+"; reason="+String(body.error||"unknown").slice(0,280));
+              if(body.companies.some(c=>!c.name || !/^https:\/\/www.openstreetmap.org\//.test(c.sourceUrl))) throw Error("Missing OSM provenance");
+              console.log("LIVE DISCOVERY PASS; count="+body.companies.length);
+            } catch(error) { console.error("LIVE DISCOVERY NOT VERIFIED: "+error.message); process.exitCode=1; }
+          '

@@ -1,0 +1,75 @@
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+const url='https://freelance-growth-os-mvp.vercel.app/';
+const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+try{
+  const context=await browser.newContext({viewport:{width:1280,height:800}});
+  const page=await context.newPage();
+  const errors=[];
+  page.on('pageerror', e=>errors.push(e.message));
+  page.on('dialog',d=>d.type()==='prompt'?d.accept('Empresa QA DEMO'):d.accept());
+  const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
+  assert.equal(response.status(),200,'home should respond HTTP 200');
+  await page.locator('#stat-total').waitFor();
+  assert.equal(await page.locator('#stat-total').innerText(),'2','demo records first run');
+  await page.locator('#newBtn').click();
+  await page.locator('#editName').waitFor();
+  assert.equal(await page.locator('#editName').inputValue(),'Empresa QA DEMO');
+  await page.locator('#editCity').fill('CABA');
+  await page.locator('#editSector').fill('Funerarias');
+  await page.locator('#editStage').selectOption('Investigado');
+  await page.locator('#saveCompany').click();
+  await page.locator('[data-nav="pipeline"]').click();
+  await page.locator('#pipelineCards').getByText('Empresa QA DEMO').first().waitFor();
+  await page.locator('[data-nav="proposal"]').click();
+  await page.locator('#propHeadline').fill('Un sitio más claro para familias');
+  await page.locator('#saveProposal').click();
+  await page.locator('#propCompany').waitFor();
+  assert.ok((await page.locator('#propCompany').innerText()).includes('Empresa QA DEMO'));
+  assert.ok((await page.locator('#presentation').innerText()).includes('Un sitio más claro para familias'));
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('#stat-total').waitFor();
+  assert.equal(await page.locator('#stat-total').innerText(),'3','client-side data survives refresh');
+  await page.locator('[data-nav="radar"]').click();
+  await page.locator('#companyRows').getByText('Empresa QA DEMO').waitFor();
+  await page.setViewportSize({width:390,height:844});
+  await page.locator('[data-nav="proposal"]').click();
+  // P0 Android regression: verify expanded filters on the ACTUAL HTTPS page, not local fixtures.
+  await page.locator('[data-nav="radar"]').click();
+  const sectorValues=await page.locator('#discoverSector option').evaluateAll(nodes=>nodes.map(n=>n.value));
+  const zoneValues=await page.locator('#discoverZone option').evaluateAll(nodes=>nodes.map(n=>n.value));
+  assert.equal(sectorValues.length,21,'published mobile UI must expose 21 industries');
+  assert.equal(zoneValues.length,11,'published mobile UI must expose 11 regions');
+  assert.ok(sectorValues.includes('restaurant')&&sectorValues.includes('realestate'));
+  assert.ok(zoneValues.includes('mardelplata'));
+  await page.locator('#discoverSector').selectOption('restaurant');
+  await page.locator('#discoverZone').selectOption('caba');
+  assert.equal(await page.locator('#discoverSector').inputValue(),'restaurant');
+  assert.equal(await page.locator('#discoverZone').inputValue(),'caba');
+  // Deterministic mobile UX test: synthetic HTTP response is only a browser test fixture.
+  // No test company is inserted and there is no external Overpass request.
+  let discoveryCalls=0;
+  await page.route('**/api/discover?**',async route=>{
+    discoveryCalls++;
+    await new Promise(resolve=>setTimeout(resolve,250));
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({companies:[]})});
+  });
+  await page.clock.install();
+  const searchButton=page.locator('#discoverBtn');
+  await searchButton.click();
+  assert.equal(await searchButton.isDisabled(),true,'search is disabled immediately');
+  assert.match(await searchButton.innerText(),/Buscando empresas/,'running label appears');
+  await page.waitForFunction(()=>document.querySelector('#discoverBtn').textContent.includes('Reintentar en'));
+  assert.equal(discoveryCalls,1,'only one discovery request was sent');
+  assert.equal(await searchButton.isDisabled(),true,'cooldown blocks second request');
+  assert.match(await searchButton.innerText(),/Reintentar en 1[45] s/,'retry countdown is visible');
+  await page.clock.fastForward(16000);
+  await page.waitForFunction(()=>!document.querySelector('#discoverBtn').disabled);
+  assert.match(await searchButton.innerText(),/Buscar empresas reales/,'button reactivates after countdown');
+  assert.equal(discoveryCalls,1,'countdown never triggers another request');
+  await page.locator('[data-nav="proposal"]').click();
+  await page.locator('#presentation .slide').first().waitFor();
+  assert.equal(await page.locator('#presentation .slide').count(),3,'three proposal slides');
+  assert.deepEqual(errors,[],'no browser JS errors');
+  console.log('PASS: desktop/mobile CRM, proposal and disabled-search retry countdown');
+}finally{await browser.close()}

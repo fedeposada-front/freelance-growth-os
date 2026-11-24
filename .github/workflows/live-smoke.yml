@@ -1,0 +1,66 @@
+name: Public URL smoke
+on:
+  push:
+    branches: [mvp/freelance-growth-os]
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Public home responds with expected UI
+        run: |
+          set -euo pipefail
+          curl --retry 3 --retry-delay 2 --max-time 25 --fail --silent --show-error https://freelance-growth-os-mvp.vercel.app/ -o /tmp/home.html
+          grep -q 'Freelance Growth OS' /tmp/home.html
+          grep -q 'id="view-radar"' /tmp/home.html
+          grep -q 'id="view-proposal"' /tmp/home.html
+          # Regression: the public domain must expose the expanded search filters.
+          grep -q 'value="realestate"' /tmp/home.html
+          grep -q 'value="restaurant"' /tmp/home.html
+          grep -q 'value="mardelplata"' /tmp/home.html
+      - name: Public audit endpoint returns JSON and is not a fake UX verdict
+        run: |
+          set -euo pipefail
+          curl --retry 3 --retry-delay 2 --max-time 25 --fail --silent --show-error 'https://freelance-growth-os-mvp.vercel.app/api/audit?url=https%3A%2F%2Fwww.sepeliosmoron.com.ar%2F' -o /tmp/audit.json
+          node -e "const fs=require('fs'); const j=JSON.parse(fs.readFileSync('/tmp/audit.json','utf8')); if (!['consultado','no_consultado'].includes(j.status) || !j.checkedAt) process.exit(1); console.log('API audit status:', j.status)"
+
+      - name: Live Overpass discovery diagnostic (never invent leads)
+        run: |
+          set -euo pipefail
+          URL='https://freelance-growth-os-mvp.vercel.app/api/discover?zone=caba&sector=funeral'
+          STATUS=$(curl --retry 2 --retry-delay 2 --max-time 30 --silent --show-error -D /tmp/discover-headers -o /tmp/discover.json -w '%{http_code}' "$URL")
+          echo "Discovery HTTP: $STATUS"
+          grep -i '^x-app-revision:' /tmp/discover-headers || true
+          node - "$STATUS" <<'NODE'
+          const fs=require('fs');
+          const status=Number(process.argv[2]);
+          let data;
+          try { data=JSON.parse(fs.readFileSync('/tmp/discover.json','utf8')); }
+          catch { throw new Error('Discovery returned non-JSON response'); }
+          if(status===200){
+            if(!Array.isArray(data.companies)||!data.providerUrl?.startsWith('https://overpass.')||!data.at||!data.license?.includes('ODbL')) throw new Error('Missing real-source provenance');
+            for(const company of data.companies){
+              if(!company.name||!/^https:\/\/www\.openstreetmap\.org\/(node|way|relation)\/\d+$/.test(company.sourceUrl)) throw new Error('Unverified discovery record');
+            }
+            console.log('LIVE OVERPASS PASS:',data.companies.length,'records, provider:',data.providerUrl,'at:',data.at);
+          } else if(status===503 && typeof data.error==='string'){
+            console.log('LIVE OVERPASS UNAVAILABLE (not PASS):',data.error);
+          } else {
+            throw new Error('Unexpected discovery response HTTP '+status);
+          }
+          NODE
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Install headless Chromium runner
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Browser E2E on desktop and mobile
+        run: node tests/browser-smoke.mjs
